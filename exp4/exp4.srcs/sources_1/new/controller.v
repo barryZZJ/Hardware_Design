@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-
+`include "defines.vh"
 module controller(input [5:0] op,
                   input [5:0] funct,
                   output regwriteD,
@@ -9,13 +9,13 @@ module controller(input [5:0] op,
                   output [2:0]alucontrolD,
                   output alusrcD,
                   output regdstD,
-                  output jumpD);
+                  output jumpD,
+                  );
 
-wire [1:0]aluop;
+
 
 main_decoder main_decoder(
     .op(op),
-
     .regdst(regdstD),
     .regwrite(regwriteD),
     .alusrc(alusrcD),
@@ -23,12 +23,13 @@ main_decoder main_decoder(
     .memtoreg(memtoregD),
     .branch(branchD),
     .jump(jumpD),
-    .aluop(aluop)
+    
+    
 );
 
 aludec aludec(
     .funct(funct),
-    .aluop(aluop),
+    .op(op),
     .alucontrol(alucontrolD)
 );
 

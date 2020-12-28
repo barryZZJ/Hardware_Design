@@ -1,3 +1,4 @@
+`include "defines.vh"
 module alu #(WIDTH = 32)
             (input [WIDTH-1:0] a,
              input [WIDTH-1:0] b,
