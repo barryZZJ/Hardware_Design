@@ -35,12 +35,13 @@ wire [31:0] pc_4F;
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
 wire [31:0] pcF, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
-wire [ 4:0] rsD, rtD, rdD;
+wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
+wire [ 4:0] saE;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -105,6 +106,7 @@ assign jump_addr = {pc_4D[31:28], sl2_j_addr[27:0]};
 assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
+assign saD = instrD[10: 6];
 
 //寄存器堆
 regfile regfile(
@@ -203,6 +205,15 @@ floprc #(15) DE_rt_rd (
     .q({rsE, rtE, rdE})
 );
 
+// sa 
+floprc #(5) DE_sa (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(saD),
+    .q(saE)
+);
+
 // extend_imm
 floprc #(32) DE_imm (
     .clk(clk),
@@ -243,6 +254,7 @@ mux2 #(32) mux_ALUBsrc2(
 alu alu(
     .a(ALUsrcA),
     .b(ALUsrcB2),
+    .sa(saE),
     .op(alucontrolE),
     
     .res(aluoutE)

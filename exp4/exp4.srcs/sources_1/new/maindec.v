@@ -59,9 +59,9 @@ module main_decoder(input [5:0] op,
             // sll
             `EXE_SLL: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
-                regdst   <= 1'b0;   // rd 15:11
-                alusrc   <= 1'b1;   //
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;   // rd 15:11
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
@@ -69,9 +69,9 @@ module main_decoder(input [5:0] op,
             // srl
             `EXE_SRL: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
-                regdst   <= 1'b0;   // rd 15:11
-                alusrc   <= 1'b1;   //
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;   // rd 15:11
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
@@ -79,9 +79,9 @@ module main_decoder(input [5:0] op,
             // sra
             `EXE_SRL: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
-                regdst   <= 1'b0;   // rd 15:11
-                alusrc   <= 1'b1;   //
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;   // rd 15:11
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
@@ -89,9 +89,9 @@ module main_decoder(input [5:0] op,
             // sllv
             `EXE_SLLV: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
+                regwrite <= 1'b1;
                 regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   //
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
@@ -99,9 +99,9 @@ module main_decoder(input [5:0] op,
             // srlv
             `EXE_SRLV: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
+                regwrite <= 1'b1;
                 regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   //
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
@@ -109,9 +109,9 @@ module main_decoder(input [5:0] op,
             // srav
             `EXE_SRAV: begin
                 jump     <= 1'b0;
-                regwrite <= 1'b1;   //
+                regwrite <= 1'b1;
                 regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   //
+                alusrc   <= 1'b0;   // rt 20:16
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
