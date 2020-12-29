@@ -25,6 +25,20 @@ module testbench_shift();
 reg clock_50;
 reg rst;
 
+wire [31:0] instr, pc;
+wire [31:0] writedata,dataadr;
+wire memwrite;
+
+top top(
+    .clk(clock_50),
+    .rst(rst),
+    .instr(instr), 
+    .pc(pc),
+	.writedata(writedata),
+    .dataadr(dataadr),
+	.memwrite(memwrite)
+);
+
 initial begin
     clock_50 = 1'b0;
     forever # 10 clock_50 = ~clock_50;
@@ -37,14 +51,6 @@ initial begin
 end
 
 
-mycpuTop top(
-    .clk(clock_50),
-    .rst(rst),
-    .instr(), 
-    .pc(),
-	.writedata(),
-    .dataadr(),
-	.memwrite()
-);
+
 
 endmodule

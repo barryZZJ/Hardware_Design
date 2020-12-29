@@ -88,7 +88,7 @@ flopenr #(2) MW_signals (
 controller c(
 	.op(instrD[31:26]),
 	.funct(instrD[5:0]),
-
+	.rt(instrD[20:16]),
 	.memtoregD(memtoregD),
 	.memwriteD(memwriteD),
 	.alusrcD(alusrcD),

@@ -58,6 +58,10 @@ wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 
+// branch and jump
+
+
+
 // ----------------------------------------
 // Fetch 
 

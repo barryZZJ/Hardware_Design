@@ -2,6 +2,7 @@
 `include "defines.vh"
 module controller(input [5:0] op,
                   input [5:0] funct,
+                  input [4:0] rt,
                   output regwriteD,
                   output memtoregD,
                   output memwriteD,
@@ -9,21 +10,32 @@ module controller(input [5:0] op,
                   output [7:0]alucontrolD,
                   output alusrcD,
                   output regdstD,
-                  output jumpD
+                  output jumpD,
+                  output memenD,
+                  output jalD,
+                  output jrD,
+                  output balD
                   );
 
 
 
 main_decoder main_decoder(
     .op(op),
+    .funct(funct),
+    .rt(rt),
     .regdst(regdstD),
     .regwrite(regwriteD),
     .alusrc(alusrcD),
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
     .branch(branchD),
-    .jump(jumpD)
-);
+    .jump(jumpD),
+    .memen(memenD),
+    .jal(jalD),
+    .jr(jrD),
+    .bal(balD)
+    );
+
 
 aludec aludec(
     .funct(funct),
