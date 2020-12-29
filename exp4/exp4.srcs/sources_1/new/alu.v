@@ -4,6 +4,7 @@ module alu #(WIDTH = 32)
             (input [WIDTH-1:0] a,//操作数1
              input [WIDTH-1:0] b,//操作数2
              input [7:0] op,
+             input [4:0] sa,
              input [63:0] hilo_i,//乘除法hilo寄存器：输入
              output [63:0] hilo_o,//乘除法hilo寄存器：输出
              output reg [WIDTH-1:0] res,
@@ -16,8 +17,43 @@ module alu #(WIDTH = 32)
         //乘法
         //除法
         
-        always@(*)
+        always@(*)begin
+            
+      
          case(op)
+
+            `EXE_AND_OP : res <= a & b;
+            `EXE_OR_OP  : res <= a | b;
+            `EXE_ADD_OP : res <= a + b;
+            `EXE_SUB_OP : res <= a - b;
+            `EXE_SLT_OP : res <= (a<b) ? 1 : 0;
+
+            /////////////////////////////////////
+            ///             移位指令            //
+            /////////////////////////////////////
+            // 操作数 sa:shamt b:rt
+            // sxx rd,rt,shamt
+            // 逻辑移位，空位填零
+            // sll
+            `EXE_SLL_OP : res <= b << sa;
+            // srl
+            `EXE_SRL_OP : res <= b >> sa;
+            // 算术右移，空位填符号位
+            // sra
+            `EXE_SRA_OP : begin
+                // equals : res =  ({b, 1'b0} << ~sa) | (b >> sa) ;
+                res = ({32{b[31]}} << (6'd32 - {1'b0, sa})) | (b >> sa) ;
+            end
+            // 操作数 a:rs b:rt
+            // sxxv rd,rs,rt
+            // sllv
+            `EXE_SLLV_OP: res <= b << a[4:0];
+            // srlv
+            `EXE_SRLV_OP: res <= b >> a[4:0];
+            // srav
+            `EXE_SRAV_OP: begin
+                res = ({32{b[31]}} << (6'd32 - {1'b0, a[4:0]})) | (b >> a[4:0]) ;
+            end
          //算术运算指令
           `EXE_ADD_OP: //考虑溢出情况：有符号加法
               begin
@@ -110,9 +146,14 @@ module alu #(WIDTH = 32)
             `EXE_SW_OP:res <= a + b;      
             `EXE_SB_OP:res <= a + b;
             `EXE_SH_OP:res <= a + b;
+
+            default:begin
+                res <= 32'b0;
+            end
          endcase
         
+        end
 
-
+    assign zero = ((a-b)==0);
     
 endmodule
