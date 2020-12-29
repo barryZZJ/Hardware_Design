@@ -11,11 +11,11 @@ module main_decoder(input [5:0] op,
 
                     output reg memwrite,
                     output reg memtoreg,
-                    // output reg memen,
+                    output reg memen,
 
-                    // output reg jal,
-                    // output reg jr,
-                    // output reg bal,
+                    output reg jal,
+                    output reg jr,
+                    output reg bal,
                     output reg jump);
     
     always @(*) begin
@@ -83,9 +83,25 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b1;
+                bal      <= 1'b0;
             end
             // jalr : 需要写寄存器
-
+            `EXE_JALR: begin
+                jump     <= 1'b0;
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b1;
+                bal      <= 1'b0;
+            end
             // j
             `EXE_J: begin
                 jump     <= 1'b1;
@@ -95,9 +111,25 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
             end
             // jal : 需要写寄存器
-
+            `EXE_JAL: begin
+                jump     <= 1'b1;
+                regwrite <= 1'b0;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b1;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
+            end
             // beq
             `EXE_BEQ: begin
                 jump     <= 1'b0;
@@ -125,6 +157,10 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
             end
         endcase
     end
