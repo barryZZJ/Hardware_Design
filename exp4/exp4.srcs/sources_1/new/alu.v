@@ -2,16 +2,16 @@
 module alu #(WIDTH = 32)
             (input [WIDTH-1:0] a,
              input [WIDTH-1:0] b,
-             input [2:0] op,
+             input [7:0] op,
              output[WIDTH-1:0] res,
              output zero);
     
-assign res = (op == 3'b000) ? a & b:
-             (op == 3'b001) ? a | b:
-             (op == 3'b010) ? a + b:
-             (op == 3'b110) ? a - b:
-             (op == 3'b111) ? (a<b) ? 1 : 0 :
-             8'b0; // 未使用端口默认输出0
+assign res = (op == `EXE_AND_OP) ? a & b:
+             (op == `EXE_OR_OP) ? a | b:
+             (op == `EXE_ADD_OP) ? a + b:
+             (op == `EXE_SUB_OP) ? a - b:
+             (op == `EXE_SLT_OP) ? (a<b) ? 1 : 0 :
+             8'b0;
 
 assign zero = ((a-b) == 0);
     

@@ -35,11 +35,11 @@ module mips(
 // Decode phase
 wire [31:0] instrD;
 wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD;
-wire [2:0] alucontrolD;
+wire [7:0] alucontrolD;
 
 // Execution phase
 wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE;
-wire [2:0] alucontrolE;
+wire [7:0] alucontrolE;
 
 // Mem phase
 wire regwriteM, memtoregM; 

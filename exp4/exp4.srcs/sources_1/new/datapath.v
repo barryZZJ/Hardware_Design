@@ -3,14 +3,14 @@
 
 module datapath(
     input clk,rst,
-    input [31:0]instrD, readdata, // Êý¾Ý´æ´¢Æ÷¶Á³öµÄÊý¾Ý
+    input [31:0]instrD, readdata, // ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     input regwriteE,
     input regwriteM,
     input regwriteW,
     input memtoregW,
     input memtoregE,
     input memtoregM,
-    input [2:0]alucontrolE,
+    input [7:0]alucontrolE,
     input alusrcE,
     input regdstE,
     input jumpD,
@@ -22,10 +22,10 @@ module datapath(
 );
     
 
-//·Ö±ðÎª£ºpc+4, ¶àÂ·Ñ¡Ôñ·ÖÖ§Ö®ºóµÄpc, ÏÂÒ»ÌõÕæÕýÒªÖ´ÐÐµÄÖ¸ÁîµÄpc
+//ï¿½Ö±ï¿½Îªï¿½ï¿½pc+4, ï¿½ï¿½Â·Ñ¡ï¿½ï¿½ï¿½Ö§Ö®ï¿½ï¿½ï¿½pc, ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÖ´ï¿½Ðµï¿½Ö¸ï¿½ï¿½ï¿½pc
 wire [31:0] pc_branched, pc_realnext;
 
-//ALUÊý¾ÝÀ´Ô´A¡¢B£¬¼Ä´æÆ÷¶ÑÐ´ÈëÊý¾Ý£¬×óÒÆ2Î»ºóµÄÁ¢¼´Êý£¬
+//ALUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Aï¿½ï¿½Bï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½2Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr;
     // resultW, 
 
@@ -41,7 +41,7 @@ wire [ 4:0] rsD, rtD, rdD;
 
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
-wire [ 4:0] rsE, rtE, rdE, writeregE; // Ð´Èë¼Ä´æÆ÷¶ÑµÄµØÖ·
+wire [ 4:0] rsE, rtE, rdE, writeregE; // Ð´ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ÑµÄµï¿½Ö·
 
 // Mem phase
 wire [31:0] writedataM;
@@ -73,7 +73,7 @@ flopenr #(32) pc_module(
 
 assign pcF = pc;
 
-//PC+4¼Ó·¨Æ÷
+//PC+4ï¿½Ó·ï¿½ï¿½ï¿½
 adder pc_4_adder (
     .a(pcF),
     .b(32'h4),
@@ -96,7 +96,7 @@ flopenrc #(32) FD_pc_4 (
 // ----------------------------------------
 // Decode 
 
-//jumpÖ¸ÁîµÄ×óÒÆ2Î»
+//jumpÖ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2Î»
 sl2 sl2_2(
     .a({6'b0, instrD[25:0]}),
     .y(sl2_j_addr)
@@ -108,7 +108,7 @@ assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
 
-//¼Ä´æÆ÷¶Ñ
+//ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
@@ -139,35 +139,35 @@ mux2 #(32) mux_equalsrc2(
 assign equalD = (equalsrc1 == equalsrc2);
 assign pcsrcD = branchD & equalD;
 
-//·ûºÅÍØÕ¹
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹
 signext sign_extend(
     .a(instrD[15:0]),
     .y(extend_immD)
 );
 
-//Á¢¼´ÊýµÄ×óÒÆ2Î»
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2Î»
 sl2 sl2_1(
     .a(extend_immD),
     .y(sl2_imm)
 );
 
-//branchÌø×ªµØÖ·¼Ó·¨Æ÷
+//branchï¿½ï¿½×ªï¿½ï¿½Ö·ï¿½Ó·ï¿½ï¿½ï¿½
 adder pc_branch_adder (
 	.a(pc_4D),
 	.b(sl2_imm),
 	.y(pcbranchD)
 );
 
-//mux, PCÖ¸ÏòÑ¡Ôñ, PC+4(0), pc_src(1)
-// pc_branched: ÓÃÀ´¸újumpµØÖ·ÔÙÑ¡Ò»´Î
+//mux, PCÖ¸ï¿½ï¿½Ñ¡ï¿½ï¿½, PC+4(0), pc_src(1)
+// pc_branched: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½jumpï¿½ï¿½Ö·ï¿½ï¿½Ñ¡Ò»ï¿½ï¿½
 mux2 #(32) mux_pcbranch(
-	.a(pcbranchD),//À´×ÔÊý¾Ý´æ´¢Æ÷
-	.b(pc_4F),//À´×Ô¼Ó·¨Æ÷¼ÆËã½á¹û
+	.a(pcbranchD),//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½
+	.b(pc_4F),//ï¿½ï¿½ï¿½Ô¼Ó·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	.s(pcsrcD),
 	.y(pc_branched)
 );
 
-//mux, Ñ¡Ôñ·ÖÖ§Ö®ºóµÄpcÓëjump_addr
+//mux, Ñ¡ï¿½ï¿½ï¿½Ö§Ö®ï¿½ï¿½ï¿½pcï¿½ï¿½jump_addr
 mux2 #(32) mux_pcnext(
 	.a(jump_addr),
 	.b(pc_branched),
@@ -217,7 +217,7 @@ floprc #(32) DE_imm (
 // ----------------------------------------
 // Exe 
 
-// ALU,A¶ËÊäÈëÖµ£¬rd1E(00),resultW(01)£¬aluoutM(10)
+// ALU,Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½rd1E(00),resultW(01)ï¿½ï¿½aluoutM(10)
 mux3 #(32) mux_ALUAsrc(
     .a(rd1E),
     .b(resultW),
@@ -225,7 +225,7 @@ mux3 #(32) mux_ALUAsrc(
     .s(forwardAE),
     .y(ALUsrcA)
 );
-// ALU, B¶ËÊäÈëÖµ£¬rd1E(00),resultW(01)£¬aluoutM(10)
+// ALU, Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½rd1E(00),resultW(01)ï¿½ï¿½aluoutM(10)
 mux3 #(32) mux_ALUBsrc1(
     .a(rd2E),
     .b(resultW),
@@ -238,7 +238,7 @@ mux2 #(32) mux_ALUBsrc2(
     .a(extend_immE),
     .b(ALUsrcB1),
     .s(alusrcE),
-    .y(ALUsrcB2) // BÊäÈëµÚ¶þ¸öÑ¡ÔñÆ÷Ö®ºóµÄ½á¹û
+    .y(ALUsrcB2) // Bï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½ï¿½ï¿½
 );
 
 //ALU
@@ -250,9 +250,9 @@ alu alu(
     .res(aluoutE)
 );
 
-assign writedataE = ALUsrcB1; // BÊäÈëµÚÒ»¸öÑ¡ÔñÆ÷Ö®ºóµÄ½á¹û
+assign writedataE = ALUsrcB1; // Bï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½ï¿½ï¿½
 
-// ¼Ä´æÆ÷¶ÑÐ´ÈëµØÖ· writereg
+// ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ö· writereg
 
 mux2 #(5) mux_WA3(
 	.a(rdE), //instr[15:11]
@@ -329,10 +329,10 @@ flopenr #(5) MW_writereg (
 // ----------------------------------------
 // Write Back 
 
-//mux, ¼Ä´æÆ÷¶ÑÐ´ÈëÊý¾ÝÀ´×Ô´æ´¢Æ÷ or ALU £¬memtoReg
+//mux, ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´æ´¢ï¿½ï¿½ or ALU ï¿½ï¿½memtoReg
 mux2 #(32) mux_WD3(
-	.a(readdataW),//À´×ÔÊý¾Ý´æ´¢Æ÷
-	.b(aluoutW),//À´×ÔALU¼ÆËã½á¹û
+	.a(readdataW),//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½
+	.b(aluoutW),//ï¿½ï¿½ï¿½ï¿½ALUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	.s(memtoregW),
 	.y(resultW)
 );

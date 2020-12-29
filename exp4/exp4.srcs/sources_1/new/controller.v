@@ -6,7 +6,7 @@ module controller(input [5:0] op,
                   output memtoregD,
                   output memwriteD,
                   output branchD,
-                  output [2:0]alucontrolD,
+                  output [7:0]alucontrolD,
                   output alusrcD,
                   output regdstD,
                   output jumpD,
@@ -22,9 +22,7 @@ main_decoder main_decoder(
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
     .branch(branchD),
-    .jump(jumpD),
-    
-    
+    .jump(jumpD)
 );
 
 aludec aludec(
