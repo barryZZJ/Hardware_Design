@@ -38,3 +38,5 @@ update_compile_order -fileset sources_1
 update_compile_order -fileset sources_1
 update_compile_order -fileset sources_1
 update_compile_order -fileset sources_1
+exit
+INFO: [Common 17-206] Exiting Vivado at Tue Dec 29 22:09:48 2020...
