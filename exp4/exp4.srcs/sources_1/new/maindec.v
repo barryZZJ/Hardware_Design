@@ -40,33 +40,19 @@ module main_decoder(input [5:0] op,
             end
             // lw
             `EXE_LW: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
                 memtoreg <= 1'b1;
             end
             // sw
             `EXE_SW: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
                 memwrite <= 1'b1;
-                memtoreg <= 1'b0;
             end
             // addi
             `EXE_ADDI: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
             
             ////////////////////////////////////////
@@ -103,23 +89,34 @@ module main_decoder(input [5:0] op,
                 jal      <= 1'b1;
             end
             // beq
+            // if rs = rt then branch
             `EXE_BEQ: begin
                 jal      <= 1'b1;
                 branch   <= 1'b1;
             end
             // bgtz
+            // if rs > 0 then branch
+
             // blez
+            // if rs <= 0 then branch
+
             // bne
+            // if rs != rt then branch
+
             // bltz
+            // if rs < 0 then branch
+
             // bgez
+            // if rs >= 0 then branch
             
             // bltzal
+            // if rs < 0 then branch
             `EXE_BLTZAL: begin
                 branch   <= 1'b1;
                 bal      <= 1'b1;
             end
             // bgezal
-
+            // if rs >= 0 then branch
 
             default: begin
                 

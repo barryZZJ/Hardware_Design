@@ -30,16 +30,16 @@ wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW
 
 
 // Fetch phase
-wire [31:0] pc_4F;
+wire [31:0] pc_4F,pc_8F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcF, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pcF, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
+wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE,aluout2E, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [ 4:0] saE;
 
@@ -82,6 +82,12 @@ adder pc_4_adder (
     .b(32'h4),
     .y(pc_4F)
 );
+//PC+8加法器
+adder pc_8_adder (
+    .a(pcF),
+    .b(32'h8),
+    .y(pc_8F)
+);
 
 // ----------------------------------------
 // fetech to decode memory flops 
@@ -95,6 +101,18 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
+
+flopenrc #(32) FD_pc_8 (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallD),
+    .clear(pcsrcD),
+    .d(pc_8F),
+    .q(pc_8D)
+);
+
+// pc_8
+
 
 // ----------------------------------------
 // Decode 
@@ -178,6 +196,24 @@ mux2 #(32) mux_pcnext(
 	.s(jumpD),
 	.y(pc_realnext)
 );
+
+// jump and branch
+
+// 控制是否将返回地址写入31号寄存器
+mux2 #(5) wrmux2 (
+	.a(writeregE),
+	.b(5'b11111),
+	.s(jumpD),
+	.y(pc_realnext)
+);
+// 控制被写数据是否为PC+8
+mux2 #(32) wrmux3 (
+	.a(aluoutE),
+	.b(),
+	.s(jumpD),
+	.y(pc_realnext)
+);
+
 
 // ----------------------------------------
 // decode to execution flops
