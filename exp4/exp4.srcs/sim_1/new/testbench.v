@@ -24,13 +24,19 @@ module testbench1();
 	reg clk;
 	reg rst;
 
-	wire [31:0] instr, pc, resultW;
-	wire [4:0] rs, rt, rd;
+	wire [31:0] instr, pc;
 	wire [31:0] writedata,dataadr;
 	wire memwrite;
-	wire stallF, stallD, flushE;
 
-	top dut(clk,rst,instr, pc, resultW, rs, rt, rd, writedata, dataadr, memwrite, stallF, stallD, flushE);
+	top dut(
+		clk,
+		rst,
+		instr, 
+		pc, 
+		writedata, 
+		dataadr, 
+		memwrite
+	);
 
 	initial begin 
 		rst <= 1;

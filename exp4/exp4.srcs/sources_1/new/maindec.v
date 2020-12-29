@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-
 `include "defines.vh"
 module main_decoder(input [5:0] op,
                     output reg regdst,

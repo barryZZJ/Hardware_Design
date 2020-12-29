@@ -1,0 +1,18 @@
+#-----------------------------------------------------------
+# Vivado v2019.2 (64-bit)
+# SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
+# IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
+# Start of session at: Mon Dec 28 22:00:00 2020
+# Process ID: 14452
+# Current directory: E:/hw/Hardware_Design/exp4
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent16632 E:\hw\Hardware_Design\exp4\exp4.xpr
+# Log file: E:/hw/Hardware_Design/exp4/vivado.log
+# Journal file: E:/hw/Hardware_Design/exp4\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/hw/Hardware_Design/exp4/exp4.xpr
+update_compile_order -fileset sources_1
+export_ip_user_files -of_objects  [get_files E:/hw/Hardware_Design/exp3/mipstest.coe] -no_script -reset -force -quiet
+remove_files  E:/hw/Hardware_Design/exp3/mipstest.coe
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1

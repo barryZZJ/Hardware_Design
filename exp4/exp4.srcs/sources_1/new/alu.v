@@ -1,4 +1,3 @@
-
 `include "defines.vh"
 module alu #(WIDTH = 32)
             (input [WIDTH-1:0] a,
@@ -6,7 +5,6 @@ module alu #(WIDTH = 32)
              input [7:0] op,
              output reg [WIDTH-1:0] res,
              output zero);
-    
     always @(*) begin
         case(op)
             `EXE_AND_OP : res <= a & b;

@@ -24,12 +24,9 @@ module mips(
 	input wire clk,rst,
 	input wire[31:0] instr,
 	input wire[31:0] readdata,
-
 	output wire memwriteM,
-	output wire[31:0] pc, resultW,
-	output wire[31:0] aluoutM, writedata,
-	output [4:0] rs, rt, rd,
-	output stallF, stallD, flushE
+	output wire[31:0] pc,
+	output wire[31:0] aluoutM, writedata
 );
 	
 // Decode phase
@@ -49,12 +46,7 @@ wire regwriteM, memtoregM;
 wire regwriteW, memtoregW;
 
 // hazard
-// wire stallF, stallD, flushE;
-
-
-assign rs = instrD[25:21];
-assign rt = instrD[20:16];
-assign rd = instrD[15:11];
+wire stallF, stallD, flushE;
 
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
@@ -67,7 +59,7 @@ flopenrc #(32) FD_instr (
 );
 
 // Decode to Exe flop for signals
-floprc #(8) DE_signals (
+floprc #(13) DE_signals (
     .clk(clk),
     .rst(rst),
     .clear(flushE),
@@ -123,7 +115,6 @@ datapath dp(
 	.regdstE(regdstE),
 	.jumpD(jumpD),
 	.branchD(branchD),
-	.resultW(resultW),
 	
 	.pc(pc),
 	.pcsrcD(pcsrcD),
