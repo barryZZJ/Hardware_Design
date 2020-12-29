@@ -71,6 +71,24 @@ module main_decoder(input [5:0] op,
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
             end
+
+            /////////////////////////////////////
+            ///             移位指令            //
+            /////////////////////////////////////
+
+            // sll
+
+            // srl
+
+            // sra
+
+            // sllv
+
+            // srlv
+
+            // srav
+
+
             default: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b0;
