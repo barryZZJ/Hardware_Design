@@ -1600,8 +1600,16 @@
         </spirit:fileSetRef>
         <spirit:parameters>
           <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Tue Dec 29 05:48:53 UTC 2020</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
+<<<<<<< HEAD
+            <spirit:value>9:44b599c6</spirit:value>
+=======
             <spirit:value>9:c6d80bec</spirit:value>
+>>>>>>> ZZJ
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>

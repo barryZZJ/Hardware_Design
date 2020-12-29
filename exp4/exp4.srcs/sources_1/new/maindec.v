@@ -1,19 +1,26 @@
 `timescale 1ns / 1ps
 `include "defines.vh"
 module main_decoder(input [5:0] op,
-                    output regdst,
-                    output regwrite,
-                    output alusrc,
-                    output memwrite,
-                    output memtoreg,
-                    output branch,
-                    output jump,
-                    output mfhi, //TODO
-                    output mflo, //TODO
-                    output mthi, //TODO
-                    output mtlo, //TODO
-                    output mul, //TODO
-                    output div //TODO
+                    output reg regdst,
+                    output reg regwrite,
+
+                    output reg alusrc,
+                    output reg branch,
+
+                    output reg memwrite,
+                    output reg memtoreg,
+                    output reg memen,
+
+                    output reg jal,
+                    output reg jr,
+                    output reg bal,
+                    output reg jump,
+                    output reg mfhi, //TODO
+                    output reg mflo, //TODO
+                    output reg mthi, //TODO
+                    output reg mtlo, //TODO
+                    output reg mul, //TODO
+                    output reg div //TODO
                     );
     
     always @(*) begin
@@ -48,16 +55,6 @@ module main_decoder(input [5:0] op,
                 memwrite <= 1'b1;
                 memtoreg <= 1'b0;
             end
-            // beq
-            6'b000100: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
-                branch   <= 1'b1;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
             // addi
             6'b001000: begin
                 jump     <= 1'b0;
@@ -68,8 +65,22 @@ module main_decoder(input [5:0] op,
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
             end
-            // j
-            6'b000010: begin
+            
+            ////////////////////////////////////////
+            //
+            // 移位指令
+            //
+            ////////////////////////////////////////
+
+            // 均为 R - Type
+
+            ////////////////////////////////////////
+            //
+            // 分支跳转指令
+            //
+            ////////////////////////////////////////
+            // jr
+            `EXE_JR: begin
                 jump     <= 1'b1;
                 regwrite <= 1'b0;
                 regdst   <= 1'b0;
@@ -77,7 +88,72 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b1;
+                bal      <= 1'b0;
             end
+            // jalr : 需要写寄存器
+            `EXE_JALR: begin
+                jump     <= 1'b0;
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b1;
+                bal      <= 1'b0;
+            end
+            // j
+            `EXE_J: begin
+                jump     <= 1'b1;
+                regwrite <= 1'b0;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
+            end
+            // jal : 需要写寄存器
+            `EXE_JAL: begin
+                jump     <= 1'b1;
+                regwrite <= 1'b0;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b1;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
+            end
+            // beq
+            `EXE_BEQ: begin
+                jump     <= 1'b0;
+                regwrite <= 1'b0;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b0;
+                branch   <= 1'b1;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+            end
+            // bgtz
+            // blez
+            // bne
+            // bltz
+            // bltzal
+            // bgez
+            // bgezal
+
+
             default: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b0;
@@ -86,6 +162,10 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
+                memen    <= 1'b0;
+                jal      <= 1'b0;
+                jr       <= 1'b0;
+                bal      <= 1'b0;
             end
         endcase
     end
