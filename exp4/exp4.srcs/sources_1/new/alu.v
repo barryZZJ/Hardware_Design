@@ -1,4 +1,3 @@
-
 `include "defines.vh"
 module alu #(WIDTH = 32)
             (
@@ -41,9 +40,11 @@ module alu #(WIDTH = 32)
             `EXE_SUB_OP : res <= a - b;
             `EXE_SLT_OP : res <= (a<b) ? 1 : 0;
 
-            /////////////////////////////////////
-            ///             移位指令            //
-            /////////////////////////////////////
+            ////////////////////////////////////////
+            //
+            // 移位指令
+            //
+            ////////////////////////////////////////
             // 操作数 sa:shamt b:rt
             // sxx rd,rt,shamt
             // 逻辑移位，空位填零
@@ -168,7 +169,26 @@ module alu #(WIDTH = 32)
             `EXE_SW_OP:res <= a + b;      
             `EXE_SB_OP:res <= a + b;
             `EXE_SH_OP:res <= a + b;
+          
+              ////////////////////////////////////////
+            //
+            // 分支跳转指令
+            //
+            ////////////////////////////////////////
+            // jr
 
+            // jalr
+            // j
+            // jal
+
+            // beq
+            // bgtz
+            // blez
+            // bne
+            // bltz
+            // bltzal
+            // bgez
+            // bgezal
 
             default:begin
                 res <= 32'b0;
@@ -176,7 +196,7 @@ module alu #(WIDTH = 32)
          endcase
         
         end
-
-    assign zero = ((a-b)==0);
+  
+assign zero = ((a-b) == 0);
     
 endmodule

@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity blk_mem_gen_v8_4_3 is
+entity blk_mem_gen_v8_4_4 is
   generic (
     C_FAMILY                     : string := "virtex7";
     C_XDEVICEFAMILY              : string := "virtex7";
@@ -142,9 +142,9 @@ entity blk_mem_gen_v8_4_3 is
     s_axi_dbiterr                : out std_logic;
     s_axi_rdaddrecc              : out std_logic_vector(c_addrb_width - 1 downto 0)
   );
-end entity blk_mem_gen_v8_4_3;
+end entity blk_mem_gen_v8_4_4;
 
-architecture xilinx of blk_mem_gen_v8_4_3 is
+architecture xilinx of blk_mem_gen_v8_4_4 is
   begin
   end 
 architecture xilinx;

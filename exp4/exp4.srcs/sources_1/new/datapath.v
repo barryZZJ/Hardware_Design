@@ -3,7 +3,7 @@
 
 module datapath(
     input clk,rst,
-    input [31:0]instrD, readdata, // ���ݴ洢������������
+    input [31:0]instrD, readdata, // 数据存储器读出的数据
     input regwriteE,
     input regwriteM,
     input regwriteW,
@@ -16,18 +16,17 @@ module datapath(
     input jumpD,
     input branchD,
     
-    output wire [31:0] pc, aluoutM, mem_WriteData, resultW,
+    output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
     output wire stallF, stallD, flushE
 );
     
 
-//�ֱ�Ϊ��pc+4, ��·ѡ���֧֮���pc, ��һ������Ҫִ�е�ָ���pc
+//分别为：pc+4, 多路选择分支之后的pc, 下一条真正要执行的指令的pc
 wire [31:0] pc_branched, pc_realnext;
 
-//ALU������ԴA��B���Ĵ�����д�����ݣ�����2λ�����������
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr;
-    // resultW, 
+//ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
+wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -36,12 +35,13 @@ wire [31:0] pc_4F;
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
 wire [31:0] pcF, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
-wire [ 4:0] rsD, rtD, rdD;
+wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
-wire [ 4:0] rsE, rtE, rdE, writeregE; // д��Ĵ����ѵĵ�ַ
+wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
+wire [ 4:0] saE;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -55,7 +55,6 @@ wire [ 4:0] writeregW;
 // hazard
 wire [1:0] forwardAE, forwardBE;
 wire forwardAD, forwardBD;
-    // wire stallF, stallD, flushE;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 
@@ -73,7 +72,7 @@ flopenr #(32) pc_module(
 
 assign pcF = pc;
 
-//PC+4�ӷ���
+//PC+4加法器
 adder pc_4_adder (
     .a(pcF),
     .b(32'h4),
@@ -96,7 +95,7 @@ flopenrc #(32) FD_pc_4 (
 // ----------------------------------------
 // Decode 
 
-//jumpָ�������2λ
+//jump指令的左移2位
 sl2 sl2_2(
     .a({6'b0, instrD[25:0]}),
     .y(sl2_j_addr)
@@ -107,8 +106,9 @@ assign jump_addr = {pc_4D[31:28], sl2_j_addr[27:0]};
 assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
+assign saD = instrD[10: 6];
 
-//�Ĵ�����
+//寄存器堆
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
@@ -139,35 +139,35 @@ mux2 #(32) mux_equalsrc2(
 assign equalD = (equalsrc1 == equalsrc2);
 assign pcsrcD = branchD & equalD;
 
-//������չ
+//符号拓展
 signext sign_extend(
     .a(instrD[15:0]),
     .y(extend_immD)
 );
 
-//������������2λ
+//立即数的左移2位
 sl2 sl2_1(
     .a(extend_immD),
     .y(sl2_imm)
 );
 
-//branch��ת��ַ�ӷ���
+//branch跳转地址加法器
 adder pc_branch_adder (
 	.a(pc_4D),
 	.b(sl2_imm),
 	.y(pcbranchD)
 );
 
-//mux, PCָ��ѡ��, PC+4(0), pc_src(1)
-// pc_branched: ������jump��ַ��ѡһ��
+//mux, PC指向选择, PC+4(0), pc_src(1)
+// pc_branched: 用来跟jump地址再选一次
 mux2 #(32) mux_pcbranch(
-	.a(pcbranchD),//�������ݴ洢��
-	.b(pc_4F),//���Լӷ���������
+	.a(pcbranchD),//来自数据存储器
+	.b(pc_4F),//来自加法器计算结果
 	.s(pcsrcD),
 	.y(pc_branched)
 );
 
-//mux, ѡ���֧֮���pc��jump_addr
+//mux, 选择分支之后的pc与jump_addr
 mux2 #(32) mux_pcnext(
 	.a(jump_addr),
 	.b(pc_branched),
@@ -205,6 +205,15 @@ floprc #(15) DE_rt_rd (
     .q({rsE, rtE, rdE})
 );
 
+// sa 
+floprc #(5) DE_sa (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(saD),
+    .q(saE)
+);
+
 // extend_imm
 floprc #(32) DE_imm (
     .clk(clk),
@@ -217,7 +226,7 @@ floprc #(32) DE_imm (
 // ----------------------------------------
 // Exe 
 
-// ALU,A������ֵ��rd1E(00),resultW(01)��aluoutM(10)
+// ALU,A端输入值，rd1E(00),resultW(01)，aluoutM(10)
 mux3 #(32) mux_ALUAsrc(
     .a(rd1E),
     .b(resultW),
@@ -225,7 +234,7 @@ mux3 #(32) mux_ALUAsrc(
     .s(forwardAE),
     .y(ALUsrcA)
 );
-// ALU, B������ֵ��rd1E(00),resultW(01)��aluoutM(10)
+// ALU, B端输入值，rd1E(00),resultW(01)，aluoutM(10)
 mux3 #(32) mux_ALUBsrc1(
     .a(rd2E),
     .b(resultW),
@@ -238,21 +247,22 @@ mux2 #(32) mux_ALUBsrc2(
     .a(extend_immE),
     .b(ALUsrcB1),
     .s(alusrcE),
-    .y(ALUsrcB2) // B����ڶ���ѡ����֮��Ľ��
+    .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
 //ALU
 alu alu(
     .a(ALUsrcA),
     .b(ALUsrcB2),
+    .sa(saE),
     .op(alucontrolE),
     
     .res(aluoutE)
 );
 
-assign writedataE = ALUsrcB1; // B�����һ��ѡ����֮��Ľ��
+assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
-// �Ĵ�����д���ַ writereg
+// 寄存器堆写入地址 writereg
 
 mux2 #(5) mux_WA3(
 	.a(rdE), //instr[15:11]
@@ -329,10 +339,10 @@ flopenr #(5) MW_writereg (
 // ----------------------------------------
 // Write Back 
 
-//mux, �Ĵ�����д���������Դ洢�� or ALU ��memtoReg
+//mux, 寄存器堆写入数据来自存储器 or ALU ，memtoReg
 mux2 #(32) mux_WD3(
-	.a(readdataW),//�������ݴ洢��
-	.b(aluoutW),//����ALU������
+	.a(readdataW),//来自数据存储器
+	.b(aluoutW),//来自ALU计算结果
 	.s(memtoregW),
 	.y(resultW)
 );
