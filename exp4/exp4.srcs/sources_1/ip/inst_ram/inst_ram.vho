@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:blk_mem_gen:8.4
--- IP Revision: 3
+-- IP Revision: 4
 
 -- The following code must appear in the VHDL architecture header.
 
