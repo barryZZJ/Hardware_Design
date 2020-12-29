@@ -3,11 +3,9 @@
 
 module top(
 	input wire clk,rst,
-    output [31:0] instr, pc, resultW, // for testbench
-	output [4:0] rs, rt, rd,
+    output [31:0] instr, pc,
 	output wire [31:0] writedata, dataadr,
-	output wire memwrite,
-	output stallF, stallD, flushE
+	output wire memwrite
 );
 
 wire [31:0] readdata; 
@@ -21,14 +19,7 @@ mips mips(
 	.memwriteM(memwrite),
 	.pc(pc),
 	.aluoutM(dataadr),
-	.writedata(writedata),
-	.resultW(resultW),
-	.rs(rs),
-	.rt(rt),
-	.rd(rd),
-    .stallF(stallF),
-	.stallD(stallD),
-	.flushE(flushE)
+	.writedata(writedata)
 );
 
 inst_ram inst_ram(

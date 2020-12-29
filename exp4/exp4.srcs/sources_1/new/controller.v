@@ -9,7 +9,7 @@ module controller(input [5:0] op,
                   output [7:0]alucontrolD,
                   output alusrcD,
                   output regdstD,
-                  output jumpD,
+                  output jumpD
                   );
 
 

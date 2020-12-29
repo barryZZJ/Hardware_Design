@@ -16,7 +16,7 @@ module datapath(
     input jumpD,
     input branchD,
     
-    output wire [31:0] pc, aluoutM, mem_WriteData, resultW,
+    output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
     output wire stallF, stallD, flushE
 );
@@ -26,8 +26,7 @@ module datapath(
 wire [31:0] pc_branched, pc_realnext;
 
 //ALU������ԴA��B���Ĵ�����д�����ݣ�����2λ�����������
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr;
-    // resultW, 
+wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -55,7 +54,6 @@ wire [ 4:0] writeregW;
 // hazard
 wire [1:0] forwardAE, forwardBE;
 wire forwardAD, forwardBD;
-    // wire stallF, stallD, flushE;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 

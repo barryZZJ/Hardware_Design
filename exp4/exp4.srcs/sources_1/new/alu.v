@@ -5,7 +5,7 @@ module alu #(WIDTH = 32)
              input [7:0] op,
              output[WIDTH-1:0] res,
              output zero);
-    
+// ! 在这里添加
 assign res = (op == `EXE_AND_OP) ? a & b:
              (op == `EXE_OR_OP) ? a | b:
              (op == `EXE_ADD_OP) ? a + b:
