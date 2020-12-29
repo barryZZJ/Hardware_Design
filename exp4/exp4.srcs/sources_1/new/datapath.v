@@ -15,6 +15,12 @@ module datapath(
     input regdstE,
     input jumpD,
     input branchD,
+    input mfhiE, mfhiW, 
+    input mfloE, mfloW, 
+    input mthiE, mthiW, 
+    input mtloE, mtloW, 
+    input mulE, mulW,
+    input divE, divW,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
@@ -41,15 +47,23 @@ wire [ 4:0] rsD, rtD, rdD;
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
+wire [31:0] hi_iE, lo_iE; // input
+
 
 // Mem phase
 wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] writeregM;
+wire [31:0] hi_iM, lo_iM; // input
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
+
+// hilo寄存器
+wire hi_writeW, lo_writeW;
+wire [31:0] hi_iW, lo_iW; // input
+wire [31:0] hi_oW, lo_oW; // output
 
 // hazard
 wire [1:0] forwardAE, forwardBE;
@@ -140,6 +154,7 @@ assign pcsrcD = branchD & equalD;
 //符号拓展
 signext sign_extend(
     .a(instrD[15:0]),
+    .type(instrD[29:28]),
     .y(extend_immD)
 );
 
@@ -252,12 +267,25 @@ assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
 
-mux2 #(5) mux_WA3(
-	.a(rdE), //instr[15:11]
-	.b(rtE), //instr[20:16]
-	.s(regdstE),
-	.y(writeregE)
-); 
+assign writeregE = {mfhiE | mfloE, regdstE} == 2'b00 ? rtE : rdE;
+
+// mux2 #(5) mux_WA3(
+// 	.a(rdE), //instr[15:11]
+// 	.b(rtE), //instr[20:16]
+// 	.s(regdstE),
+// 	.y(writeregE)
+// ); 
+
+// hilo
+//TODO 等乘除法器写好
+// assign hi_iE = {mulE, divE, mthiE} == 3'b100 ? 乘法hi :
+//                {mulE, divE, mthiE} == 3'b010 ? 除法hi :
+//                {mulE, divE, mthiE} == 3'b001 ? rd2E  :
+//                                                32'b0;
+// assign lo_iE = {mulE, divE, mtloE} == 3'b100 ? 乘法lo :
+//                {mulE, divE, mtloE} == 3'b010 ? 除法lo :
+//                {mulE, divE, mtloE} == 3'b001 ? rd2E  :
+//                                                32'b0;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -288,6 +316,16 @@ flopenr #(5) EM_writereg (
     .d(writeregE),
     .q(writeregM)
 );
+
+// hilo
+flopenr #(64) EM_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iE, lo_iE}),
+    .q({hi_iM, lo_iM})
+);
+
 
 
 // ----------------------------------------
@@ -324,15 +362,39 @@ flopenr #(5) MW_writereg (
     .q(writeregW)
 );
 
+// hilo
+flopenr #(64) MW_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iM, lo_iM}),
+    .q({hi_iW, lo_iW})
+);
+
 // ----------------------------------------
 // Write Back 
 
 //mux, 寄存器堆写入数据来自存储器 or ALU ，memtoReg
-mux2 #(32) mux_WD3(
-	.a(readdataW),//来自数据存储器
-	.b(aluoutW),//来自ALU计算结果
-	.s(memtoregW),
-	.y(resultW)
+// mux2 #(32) mux_WD3(
+// 	.a(readdataW),//来自数据存储器
+// 	.b(aluoutW),//来自ALU计算结果
+// 	.s(memtoregW),
+// 	.y(resultW)
+// );
+assign resultW = {mfhiW, mfloW} == 2'b00 ? (memtoregW == 1'b1 ? readdataW : aluoutW) : 
+                 {mfhiW, mfloW} == 2'b10 ? hi_oW :
+                 {mfhiW, mfloW} == 2'b01 ? lo_oW :
+                 32'b0;
+
+//hilo寄存器
+assign hi_writeW = mulW | divW | mthiW;
+assign lo_writeW = mulW | divW | mtloW;
+hilo_reg hilo(
+    .clk(clk), .rst(rst), 
+    .weh(hi_writeW),
+    .wel(lo_writeW),
+    .hi(hi_iW), .lo(lo_iW),
+    .hi_o(hi_oW), .lo_o(lo_oW)
 );
 
 // ----------------------------------------
@@ -352,6 +414,10 @@ hazard hazard(
     .memtoregE(memtoregE),
     .memtoregM(memtoregM),
     .branchD(branchD),
+    .mfhiE(mfhiE), .mfhiM(mfhiM), .mfhiW(mfhiW),
+	.mfloE(mfloE), .mfloM(mfloM), .mfloW(mfloW),
+	.mthiE(mthiE), .mthiM(mthiM), .mthiW(mthiW),
+	.mtloE(mtloE), .mtloM(mtloM), .mtloW(mtloW),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),

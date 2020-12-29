@@ -9,7 +9,13 @@ module controller(input [5:0] op,
                   output [7:0]alucontrolD,
                   output alusrcD,
                   output regdstD,
-                  output jumpD
+                  output jumpD,
+                  output mfhiD,
+                  output mfloD,
+                  output mthiD,
+                  output mtloD,
+                  output mulD,
+                  output divD
                   );
 
 
@@ -22,7 +28,13 @@ main_decoder main_decoder(
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
     .branch(branchD),
-    .jump(jumpD)
+    .jump(jumpD),
+	.mfhi(mfhiD),
+	.mflo(mfloD),
+	.mthi(mthiD),
+	.mtlo(mtloD),
+	.mul(mulD),
+	.div(divD)
 );
 
 aludec aludec(

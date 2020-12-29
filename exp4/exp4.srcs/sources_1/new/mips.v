@@ -35,15 +35,15 @@ wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD;
 wire [7:0] alucontrolD;
 
 // Execution phase
-wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE;
+wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE, mthiE, mtloE, mulE, divE;
 wire [7:0] alucontrolE;
 
 // Mem phase
-wire regwriteM, memtoregM; 
+wire regwriteM, memtoregM, mfhiM, mfloM, mthiM, mtloM, mulM, divM; 
 //memwriteM;
 
 // WB phase
-wire regwriteW, memtoregW;
+wire regwriteW, memtoregW, mfhiW, mfloW, mthiW, mtloW, mulW, divW;
 
 // hazard
 wire stallF, stallD, flushE;
@@ -59,30 +59,30 @@ flopenrc #(32) FD_instr (
 );
 
 // Decode to Exe flop for signals
-floprc #(13) DE_signals (
+floprc #(19) DE_signals (
     .clk(clk),
     .rst(rst),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE})
+    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, mfhiD, mfloD, mthiD, mtloD, mulD, divD}),
+    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, mfhiE, mfloE, mthiE, mtloE, mulE, divE})
 );
 
 // exe to Mem flop for signals
-flopenr #(3) EM_signals (
+flopenr #(9) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteE, memtoregE, memwriteE}),
-    .q({regwriteM, memtoregM, memwriteM})
+    .d({regwriteE, memtoregE, memwriteE, mfhiE, mfloE, mthiE, mtloE, mulE, divE}),
+    .q({regwriteM, memtoregM, memwriteM, mfhiM, mfloM, mthiM, mtloM, mulM, divM})
 );
 
 // mem to wb flop for signals
-flopenr #(2) MW_signals (
+flopenr #(8) MW_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteM, memtoregM}),
-    .q({regwriteW, memtoregW})
+    .d({regwriteM, memtoregM, mfhiM, mfloM, mthiM, mtloM, mulM, divM}),
+    .q({regwriteW, memtoregW, mfhiW, mfloW, mthiW, mtloW, mulW, divW})
 );
 
 controller c(
@@ -96,7 +96,13 @@ controller c(
 	.regwriteD(regwriteD),
 	.branchD(branchD),
 	.jumpD(jumpD),
-	.alucontrolD(alucontrolD)
+	.alucontrolD(alucontrolD),
+	.mfhiD(mfhiD),
+	.mfloD(mfloD),
+	.mthiD(mthiD),
+	.mtloD(mtloD),
+	.mulD(mulD),
+	.divD(divD)
 );
 
 datapath dp(
@@ -115,6 +121,12 @@ datapath dp(
 	.regdstE(regdstE),
 	.jumpD(jumpD),
 	.branchD(branchD),
+	.mfhiE(mfhiE), .mfhiW(mfhiW),
+	.mfloE(mfloE), .mfloW(mfloW),
+	.mthiE(mthiE), .mthiW(mthiW),
+	.mtloE(mtloE), .mtloW(mtloW),
+	.mulE(mulE), .mulW(mulW),
+	.divE(divE), .divW(divW),
 	
 	.pc(pc),
 	.pcsrcD(pcsrcD),

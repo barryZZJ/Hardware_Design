@@ -1,0 +1,14 @@
+12/29:
+修改寄存器初始化
+修复datapath注释乱码，
+以及更新了两个ram，更新了coe文件
+解决了添加alucontrol信号后，中间寄存器位数不对的问题
+
+增加逻辑运算指令
+(修改signext)
+
+增加数据移动指令hilo
+！mfhi/lo, mthi/lo都是在wb阶段结束
+下降沿写?
+寄存器是先写后读
+数据前推：同lw，stall一周期+forward

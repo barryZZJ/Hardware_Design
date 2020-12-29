@@ -1,13 +1,20 @@
 `timescale 1ns / 1ps
 `include "defines.vh"
 module main_decoder(input [5:0] op,
-                    output reg regdst,
-                    output reg regwrite,
-                    output reg alusrc,
-                    output reg memwrite,
-                    output reg memtoreg,
-                    output reg branch,
-                    output reg jump);
+                    output regdst,
+                    output regwrite,
+                    output alusrc,
+                    output memwrite,
+                    output memtoreg,
+                    output branch,
+                    output jump,
+                    output mfhi, //TODO
+                    output mflo, //TODO
+                    output mthi, //TODO
+                    output mtlo, //TODO
+                    output mul, //TODO
+                    output div //TODO
+                    );
     
     always @(*) begin
         case (op)
