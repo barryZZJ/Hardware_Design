@@ -19,6 +19,7 @@ module alu #(WIDTH = 32)
             ///             移位指令            //
             /////////////////////////////////////
             // 操作数 a:shamt b:rt
+            // sxx rd,rt,shamt
             // 逻辑移位，空位填零
             // sll
             `EXE_SLL_OP : res <= b << a;
@@ -27,17 +28,19 @@ module alu #(WIDTH = 32)
             // 算术右移，空位填符号位
             // sra
             `EXE_SRA_OP : begin
-                res =  ({b, 1'b0} << ~a) | (b >> a) ;
-                // equals : res = (b << (6'd32 - {1'b0, a})) | (b >> a) ;
+                // equals : res =  ({b, 1'b0} << ~a) | (b >> a) ;
+                res = ({32{b[31]}} << (6'd32 - {1'b0, a[4:0]})) | (b >> a[4:0]) ;
             end
-            // 操作数 a: rs b: rt
+            // 依照PPT格式
+            // 操作数 a:rs b:rt
+            // sxxv rd,rs,rt
             // sllv
-            `EXE_SLLV_OP: res <= b << a;
+            `EXE_SLLV_OP: res <= a << b[4:0];
             // srlv
-            `EXE_SRLV_OP: res <= b >> a;
+            `EXE_SRLV_OP: res <= a >> b[4:0];
             // srav
             `EXE_SRAV_OP: begin
-                res =  ({b, 1'b0} << ~a) | (b >> a) ;
+                res = ({32{a[31]}} << (6'd32 - {1'b0, b[4:0]})) | (a >> b[4:0]) ;
             end
             ////////////////////////////////////////
             //              分支跳转指令            //
