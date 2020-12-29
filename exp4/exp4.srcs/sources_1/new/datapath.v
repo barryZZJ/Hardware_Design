@@ -42,12 +42,14 @@ wire [31:0] pc_4F,pc_8F;
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
 wire [31:0] pcF, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
+wire [ 5:0] opD;
     //wire pcsrcD;
 
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [ 4:0] saE;
+wire [ 5:0] opE;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -132,6 +134,7 @@ sl2 sl2_2(
 
 assign jump_addr = {pc_4D[31:28], sl2_j_addr[27:0]};
 
+assign opD = instrD[31:26];
 assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
@@ -224,7 +227,14 @@ mux2 #(32) wrmux3 (
 
 // ----------------------------------------
 // decode to execution flops
-
+// op 
+floprc #(6) DE_op (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(opD),
+    .q(opE)
+);
 // rd1
 floprc #(32) DE_rd1 (
     .clk(clk),
@@ -295,6 +305,15 @@ mux2 #(32) mux_ALUBsrc2(
     .b(ALUsrcB1),
     .s(alusrcE),
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
+);
+
+// branch指令判断
+eqcmp eqcmp(
+    .a(ALUsrcA),
+    .b(ALUsrcB2),
+    .op(opE),
+    .rt(rtE),
+    .y()
 );
 
 //ALU

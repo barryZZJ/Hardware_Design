@@ -100,19 +100,29 @@ module main_decoder(input [5:0] op,
             // 然后与延迟槽指令的地址相加，加法的结果就是转移目的地址
             // bgtz
             // if rs > 0 then branch
-
+            `EXE_BGTZ: begin
+                branch   <= 1'b1;
+            end
             // blez
             // if rs <= 0 then branch
-
+            `EXE_BLEZ: begin
+                branch   <= 1'b1;
+            end
             // bne
             // if rs != rt then branch
-
+            `EXE_BNE: begin
+                branch   <= 1'b1;
+            end
             // bltz
             // if rs < 0 then branch
-
+            `EXE_BLTZ: begin
+                branch   <= 1'b1;
+            end
             // bgez
             // if rs >= 0 then branch
-            
+            `EXE_BGEZ: begin
+                branch   <= 1'b1;
+            end
             // bltzal
             // if rs < 0 then branch
             `EXE_BLTZAL: begin
@@ -121,7 +131,10 @@ module main_decoder(input [5:0] op,
             end
             // bgezal
             // if rs >= 0 then branch
-
+                `EXE_BGEZAL: begin
+                branch   <= 1'b1;
+                bal      <= 1'b1;
+            end
             default: begin
                 
             end
