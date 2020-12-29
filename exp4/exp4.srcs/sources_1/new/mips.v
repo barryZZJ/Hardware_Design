@@ -33,10 +33,13 @@ module mips(
 wire [31:0] instrD;
 wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD;
 wire [7:0] alucontrolD;
+wire memenD, jalD, jrD, balD;
+
 
 // Execution phase
 wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE;
 wire [7:0] alucontrolE;
+wire memenE, jalE, jrE, balE;
 
 // Mem phase
 wire regwriteM, memtoregM; 
@@ -59,12 +62,12 @@ flopenrc #(32) FD_instr (
 );
 
 // Decode to Exe flop for signals
-floprc #(13) DE_signals (
+floprc #(17) DE_signals (
     .clk(clk),
     .rst(rst),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE})
+    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD,memenD,jalD,jrD,balD}),
+    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE,memenE,jalE,jrE,balE})
 );
 
 // exe to Mem flop for signals
@@ -96,7 +99,12 @@ controller c(
 	.regwriteD(regwriteD),
 	.branchD(branchD),
 	.jumpD(jumpD),
-	.alucontrolD(alucontrolD)
+	.alucontrolD(alucontrolD),
+	// jump and branch
+	.memenD(memenD),
+    .jalD(jalD),
+    .jrD(jrD),
+    .balD(balD)
 );
 
 datapath dp(
@@ -122,7 +130,12 @@ datapath dp(
 	.mem_WriteData(writedata),
 	.stallF(stallF),
 	.stallD(stallD),
-	.flushE(flushE)
+	.flushE(flushE),
+	// jump and branch
+	.memenE(memenE),
+    .jalE(jalE),
+    .jrE(jrE),
+    .balE(balE)
 );
 	
 endmodule

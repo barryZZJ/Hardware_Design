@@ -15,6 +15,12 @@ module datapath(
     input regdstE,
     input jumpD,
     input branchD,
+
+    input memenE,
+    input jalE,
+    input jrE,
+    input balE,
+
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
@@ -39,7 +45,7 @@ wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE,aluout2E, writedataE;
+wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [ 4:0] saE;
 
@@ -59,7 +65,8 @@ wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 
 // branch and jump
-
+wire [4:0]writereg2E;
+wire [31:0] aluout2E;
 
 
 // ----------------------------------------
@@ -101,7 +108,7 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
-
+// pc_8
 flopenrc #(32) FD_pc_8 (
     .clk(clk),
     .rst(rst),
@@ -111,7 +118,7 @@ flopenrc #(32) FD_pc_8 (
     .q(pc_8D)
 );
 
-// pc_8
+
 
 
 // ----------------------------------------
@@ -203,15 +210,15 @@ mux2 #(32) mux_pcnext(
 mux2 #(5) wrmux2 (
 	.a(writeregE),
 	.b(5'b11111),
-	.s(jumpD),
-	.y(pc_realnext)
+	.s(jalE | balE),
+	.y(writereg2E)
 );
 // 控制被写数据是否为PC+8
 mux2 #(32) wrmux3 (
 	.a(aluoutE),
-	.b(),
-	.s(jumpD),
-	.y(pc_realnext)
+	.b(pcplus8E),
+	.s(jalE | jrE | balE),
+	.y(aluout2E)
 );
 
 

@@ -94,6 +94,10 @@ module main_decoder(input [5:0] op,
                 jal      <= 1'b1;
                 branch   <= 1'b1;
             end
+
+            // 所有分支指令的第0-15bit存储的都是offset
+            // 如果发生转移，那么将offset左移2位，并符号扩展至32位
+            // 然后与延迟槽指令的地址相加，加法的结果就是转移目的地址
             // bgtz
             // if rs > 0 then branch
 
