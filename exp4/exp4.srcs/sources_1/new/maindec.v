@@ -1,12 +1,21 @@
 `timescale 1ns / 1ps
 `include "defines.vh"
 module main_decoder(input [5:0] op,
+                    // input [5:0] funct,
+                    // input [4:0] rt,
                     output reg regdst,
                     output reg regwrite,
+
                     output reg alusrc,
+                    output reg branch,
+
                     output reg memwrite,
                     output reg memtoreg,
-                    output reg branch,
+                    // output reg memen,
+
+                    // output reg jal,
+                    // output reg jr,
+                    // output reg bal,
                     output reg jump);
     
     always @(*) begin
@@ -52,11 +61,11 @@ module main_decoder(input [5:0] op,
                 memtoreg <= 1'b0;
             end
             
-            /////////////////////////////////////
+            ////////////////////////////////////////
             //
             // 移位指令
             //
-            /////////////////////////////////////
+            ////////////////////////////////////////
 
             // 均为 R - Type
 
