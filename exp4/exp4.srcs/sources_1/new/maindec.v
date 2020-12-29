@@ -7,12 +7,11 @@ module main_decoder(input [5:0] op,
                     output reg memwrite,
                     output reg memtoreg,
                     output reg branch,
-                    output reg jump,
-                    output reg [1:0] aluop);
+                    output reg jump);
     
     always @(*) begin
         case (op)
-            //R-type
+            // R-type
             6'b000000: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b1;
@@ -21,9 +20,8 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b10;
             end
-            //lw
+            // lw
             6'b100011: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b1;
@@ -32,9 +30,8 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b1;
-                aluop    <= 2'b00;
             end
-            //sw
+            // sw
             6'b101011: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b0;
@@ -43,9 +40,8 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b1;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b00;
             end
-            //beq
+            // beq
             6'b000100: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b0;
@@ -54,9 +50,8 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b1;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b01;
             end
-            //addi
+            // addi
             6'b001000: begin
                 jump     <= 1'b0;
                 regwrite <= 1'b1;
@@ -65,9 +60,8 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b00;
             end
-            //j
+            // j
             6'b000010: begin
                 jump     <= 1'b1;
                 regwrite <= 1'b0;
@@ -76,7 +70,6 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b00;
             end
             default: begin
                 jump     <= 1'b0;
@@ -86,7 +79,6 @@ module main_decoder(input [5:0] op,
                 branch   <= 1'b0;
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
-                aluop    <= 2'b00;
             end
         endcase
     end
