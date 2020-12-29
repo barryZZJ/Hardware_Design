@@ -30,11 +30,12 @@ reg mul, div;
 assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
                {mul, div, mthi} == 3'b010 ? 2'b10 :
                {mul, div, mthi} == 3'b001 ? 2'b11 :
-               2'b00
+               2'b00;
+               
 assign lodst = {mul, div, mtlo} == 3'b100 ? 2'b01 :
                {mul, div, mtlo} == 3'b010 ? 2'b10 :
                {mul, div, mtlo} == 3'b001 ? 2'b11 :
-               2'b00
+               2'b00;
 assign hi_write = mul | div | mthi;
 assign lo_write = mul | div | mtlo;
 
