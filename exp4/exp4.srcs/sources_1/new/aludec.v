@@ -43,7 +43,7 @@ module aludec(input [5:0] funct,
 
             `EXE_NOP:
                 case (funct)
-                    // 逻辑运算指令
+                // 逻辑运算指令
                     `EXE_AND 	: alucontrol <= `EXE_AND_OP ;
                     `EXE_OR 	: alucontrol <= `EXE_OR_OP  ;
                     `EXE_XOR 	: alucontrol <= `EXE_XOR_OP ;
