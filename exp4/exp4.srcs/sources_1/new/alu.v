@@ -1,22 +1,35 @@
 
 `include "defines.vh"
 module alu #(WIDTH = 32)
-            (input [WIDTH-1:0] a,//操作数1
+            (
+             input clk,rst,
+             input [WIDTH-1:0] a,//操作数1
              input [WIDTH-1:0] b,//操作数2
              input [7:0] op,
              input [4:0] sa,
              input [63:0] hilo_i,//乘除法hilo寄存器：输入
-             output [63:0] hilo_o,//乘除法hilo寄存器：输出
+             output reg [63:0] hilo_o,//乘除法hilo寄存器：输出
              output reg [WIDTH-1:0] res,
              output reg overflow,//算术运算溢出
+             output wire stall_div,
              output zero);
 
+           //中间变量
            reg [WIDTH-1:0] numa,numb;//考虑溢出情况算术运算，中间变量
            reg [31:0]nresult;//有溢出的算术运算的中间变量结果
-
+           reg [63:0]hilo_tempu;
+           wire[31:0] mult_a,mult_b;
+           wire [63:0]hilo_temp,result_div;
+           wire div_ready,sign_div,start_div;
         //乘法
+         assign mult_a = ((op ==`EXE_MULT_OP)&&(a[31]==1'b1))?(~a+1):a;
+         assign mult_b = ((op ==`EXE_MULT_OP)&&(b[31]==1'b1))?(~b+1):b;
+         assign hilo_temp = ((op ==`EXE_MULT_OP)&&(a[31] ^ b[31] == 1'b1))?~(mult_a * mult_b)+1:mult_a*mult_b;  
         //除法
-        
+        assign signed_div = (op ==`EXE_DIV_OP)?1:0;
+        assign start_div= (op ==`EXE_DIV_OP | op ==`EXE_DIVU_OP)?1'b1:1'b0;
+        assign div_ready=~stall_div;
+    div div(~clk, rst, a, b, start_div, signed_div, stall_div, result_div);   
         always@(*)begin
             
       
@@ -135,7 +148,16 @@ module alu #(WIDTH = 32)
                 else res <= 32'b0;
             end
           //乘法
+             `EXE_MULT_OP:hilo_o = hilo_temp;
+            `EXE_MULTU_OP:begin
+                numa = a;
+                numb = b;
+                hilo_tempu = numa * numb;
+                hilo_o = hilo_tempu;
+            end
           //除法
+            `EXE_DIV_OP:hilo_o <= result_div;
+            `EXE_DIVU_OP:hilo_o <= result_div;
 
           //访存指令
             `EXE_LB_OP:res <= a + b;
@@ -146,6 +168,7 @@ module alu #(WIDTH = 32)
             `EXE_SW_OP:res <= a + b;      
             `EXE_SB_OP:res <= a + b;
             `EXE_SH_OP:res <= a + b;
+
 
             default:begin
                 res <= 32'b0;
