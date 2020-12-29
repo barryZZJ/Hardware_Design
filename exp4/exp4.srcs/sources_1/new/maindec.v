@@ -87,6 +87,21 @@ module main_decoder(input [5:0] op,
             // srlv
 
             // srav
+            ////////////////////////////////////////
+            //              分支跳转指令            //
+            ////////////////////////////////////////
+            // jr
+            // jalr
+            // j
+            // jal
+            // beq
+            // bgtz
+            // blez
+            // bne
+            // bltz
+            // bltzal
+            // bgez
+            // bgezal
 
 
             default: begin
