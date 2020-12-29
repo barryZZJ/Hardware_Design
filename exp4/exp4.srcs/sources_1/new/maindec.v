@@ -53,74 +53,30 @@ module main_decoder(input [5:0] op,
             end
             
             /////////////////////////////////////
-            ///             移位指令            //
+            //
+            // 移位指令
+            //
             /////////////////////////////////////
 
-            // sll
-            `EXE_SLL: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            // srl
-            `EXE_SRL: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            // sra
-            `EXE_SRL: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            // sllv
-            `EXE_SLLV: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            // srlv
-            `EXE_SRLV: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            // srav
-            `EXE_SRAV: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;   // rd 15:11
-                alusrc   <= 1'b0;   // rt 20:16
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
+            // 均为 R - Type
+
             ////////////////////////////////////////
-            //              分支跳转指令            //
+            //
+            // 分支跳转指令
+            //
             ////////////////////////////////////////
             // jr
-            // jalr
+            `EXE_JR: begin
+                jump     <= 1'b1;
+                regwrite <= 1'b0;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b0;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+            end
+            // jalr : 需要写寄存器
+
             // j
             `EXE_J: begin
                 jump     <= 1'b1;
@@ -131,7 +87,8 @@ module main_decoder(input [5:0] op,
                 memwrite <= 1'b0;
                 memtoreg <= 1'b0;
             end
-            // jal
+            // jal : 需要写寄存器
+
             // beq
             `EXE_BEQ: begin
                 jump     <= 1'b0;
