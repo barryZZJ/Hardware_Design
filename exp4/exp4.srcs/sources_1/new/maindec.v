@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 `include "defines.vh"
 module main_decoder(input [5:0] op,
+                    input [5:0] funct,
+                    // input [4:0] rt, //暂时没用
                     output reg regdst,
                     output reg regwrite,
 
@@ -19,60 +21,99 @@ module main_decoder(input [5:0] op,
                     output reg mflo, //TODO
                     output reg mthi, //TODO
                     output reg mtlo, //TODO
-                    output reg mul, //TODO
-                    output reg div //TODO
+                    output [1:0] hidst,
+                    output [1:0] lodst,
+                    output hi_write,
+                    output lo_write
                     );
-    
+reg mul, div;
+assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
+               {mul, div, mthi} == 3'b010 ? 2'b10 :
+               {mul, div, mthi} == 3'b001 ? 2'b11 :
+               2'b00
+assign lodst = {mul, div, mtlo} == 3'b100 ? 2'b01 :
+               {mul, div, mtlo} == 3'b010 ? 2'b10 :
+               {mul, div, mtlo} == 3'b001 ? 2'b11 :
+               2'b00
+assign hi_write = mul | div | mthi;
+assign lo_write = mul | div | mtlo;
+
+
     always @(*) begin
+        // 全初始化为0，下面的case中符合条件的改成1
+        regdst   <= 1'b0;
+        regwrite <= 1'b0;
+        alusrc   <= 1'b0;
+        branch   <= 1'b0;
+        memwrite <= 1'b0;
+        memtoreg <= 1'b0;
+        memen    <= 1'b0;
+        jal      <= 1'b0;
+        jr       <= 1'b0;
+        bal      <= 1'b0;
+        jump     <= 1'b0;
+        mfhi     <= 1'b0;
+        mflo     <= 1'b0;
+        mthi     <= 1'b0;
+        mtlo     <= 1'b0;
+        mul      <= 1'b0;
+        div      <= 1'b0;
         case (op)
             // R-type
-            6'b000000: begin
-                jump     <= 1'b0;
+            // 逻辑运算指令（非立即数部分）
+            // 移位指令
+            // 数据移动指令
+            // 算术运算指令（非立即数部分）
+            `EXE_NOP: begin
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
+                case (funct)
+                    `EXE_MULT: mul  <= 1'b1;
+                    `EXE_DIV : div  <= 1'b1;
+                    `EXE_MFHI: mfhi <= 1'b1;
+                    `EXE_MFLO: mflo <= 1'b1;
+                    `EXE_MTHI: mthi <= 1'b1;
+                    `EXE_MTLO: mtlo <= 1'b1;
+                endcase
             end
-            // lw
-            6'b100011: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b1;
-            end
-            // sw
-            6'b101011: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b1;
-                memtoreg <= 1'b0;
-            end
-            // addi
-            6'b001000: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b1;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-            end
-            
+
+
+
+
+
             ////////////////////////////////////////
-            //
-            // 移位指令
+            // 
+            // 访存指令
             //
             ////////////////////////////////////////
 
-            // 均为 R - Type
+            // lw
+            `EXE_LW: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+                memtoreg <= 1'b1;
+            end
+            // sw
+            `EXE_SW: begin
+                alusrc   <= 1'b1;
+                memwrite <= 1'b1;
+            end
+
+            ////////////////////////////////////////
+            //
+            // 算术运算指令
+            //
+            ////////////////////////////////////////
+
+            `EXE_ADDI: begin
+                jump     <= 1'b0;
+                regwrite <= 1'b1;
+                regdst   <= 1'b0;
+                alusrc   <= 1'b1;
+                branch   <= 1'b0;
+                memwrite <= 1'b0;
+                memtoreg <= 1'b0;
+            end
 
             ////////////////////////////////////////
             //
@@ -153,20 +194,6 @@ module main_decoder(input [5:0] op,
             // bgez
             // bgezal
 
-
-            default: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-                memen    <= 1'b0;
-                jal      <= 1'b0;
-                jr       <= 1'b0;
-                bal      <= 1'b0;
-            end
         endcase
     end
     
