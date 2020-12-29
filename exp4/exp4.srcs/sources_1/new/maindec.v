@@ -17,10 +17,10 @@ module main_decoder(input [5:0] op,
                     output reg jr,
                     output reg bal,
                     output reg jump,
-                    output reg mfhi, //TODO
-                    output reg mflo, //TODO
-                    output reg mthi, //TODO
-                    output reg mtlo, //TODO
+                    output reg mfhi,
+                    output reg mflo,
+                    output reg mthi,
+                    output reg mtlo,
                     output [1:0] hidst,
                     output [1:0] lodst,
                     output hi_write,
