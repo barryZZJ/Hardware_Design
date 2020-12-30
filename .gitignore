@@ -13,4 +13,4 @@ input.txt
 test.coe
 data_ram
 inst_ram
-.xpr
+*.xpr
