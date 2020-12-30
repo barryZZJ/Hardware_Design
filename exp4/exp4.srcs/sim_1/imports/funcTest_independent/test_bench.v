@@ -28,7 +28,7 @@ end
 initial begin
     rst = 1;
     #200 rst= 0;
-    #5000 $stop;
+    #50000 $stop;
 end
 
 endmodule

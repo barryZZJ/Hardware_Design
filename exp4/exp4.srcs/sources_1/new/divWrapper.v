@@ -62,6 +62,13 @@ module divWrapper(input clk, rst,
                         div_refresh <= 1;
                     end
                 end
+
+                default: begin
+                    div_start   <= 1'b0;
+                    div_sign    <= 1'b0;
+                    div_refresh <= 1'b0;
+                    divstall    <= 1'b0;
+                end 
             endcase
         end
     end
