@@ -19,17 +19,17 @@ module aludec(input [5:0] funct,
             `EXE_ADDI   : alucontrol <= `EXE_ADDI_OP ;
             `EXE_ADDIU  : alucontrol <= `EXE_ADDIU_OP;
 
-            // 分支跳转指令
-            `EXE_J      : alucontrol <= `EXE_J_OP     ;
-            `EXE_JAL    : alucontrol <= `EXE_JAL_OP   ;
-            `EXE_BEQ    : alucontrol <= `EXE_BEQ_OP   ;
-            `EXE_BGEZ   : alucontrol <= `EXE_BGEZ_OP  ; 
-            `EXE_BGEZAL : alucontrol <= `EXE_BGEZAL_OP;
-            `EXE_BGTZ   : alucontrol <= `EXE_BGTZ_OP  ;
-            `EXE_BLEZ   : alucontrol <= `EXE_BLEZ_OP  ;
-            `EXE_BLTZ   : alucontrol <= `EXE_BLTZ_OP  ;
-            `EXE_BLTZAL : alucontrol <= `EXE_BLTZAL_OP;
-            `EXE_BNE    : alucontrol <= `EXE_BNE_OP   ;
+            // // 分支跳转指令
+            // `EXE_J      : alucontrol <= `EXE_J_OP     ;
+            // `EXE_JAL    : alucontrol <= `EXE_JAL_OP   ;
+            // `EXE_BEQ    : alucontrol <= `EXE_BEQ_OP   ;
+            // `EXE_BGEZ   : alucontrol <= `EXE_BGEZ_OP  ; 
+            // `EXE_BGEZAL : alucontrol <= `EXE_BGEZAL_OP;
+            // `EXE_BGTZ   : alucontrol <= `EXE_BGTZ_OP  ;
+            // `EXE_BLEZ   : alucontrol <= `EXE_BLEZ_OP  ;
+            // `EXE_BLTZ   : alucontrol <= `EXE_BLTZ_OP  ;
+            // `EXE_BLTZAL : alucontrol <= `EXE_BLTZAL_OP;
+            // `EXE_BNE    : alucontrol <= `EXE_BNE_OP   ;
 
             // 访存指令
             `EXE_LB     : alucontrol <= `EXE_LB_OP ;
@@ -41,7 +41,7 @@ module aludec(input [5:0] funct,
             `EXE_SH     : alucontrol <= `EXE_SH_OP ;
             `EXE_SW     : alucontrol <= `EXE_SW_OP ;
 
-            `EXE_NOP:
+            `EXE_NOP: begin
                 case (funct)
                 // 逻辑运算指令
                     `EXE_AND 	: alucontrol <= `EXE_AND_OP ;
@@ -77,7 +77,9 @@ module aludec(input [5:0] funct,
                 // 内陷指令
                     `EXE_SYSCALL: alucontrol <= `EXE_SYSCALL_OP;
                     `EXE_BREAK  : alucontrol <= `EXE_BREAK_OP  ;
+                    default: alucontrol <= 8'bx;
                 endcase
+            end
             default: begin
                 alucontrol <= `EXE_NOP_OP;
             end

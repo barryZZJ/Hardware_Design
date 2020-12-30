@@ -17,11 +17,10 @@ module datapath(
     input branchD,
     input mfhiE,
     input mfloE,
-    // input mthiE, mthiW, 
-    // input mtloE, mtloW, 
     input [1:0] hidstE, hidstW,
     input [1:0] lodstE, lodstW,
-    input hi_writeW, lo_writeW,
+    input hi_writeM, hi_writeW,
+    input lo_writeM, lo_writeW,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
@@ -59,7 +58,7 @@ flopenr #(32) MF_instr (
 wire [31:0] pc_branched, pc_realnext;
 
 //ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, ALUsrcB3, sl2_imm, sl2_j_addr, jump_addr, resultW;
+wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -273,7 +272,7 @@ mux3 #(32) mux_ALUAsrc(
     .b(resultW),
     .c(aluoutM),
     .s(forwardAE),
-    .y(ALUsrcA)
+    .y(ALUsrcA1)
 );
 // ALU, B端输入值，rd1E(00),resultW(01)，aluoutM(10)
 mux3 #(32) mux_ALUBsrc1(
@@ -291,8 +290,8 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
-// 如果是mfhi/lo指令，则ALU应该输入hi/lo寄存器的值，同时要考虑转发。
-assign ALUsrcB3 = forwardHLE == 3'b000 ? ALUsrcB2 :
+// 如果是mfhi/lo指令，则ALU A应该输入hi/lo寄存器的值，B输入的是0，同时要考虑转发。
+assign ALUsrcA2 = forwardHLE == 3'b000 ? ALUsrcA1 :
                   forwardHLE == 3'b001 ? hi_oW :
                   forwardHLE == 3'b010 ? lo_oW :
                   forwardHLE == 3'b011 ? hi_iM :
@@ -303,8 +302,8 @@ assign ALUsrcB3 = forwardHLE == 3'b000 ? ALUsrcB2 :
 
 //ALU
 alu alu(
-    .a(ALUsrcA),
-    .b(ALUsrcB3),
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
     .sa(saE),
     .op(alucontrolE),
     
@@ -325,21 +324,21 @@ mux2 #(5) mux_WA3(
 //TODO 等乘除法器写好
 assign hi_iE = hidstE == 2'b01 ? 32'b0 :
                hidstE == 2'b10 ? 32'b1 :
-               hidstE == 2'b11 ? ALUsrcB1 :
+               hidstE == 2'b11 ? ALUsrcA1 :
                32'bx;
 
 assign lo_iE = lodstE == 2'b01 ? 32'b0 :
                lodstE == 2'b10 ? 32'b1 :
-               lodstE == 2'b11 ? ALUsrcB1 :
+               lodstE == 2'b11 ? ALUsrcA1 :
                32'bx;
 // assign hi_iE = hidstE == 2'b01 ? 乘法hi :
 //                hidstE == 2'b10 ? 除法余数 :
-//                hidstE == 2'b11 ? ALUsrcB1 :
+//                hidstE == 2'b11 ? ALUsrcA1 :
 //                32'b0;
 
 // assign lo_iE = lodstE == 2'b01 ? 乘法lo :
 //                lodstE == 2'b10 ? 除法商 :
-//                lodstE == 2'b11 ? ALUsrcB1 :
+//                lodstE == 2'b11 ? ALUsrcA1 :
 //                32'b0;
 
 // ----------------------------------------
@@ -465,6 +464,8 @@ hazard hazard(
     .branchD(branchD),
     .mfhiE(mfhiE),
 	.mfloE(mfloE),
+    .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
+    .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),

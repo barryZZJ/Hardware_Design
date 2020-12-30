@@ -15,6 +15,8 @@ module hazard(input [4:0] rsD,
               input branchD,
               input mfhiE,
               input mfloE,
+              input hi_writeM, hi_writeW,
+              input lo_writeM, lo_writeW,
               
               output [1:0] forwardAE,
               output [1:0] forwardBE,
@@ -25,7 +27,7 @@ module hazard(input [4:0] rsD,
               );
 
 // --------------------------------
-// ����ð��
+// 数据冒险
 
 // forward
 assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
@@ -34,14 +36,15 @@ assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
 assign forwardBE = ((rtE != 0) && (rtE == writeregM) && regwriteM) ? 2'b10 :
                    ((rtE != 0) && (rtE == writeregW) && regwriteW) ? 2'b01 :
                    2'b00;
-assign forwardHLE = {forwardBE, mfhiE, mfloE} == 4'b0000 ? 3'b000 :
-                    {forwardBE, mfhiE, mfloE} == 4'b0010 ? 3'b001 :
-                    {forwardBE, mfhiE, mfloE} == 4'b0001 ? 3'b010 :
-                    {forwardBE, mfhiE, mfloE} == 4'b1010 ? 3'b011 :
-                    {forwardBE, mfhiE, mfloE} == 4'b1001 ? 3'b100 :
-                    {forwardBE, mfhiE, mfloE} == 4'b0110 ? 3'b101 :
-                    {forwardBE, mfhiE, mfloE} == 4'b0101 ? 3'b110 :
-                    3'bxxx;
+
+// 检查hilo冒险：如果E阶段正在读hilo(mf)，且发现M或W阶段要写hilo(hi_write, lo_write)，则把对应的hi_i, lo_i前推，否则直接输出hi_o, lo_o
+assign forwardHLE = mfhiE ? (hi_writeM ? 3'b011 : 
+                             hi_writeW ? 3'b101 :
+                             3'b001) :
+                    mfloE ? (lo_writeM ? 3'b100 :
+                             lo_writeW ? 3'b110 :
+                             3'b010) :
+                    3'b000;
 
 assign forwardAD = ((rsD != 0) && (rsD == writeregM) && regwriteM);
 assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
@@ -51,7 +54,7 @@ assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 wire lwstall;
 //stallF, stallD, flushE;
 wire branchstall;
-assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // �ж� D �׶� rs �� rt �ļĴ������ǲ���E�׶� lw ָ��Ҫд��ļĴ����ţ�
+assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // 判断 D 阶段 rs 或 rt 的寄存器号是不是E阶段 lw 指令要写入的寄存器号；
 assign branchstall = branchD && regwriteE && 
                        (writeregE == rsD || writeregE == rtD) ||
                        branchD && memtoregM &&

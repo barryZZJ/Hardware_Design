@@ -20,6 +20,12 @@ always @(*) begin
         `EXE_LUI_OP : res <= {b[15:0], 16'b0};
         `EXE_ORI_OP : res <= a | b;
 
+        // 数据移动指令
+        `EXE_MFHI_OP: res <= a + b;
+        `EXE_MFLO_OP: res <= a + b;
+        // 存hilo寄存器不用其他计算
+        `EXE_MTHI_OP : res <= 32'b0;
+        `EXE_MTLO_OP : res <= 32'b0;
 
         ////////////////////////////////////////
         //
