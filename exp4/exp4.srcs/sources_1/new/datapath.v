@@ -19,12 +19,14 @@ module datapath(
     input memenE,
     input jalE,
     input jrE,
+    input balD,
     input balE,
 
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
-    output wire stallF, stallD, flushE
+    output wire stallF, stallD, flushE,
+    output wire branchFlushD
 );
     
 
@@ -49,7 +51,6 @@ wire [ 5:0] opD;
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [ 4:0] saE;
-wire [ 5:0] opE;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -140,6 +141,8 @@ assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
 assign saD = instrD[10: 6];
 
+
+
 //寄存器堆
 regfile regfile(
 	.clk(~clk),
@@ -168,7 +171,7 @@ mux2 #(32) mux_equalsrc2(
     .y(equalsrc2)
 );
 
-assign equalD = (equalsrc1 == equalsrc2);
+// assign equalD = (equalsrc1 == equalsrc2);
 assign pcsrcD = branchD & equalD;
 
 //符号拓展
@@ -211,15 +214,15 @@ mux2 #(32) mux_pcnext(
 
 // 控制是否将返回地址写入31号寄存器
 mux2 #(5) wrmux2 (
-	.a(writeregE),
-	.b(5'b11111),
+	.a(5'b11111),
+	.b(writeregE),
 	.s(jalE | balE),
 	.y(writereg2E)
 );
 // 控制被写数据是否为PC+8
 mux2 #(32) wrmux3 (
-	.a(aluoutE),
-	.b(pcplus8E),
+	.a(pcplus8E),
+	.b(aluoutE),
 	.s(jalE | jrE | balE),
 	.y(aluout2E)
 );
@@ -227,14 +230,7 @@ mux2 #(32) wrmux3 (
 
 // ----------------------------------------
 // decode to execution flops
-// op 
-floprc #(6) DE_op (
-    .clk(clk),
-    .rst(rst),
-    .clear(flushE),
-    .d(opD),
-    .q(opE)
-);
+
 // rd1
 floprc #(32) DE_rd1 (
     .clk(clk),
@@ -309,11 +305,11 @@ mux2 #(32) mux_ALUBsrc2(
 
 // branch指令判断
 eqcmp eqcmp(
-    .a(ALUsrcA),
-    .b(ALUsrcB2),
-    .op(opE),
-    .rt(rtE),
-    .y()
+    .a(equalsrc1),
+    .b(equalsrc2),
+    .op(opD),
+    .rt(rtD),
+    .y(equalD)
 );
 
 //ALU
@@ -363,7 +359,7 @@ flopenr #(5) EM_writereg (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d(writeregE),
+    .d(writereg2E),
     .q(writeregM)
 );
 
@@ -437,7 +433,11 @@ hazard hazard(
     .forwardBD(forwardBD),
     .stallF(stallF),
     .stallD(stallD),
-    .flushE(flushE)
+    .flushE(flushE),
+    // new
+    .jumpD(jumpD),
+    .balD(balD),
+    .branchFlushD(branchFlushD)
 );
 
 

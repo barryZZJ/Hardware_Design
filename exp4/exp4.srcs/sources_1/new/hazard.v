@@ -12,17 +12,23 @@ module hazard(input [4:0] rsD,
               input regwriteW,
               input memtoregE,
               input memtoregM,
-              input branchD,
               
+
+              // åˆ†æ”¯è·³è½¬éƒ¨åˆ†
+              input branchD,
+              input balD,
+              input jumpD,
+
               output [1:0] forwardAE,
               output [1:0] forwardBE,
               output forwardAD,
               output forwardBD,
-              output wire stallF, stallD, flushE
+              output wire stallF, stallD, flushE,
+              output wire branchFlushD
               );
 
 // --------------------------------
-// Êı¾İÃ°ÏÕ
+// ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½
 
 // forward
 assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
@@ -40,7 +46,7 @@ assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 wire lwstall;
 //stallF, stallD, flushE;
 wire branchstall;
-assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // . ÅĞ¶Ï decode ½×¶Î rs »ò rt µÄµØÖ·ÊÇ·ñÊÇ lw Ö¸ÁîÒªĞ´ÈëµÄµØÖ·£»
+assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // . ï¿½Ğ¶ï¿½ decode ï¿½×¶ï¿½ rs ï¿½ï¿½ rt ï¿½Äµï¿½Ö·ï¿½Ç·ï¿½ï¿½ï¿½ lw Ö¸ï¿½ï¿½ÒªĞ´ï¿½ï¿½Äµï¿½Ö·ï¿½ï¿½
 assign branchstall = branchD && regwriteE && 
                        (writeregE == rsD || writeregE == rtD) ||
                        branchD && memtoregM &&
@@ -48,8 +54,10 @@ assign branchstall = branchD && regwriteE &&
 
 assign stallF = lwstall || branchstall;
 assign stallD = lwstall || branchstall;
-assign flushE = lwstall || branchstall;
-
-
+// assign flushE = lwstall || branchstall;
+// å¯èƒ½æœ‰bug
+assign #1 flushE = lwstall | jumpD | branchD;
+//
+assign branchFlushD = (branchD && !balD);
 
 endmodule

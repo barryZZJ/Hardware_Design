@@ -51,6 +51,8 @@ wire regwriteW, memtoregW;
 // hazard
 wire stallF, stallD, flushE;
 
+wire branchFlushD;
+
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
     .clk(clk),
@@ -65,7 +67,7 @@ flopenrc #(32) FD_instr (
 floprc #(17) DE_signals (
     .clk(clk),
     .rst(rst),
-    .clear(flushE),
+    .clear(flushE || branchFlushD), // 添加
     .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD,memenD,jalD,jrD,balD}),
     .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE,memenE,jalE,jrE,balE})
 );
@@ -135,7 +137,9 @@ datapath dp(
 	.memenE(memenE),
     .jalE(jalE),
     .jrE(jrE),
-    .balE(balE)
+	.balE(balE),
+    .balD(balD),
+	.branchFlushD(branchFlushD)
 );
 	
 endmodule
