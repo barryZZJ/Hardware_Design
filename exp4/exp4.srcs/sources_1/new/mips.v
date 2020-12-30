@@ -58,7 +58,7 @@ wire [1:0] hidstW, lodstW;
 wire hi_writeW, lo_writeW;
 
 // hazard
-wire stallF, stallD, flushE;
+wire stallF, stallD, stallE, flushE;
 
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
@@ -72,9 +72,10 @@ flopenrc #(32) FD_instr (
 
 //! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-floprc #(21) DE_signals (
+flopenrc #(21) DE_signals (
     .clk(clk),
     .rst(rst),
+	.en(~stallE),
     .clear(flushE),
     .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
     .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
@@ -149,6 +150,7 @@ datapath dp(
 	.mem_WriteData(writedata),
 	.stallF(stallF),
 	.stallD(stallD),
+	.stallE(stallE),
 	.flushE(flushE)
 );
 	

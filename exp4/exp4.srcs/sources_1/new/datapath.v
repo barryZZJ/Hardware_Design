@@ -24,15 +24,16 @@ module datapath(
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
-    output wire stallF, stallD, flushE
+    output wire stallF, stallD, stallE, flushE
 );
 
 //////////////////////////////////////
 // for debug:
 wire [31:0] instrE, instrM, instrW;
-floprc #(32) DE_instr (
+flopenrc #(32) DE_instr (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(instrD),
     .q(instrE)
@@ -219,45 +220,50 @@ mux2 #(32) mux_pcnext(
 // decode to execution flops
 
 // rd1
-floprc #(32) DE_rd1 (
+flopenrc #(32) DE_rd1 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd1D),
     .q(rd1E)
 );
 
 // rd2
-floprc #(32) DE_rd2 (
+flopenrc #(32) DE_rd2 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd2D),
     .q(rd2E)
 );
 
 // rs, rt, rd
-floprc #(15) DE_rt_rd (
+flopenrc #(15) DE_rt_rd (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d({rsD, rtD, rdD}),
     .q({rsE, rtE, rdE})
 );
 
 // sa 
-floprc #(5) DE_sa (
+flopenrc #(5) DE_sa (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(saD),
     .q(saE)
 );
 
 // extend_imm
-floprc #(32) DE_imm (
+flopenrc #(32) DE_imm (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(extend_immD),
     .q(extend_immE)
@@ -488,6 +494,7 @@ hazard hazard(
     .forwardBD(forwardBD),
     .stallF(stallF),
     .stallD(stallD),
+    .stallE(stallE),
     .flushE(flushE)
 );
 

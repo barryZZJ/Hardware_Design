@@ -14,15 +14,15 @@ module divWrapper(input clk, rst,
     reg  div_refresh;
     
     div div(
-    .clk(clk),
-    .rst(rst),
-    .Signed_div_i(div_sign),
-    .Opdata1_i(a),
-    .Opdata2_i(b),
-    .start_i(div_start),
-    .annul_i(div_refresh),
-    .result_o(div_result),
-    .ready_o(div_ready)
+        .clk(clk),
+        .rst(rst),
+        .Signed_div_i(div_sign),
+        .Opdata1_i(a),
+        .Opdata2_i(b),
+        .start_i(div_start),
+        .annul_i(div_refresh),
+        .result_o(div_result),
+        .ready_o(div_ready)
     );
     
     always@(*) begin
@@ -35,13 +35,14 @@ module divWrapper(input clk, rst,
             case(op)
                 //有符号除法
                 `EXE_DIV_OP: begin
-                    div_sign <= 1;
                     //状态机
                     if (!div_ready) begin
+                        div_sign    <= 1;
                         div_start   <= 1;
                         divstall    <= 1;
                         div_refresh <= 0;
                     end else if (div_ready) begin
+                        div_sign    <= 0;
                         div_start   <= 0;
                         divstall    <= 0;
                         div_refresh <= 1;
@@ -50,13 +51,14 @@ module divWrapper(input clk, rst,
 
                 //无符号除法
                 `EXE_DIVU_OP:begin
-                    div_sign <= 0;
                     //状态机
                     if (!div_ready) begin
+                        div_sign    <= 0;
                         div_start   <= 1;
                         divstall    <= 1;
                         div_refresh <= 0;
                     end else if (div_ready) begin
+                        div_sign    <= 0;
                         div_start   <= 0;
                         divstall    <= 0;
                         div_refresh <= 1;

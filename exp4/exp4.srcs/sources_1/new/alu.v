@@ -145,14 +145,14 @@ always @(*) begin
         ///////////
         //访存指令//
         ////////////
-        `EXE_LB_OP:res <= a + b;
-        `EXE_LBU_OP:res <= a + b;
-        `EXE_LH_OP:res <= a + b;
-        `EXE_LHU_OP:res <= a + b;
-        `EXE_LW_OP:res <= a + b;
-        `EXE_SW_OP:res <= a + b;      
-        `EXE_SB_OP:res <= a + b;
-        `EXE_SH_OP:res <= a + b;
+        `EXE_LB_OP : res <= a + b;
+        `EXE_LBU_OP: res <= a + b;
+        `EXE_LH_OP : res <= a + b;
+        `EXE_LHU_OP: res <= a + b;
+        `EXE_LW_OP : res <= a + b;
+        `EXE_SW_OP : res <= a + b;      
+        `EXE_SB_OP : res <= a + b;
+        `EXE_SH_OP : res <= a + b;
         
         ////////////////////////////////////////
         //

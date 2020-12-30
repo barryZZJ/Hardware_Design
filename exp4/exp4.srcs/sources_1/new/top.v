@@ -24,10 +24,7 @@ mips mips(
 
 inst_ram inst_ram(
 	.clka(~clk),
-	.ena(1'b1),      // input wire ena
-	.wea(4'b0000),      // input wire [3 : 0] wea
-	.addra({2'b0, pc[7:2]}),
-	.dina(32'b0),    // input wire [31 : 0] dina
+	.addra(pc),
 	.douta(instr)
 );
 

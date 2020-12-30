@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="49187667fs"></ZoomStartTime>
-      <ZoomEndTime time="50041668fs"></ZoomEndTime>
-      <Cursor1Time time="49330000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="382501fs"></ZoomEndTime>
+      <Cursor1Time time="1950000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="179"></NameColumnWidth>
-      <ValueColumnWidth column_width="296"></ValueColumnWidth>
+      <NameColumnWidth column_width="200"></NameColumnWidth>
+      <ValueColumnWidth column_width="144"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="14" />
+   <WVObjectSize size="15" />
    <wvobject fp_name="group149" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -55,7 +55,6 @@
    <wvobject fp_name="group162" type="group">
       <obj_property name="label">top</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/mips_min_tb/dut/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -695,6 +694,7 @@
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc_4D" type="array">
          <obj_property name="ElementShortName">pc_4D[31:0]</obj_property>
          <obj_property name="ObjectShortName">pc_4D[31:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/pcbranchD" type="array">
          <obj_property name="ElementShortName">pcbranchD[31:0]</obj_property>
@@ -791,6 +791,7 @@
       <wvobject fp_name="group287" type="group">
          <obj_property name="label">hilo</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/mips_min_tb/dut/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -893,7 +894,6 @@
    <wvobject fp_name="group531" type="group">
       <obj_property name="label">regfile</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -964,6 +964,7 @@
    <wvobject fp_name="group344" type="group">
       <obj_property name="label">hiloreg</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -1222,6 +1223,14 @@
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
       </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrD" type="array">
+         <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrE" type="array">
+         <obj_property name="ElementShortName">instrE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrE[31:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/rst" type="logic">
          <obj_property name="ElementShortName">rst</obj_property>
          <obj_property name="ObjectShortName">rst</obj_property>
@@ -1233,10 +1242,12 @@
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/Opdata1_i" type="array">
          <obj_property name="ElementShortName">Opdata1_i[31:0]</obj_property>
          <obj_property name="ObjectShortName">Opdata1_i[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/Opdata2_i" type="array">
          <obj_property name="ElementShortName">Opdata2_i[31:0]</obj_property>
          <obj_property name="ObjectShortName">Opdata2_i[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/start_i" type="logic">
          <obj_property name="ElementShortName">start_i</obj_property>
@@ -1285,6 +1296,34 @@
       <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/div_num2" type="array">
          <obj_property name="ElementShortName">div_num2[31:0]</obj_property>
          <obj_property name="ObjectShortName">div_num2[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group1028" type="group">
+      <obj_property name="label">data_ram</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/clka" type="logic">
+         <obj_property name="ElementShortName">clka</obj_property>
+         <obj_property name="ObjectShortName">clka</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/ena" type="logic">
+         <obj_property name="ElementShortName">ena</obj_property>
+         <obj_property name="ObjectShortName">ena</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/wea" type="array">
+         <obj_property name="ElementShortName">wea[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wea[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/addra" type="array">
+         <obj_property name="ElementShortName">addra[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addra[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/dina" type="array">
+         <obj_property name="ElementShortName">dina[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dina[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/douta" type="array">
+         <obj_property name="ElementShortName">douta[31:0]</obj_property>
+         <obj_property name="ObjectShortName">douta[31:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
