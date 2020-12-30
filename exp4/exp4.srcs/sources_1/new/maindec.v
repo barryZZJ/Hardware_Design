@@ -85,7 +85,23 @@ assign lo_write = mul | div | mtlo;
                 endcase
             end
 
-
+            // 逻辑运算指令（立即数部分）
+            `EXE_ANDI: begin
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+            end
+            `EXE_XORI: begin
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+            end
+            `EXE_LUI: begin
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+            end
+            `EXE_ORI: begin
+                regwrite <= 1'b1;
+                regdst   <= 1'b1;
+            end
 
 
 
