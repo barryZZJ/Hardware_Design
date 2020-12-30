@@ -32,8 +32,7 @@ assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
                    ((rsE != 0) && (rsE == writeregW) && regwriteW) ? 2'b01 :
                    2'b00;
 assign forwardBE = ((rtE != 0) && (rtE == writeregM) && regwriteM) ? 2'b10 :
-                   ((rtE != 0) && (rtE == writeregW) && regwriteW) ? 2'b0
-                   1 :
+                   ((rtE != 0) && (rtE == writeregW) && regwriteW) ? 2'b01 :
                    2'b00;
 assign forwardHLE = {forwardBE, mfhiE, mfloE} == 4'b0000 ? 3'b000 :
                     {forwardBE, mfhiE, mfloE} == 4'b0010 ? 3'b001 :

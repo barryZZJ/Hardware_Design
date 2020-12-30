@@ -6,40 +6,40 @@ module alu #(WIDTH = 32)
              input [7:0] op,
              output reg [WIDTH-1:0] res,
              output zero);
-// ! ÔÚÕâÀïÌí¼Ó
+// ! åœ¨è¿™é‡Œæ·»åŠ 
 always @(*) begin
     case (op)
-        // Âß¼­ÔËËãÖ¸Áî
+        // é€»è¾‘è¿ç®—æŒ‡ä»¤
         `EXE_AND_OP : res <= a & b;
         `EXE_OR_OP  : res <= a | b;
         `EXE_XOR_OP : res <= a ^ b;
         `EXE_NOR_OP : res <= ~(a | b);
         `EXE_ANDI_OP: res <= a & b;
         `EXE_XORI_OP: res <= a ^ b;
-        // ½« 16 Î»Á¢¼´Êı imm Ğ´Èë¼Ä´æÆ÷ rt µÄ¸ß 16 Î»£¬¼Ä´æÆ÷ rt µÄµÍ 16 Î»ÖÃ 0
+        // å°† 16 ä½ç«‹å³æ•° imm å†™å…¥å¯„å­˜å™¨ rt çš„é«˜ 16 ä½ï¼Œå¯„å­˜å™¨ rt çš„ä½ 16 ä½ç½® 0
         `EXE_LUI_OP : res <= {b[15:0], 16'b0};
         `EXE_ORI_OP : res <= a | b;
 
 
         ////////////////////////////////////////
         //
-        // ÒÆÎ»Ö¸Áî
+        // ç§»ä½æŒ‡ä»¤
         //
         ////////////////////////////////////////
-        // ²Ù×÷Êı sa:shamt b:rt
+        // æ“ä½œæ•° sa:shamt b:rt
         // sxx rd,rt,shamt
-        // Âß¼­ÒÆÎ»£¬¿ÕÎ»ÌîÁã
+        // é€»è¾‘ç§»ä½ï¼Œç©ºä½å¡«é›¶
         // sll
         `EXE_SLL_OP : res <= b << sa;
         // srl
         `EXE_SRL_OP : res <= b >> sa;
-        // ËãÊõÓÒÒÆ£¬¿ÕÎ»Ìî·ûºÅÎ»
+        // ç®—æœ¯å³ç§»ï¼Œç©ºä½å¡«ç¬¦å·ä½
         // sra
         `EXE_SRA_OP : begin
             // equals : res =  ({b, 1'b0} << ~sa) | (b >> sa) ;
             res = ({32{b[31]}} << (6'd32 - {1'b0, sa})) | (b >> sa) ;
         end
-        // ²Ù×÷Êı a:rs b:rt
+        // æ“ä½œæ•° a:rs b:rt
         // sxxv rd,rs,rt
         // sllv
         `EXE_SLLV_OP: res <= b << a[4:0];
@@ -51,7 +51,7 @@ always @(*) begin
         end
         ////////////////////////////////////////
         //
-        // ·ÖÖ§Ìø×ªÖ¸Áî
+        // åˆ†æ”¯è·³è½¬æŒ‡ä»¤
         //
         ////////////////////////////////////////
         // jr

@@ -1,20 +1,20 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Wed Dec 30 15:21:36 2020
+// Date        : Wed Dec 30 15:27:46 2020
 // Host        : Barry running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               d:/Codes/Hardware_Design/exp4/exp4.srcs/sources_1/ip/inst_ram/inst_ram_sim_netlist.v
-// Design      : inst_ram
+//               D:/Codes/Hardware_Design/exp4/exp4.srcs/sources_1/ip/data_ram/data_ram_sim_netlist.v
+// Design      : data_ram
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
 // Device      : xc7a100tcsg324-1
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "inst_ram,blk_mem_gen_v8_4_4,{}" *) (* downgradeipidentifiedwarnings = "yes" *) (* x_core_info = "blk_mem_gen_v8_4_4,Vivado 2019.2" *) 
+(* CHECK_LICENSE_TYPE = "data_ram,blk_mem_gen_v8_4_4,{}" *) (* downgradeipidentifiedwarnings = "yes" *) (* x_core_info = "blk_mem_gen_v8_4_4,Vivado 2019.2" *) 
 (* NotValidForBitStream *)
-module inst_ram
+module data_ram
    (clka,
     ena,
     wea,
@@ -24,11 +24,11 @@ module inst_ram
   (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA CLK" *) (* x_interface_parameter = "XIL_INTERFACENAME BRAM_PORTA, MEM_SIZE 8192, MEM_WIDTH 32, MEM_ECC NONE, MASTER_TYPE OTHER, READ_LATENCY 1" *) input clka;
   (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA EN" *) input ena;
   (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA WE" *) input [3:0]wea;
-  (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA ADDR" *) input [7:0]addra;
+  (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA ADDR" *) input [31:0]addra;
   (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA DIN" *) input [31:0]dina;
   (* x_interface_info = "xilinx.com:interface:bram:1.0 BRAM_PORTA DOUT" *) output [31:0]douta;
 
-  wire [7:0]addra;
+  wire [31:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
@@ -47,30 +47,30 @@ module inst_ram
   wire NLW_U0_s_axi_wready_UNCONNECTED;
   wire NLW_U0_sbiterr_UNCONNECTED;
   wire [31:0]NLW_U0_doutb_UNCONNECTED;
-  wire [7:0]NLW_U0_rdaddrecc_UNCONNECTED;
+  wire [31:0]NLW_U0_rdaddrecc_UNCONNECTED;
   wire [3:0]NLW_U0_s_axi_bid_UNCONNECTED;
   wire [1:0]NLW_U0_s_axi_bresp_UNCONNECTED;
-  wire [7:0]NLW_U0_s_axi_rdaddrecc_UNCONNECTED;
+  wire [31:0]NLW_U0_s_axi_rdaddrecc_UNCONNECTED;
   wire [31:0]NLW_U0_s_axi_rdata_UNCONNECTED;
   wire [3:0]NLW_U0_s_axi_rid_UNCONNECTED;
   wire [1:0]NLW_U0_s_axi_rresp_UNCONNECTED;
 
-  (* C_ADDRA_WIDTH = "8" *) 
-  (* C_ADDRB_WIDTH = "8" *) 
+  (* C_ADDRA_WIDTH = "32" *) 
+  (* C_ADDRB_WIDTH = "32" *) 
   (* C_ALGORITHM = "1" *) 
   (* C_AXI_ID_WIDTH = "4" *) 
   (* C_AXI_SLAVE_TYPE = "0" *) 
   (* C_AXI_TYPE = "1" *) 
   (* C_BYTE_SIZE = "8" *) 
   (* C_COMMON_CLK = "0" *) 
-  (* C_COUNT_18K_BRAM = "1" *) 
-  (* C_COUNT_36K_BRAM = "0" *) 
+  (* C_COUNT_18K_BRAM = "0" *) 
+  (* C_COUNT_36K_BRAM = "1" *) 
   (* C_CTRL_ECC_ALGO = "NONE" *) 
   (* C_DEFAULT_DATA = "0" *) 
   (* C_DISABLE_WARN_BHV_COLL = "0" *) 
   (* C_DISABLE_WARN_BHV_RANGE = "0" *) 
   (* C_ELABORATION_DIR = "./" *) 
-  (* C_ENABLE_32BIT_ADDRESS = "0" *) 
+  (* C_ENABLE_32BIT_ADDRESS = "1" *) 
   (* C_EN_DEEPSLEEP_PIN = "0" *) 
   (* C_EN_ECC_PIPE = "0" *) 
   (* C_EN_RDADDRA_CHG = "0" *) 
@@ -78,7 +78,7 @@ module inst_ram
   (* C_EN_SAFETY_CKT = "0" *) 
   (* C_EN_SHUTDOWN_PIN = "0" *) 
   (* C_EN_SLEEP_PIN = "0" *) 
-  (* C_EST_POWER_SUMMARY = "Estimated Power for IP     :     3.53845 mW" *) 
+  (* C_EST_POWER_SUMMARY = "Estimated Power for IP     :     2.96495 mW" *) 
   (* C_FAMILY = "artix7" *) 
   (* C_HAS_AXI_ID = "0" *) 
   (* C_HAS_ENA = "1" *) 
@@ -96,15 +96,15 @@ module inst_ram
   (* C_HAS_SOFTECC_OUTPUT_REGS_B = "0" *) 
   (* C_INITA_VAL = "0" *) 
   (* C_INITB_VAL = "0" *) 
-  (* C_INIT_FILE = "inst_ram.mem" *) 
-  (* C_INIT_FILE_NAME = "inst_ram.mif" *) 
+  (* C_INIT_FILE = "data_ram.mem" *) 
+  (* C_INIT_FILE_NAME = "data_ram.mif" *) 
   (* C_INTERFACE_TYPE = "0" *) 
   (* C_LOAD_INIT_FILE = "1" *) 
   (* C_MEM_TYPE = "0" *) 
   (* C_MUX_PIPELINE_STAGES = "0" *) 
   (* C_PRIM_TYPE = "1" *) 
-  (* C_READ_DEPTH_A = "256" *) 
-  (* C_READ_DEPTH_B = "256" *) 
+  (* C_READ_DEPTH_A = "1024" *) 
+  (* C_READ_DEPTH_B = "1024" *) 
   (* C_READ_LATENCY_A = "1" *) 
   (* C_READ_LATENCY_B = "1" *) 
   (* C_READ_WIDTH_A = "32" *) 
@@ -123,17 +123,17 @@ module inst_ram
   (* C_USE_URAM = "0" *) 
   (* C_WEA_WIDTH = "4" *) 
   (* C_WEB_WIDTH = "4" *) 
-  (* C_WRITE_DEPTH_A = "256" *) 
-  (* C_WRITE_DEPTH_B = "256" *) 
+  (* C_WRITE_DEPTH_A = "1024" *) 
+  (* C_WRITE_DEPTH_B = "1024" *) 
   (* C_WRITE_MODE_A = "WRITE_FIRST" *) 
   (* C_WRITE_MODE_B = "WRITE_FIRST" *) 
   (* C_WRITE_WIDTH_A = "32" *) 
   (* C_WRITE_WIDTH_B = "32" *) 
   (* C_XDEVICEFAMILY = "artix7" *) 
   (* downgradeipidentifiedwarnings = "yes" *) 
-  inst_ram_blk_mem_gen_v8_4_4 U0
+  data_ram_blk_mem_gen_v8_4_4 U0
        (.addra(addra),
-        .addrb({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .addrb({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .clka(clka),
         .clkb(1'b0),
         .dbiterr(NLW_U0_dbiterr_UNCONNECTED),
@@ -147,7 +147,7 @@ module inst_ram
         .enb(1'b0),
         .injectdbiterr(1'b0),
         .injectsbiterr(1'b0),
-        .rdaddrecc(NLW_U0_rdaddrecc_UNCONNECTED[7:0]),
+        .rdaddrecc(NLW_U0_rdaddrecc_UNCONNECTED[31:0]),
         .regcea(1'b0),
         .regceb(1'b0),
         .rsta(1'b0),
@@ -177,7 +177,7 @@ module inst_ram
         .s_axi_dbiterr(NLW_U0_s_axi_dbiterr_UNCONNECTED),
         .s_axi_injectdbiterr(1'b0),
         .s_axi_injectsbiterr(1'b0),
-        .s_axi_rdaddrecc(NLW_U0_s_axi_rdaddrecc_UNCONNECTED[7:0]),
+        .s_axi_rdaddrecc(NLW_U0_s_axi_rdaddrecc_UNCONNECTED[31:0]),
         .s_axi_rdata(NLW_U0_s_axi_rdata_UNCONNECTED[31:0]),
         .s_axi_rid(NLW_U0_s_axi_rid_UNCONNECTED[3:0]),
         .s_axi_rlast(NLW_U0_s_axi_rlast_UNCONNECTED),
@@ -198,7 +198,7 @@ module inst_ram
 endmodule
 
 (* ORIG_REF_NAME = "blk_mem_gen_generic_cstr" *) 
-module inst_ram_blk_mem_gen_generic_cstr
+module data_ram_blk_mem_gen_generic_cstr
    (douta,
     clka,
     ena,
@@ -208,18 +208,18 @@ module inst_ram_blk_mem_gen_generic_cstr
   output [31:0]douta;
   input clka;
   input ena;
-  input [7:0]addra;
+  input [9:0]addra;
   input [31:0]dina;
   input [3:0]wea;
 
-  wire [7:0]addra;
+  wire [9:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
   wire ena;
   wire [3:0]wea;
 
-  inst_ram_blk_mem_gen_prim_width \ramloop[0].ram.r 
+  data_ram_blk_mem_gen_prim_width \ramloop[0].ram.r 
        (.addra(addra),
         .clka(clka),
         .dina(dina),
@@ -229,7 +229,7 @@ module inst_ram_blk_mem_gen_generic_cstr
 endmodule
 
 (* ORIG_REF_NAME = "blk_mem_gen_prim_width" *) 
-module inst_ram_blk_mem_gen_prim_width
+module data_ram_blk_mem_gen_prim_width
    (douta,
     clka,
     ena,
@@ -239,18 +239,18 @@ module inst_ram_blk_mem_gen_prim_width
   output [31:0]douta;
   input clka;
   input ena;
-  input [7:0]addra;
+  input [9:0]addra;
   input [31:0]dina;
   input [3:0]wea;
 
-  wire [7:0]addra;
+  wire [9:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
   wire ena;
   wire [3:0]wea;
 
-  inst_ram_blk_mem_gen_prim_wrapper_init \prim_init.ram 
+  data_ram_blk_mem_gen_prim_wrapper_init \prim_init.ram 
        (.addra(addra),
         .clka(clka),
         .dina(dina),
@@ -260,7 +260,7 @@ module inst_ram_blk_mem_gen_prim_width
 endmodule
 
 (* ORIG_REF_NAME = "blk_mem_gen_prim_wrapper_init" *) 
-module inst_ram_blk_mem_gen_prim_wrapper_init
+module data_ram_blk_mem_gen_prim_wrapper_init
    (douta,
     clka,
     ena,
@@ -270,25 +270,36 @@ module inst_ram_blk_mem_gen_prim_wrapper_init
   output [31:0]douta;
   input clka;
   input ena;
-  input [7:0]addra;
+  input [9:0]addra;
   input [31:0]dina;
   input [3:0]wea;
 
-  wire \DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_32 ;
-  wire \DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_33 ;
-  wire \DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_34 ;
-  wire \DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_35 ;
-  wire [7:0]addra;
+  wire \DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_68 ;
+  wire \DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_69 ;
+  wire \DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_70 ;
+  wire \DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_71 ;
+  wire [9:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
   wire ena;
   wire [3:0]wea;
+  wire \NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DBITERR_UNCONNECTED ;
+  wire \NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_SBITERR_UNCONNECTED ;
+  wire [31:0]\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DOBDO_UNCONNECTED ;
+  wire [3:0]\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_RDADDRECC_UNCONNECTED ;
 
+  (* bmm_info_memory_device = "[31:0][0:1023]" *) 
   (* box_type = "PRIMITIVE" *) 
-  RAMB18E1 #(
+  RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(0),
+    .EN_ECC_READ("FALSE"),
+    .EN_ECC_WRITE("FALSE"),
     .INITP_00(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_01(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_02(256'h0000000000000000000000000000000000000000000000000000000000000000),
@@ -297,8 +308,16 @@ module inst_ram_blk_mem_gen_prim_wrapper_init
     .INITP_05(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_06(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_07(256'h0000000000000000000000000000000000000000000000000000000000000000),
-    .INIT_00(256'h000020100060001100400011000000113C0400003C0305053C02FFFF3C010000),
-    .INIT_01(256'h0000000000000000000000000000001E00002012002000130040001300600013),
+    .INITP_08(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_09(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0A(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0B(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0C(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0D(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0E(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INITP_0F(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_00(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_01(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_02(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_03(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_04(256'h0000000000000000000000000000000000000000000000000000000000000000),
@@ -361,8 +380,72 @@ module inst_ram_blk_mem_gen_prim_wrapper_init
     .INIT_3D(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_3E(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_3F(256'h0000000000000000000000000000000000000000000000000000000000000000),
-    .INIT_A(18'h00000),
-    .INIT_B(18'h00000),
+    .INIT_40(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_41(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_42(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_43(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_44(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_45(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_46(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_47(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_48(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_49(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4A(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4B(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4C(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4D(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4E(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_4F(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_50(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_51(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_52(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_53(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_54(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_55(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_56(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_57(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_58(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_59(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5A(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5B(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5C(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5D(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5E(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_5F(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_60(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_61(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_62(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_63(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_64(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_65(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_66(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_67(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_68(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_69(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6A(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6B(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6C(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6D(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6E(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_6F(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_70(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_71(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_72(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_73(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_74(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_75(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_76(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_77(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_78(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_79(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7A(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7B(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7C(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7D(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7E(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_7F(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_A(36'h000000000),
+    .INIT_B(36'h000000000),
     .INIT_FILE("NONE"),
     .IS_CLKARDCLK_INVERTED(1'b0),
     .IS_CLKBWRCLK_INVERTED(1'b0),
@@ -372,47 +455,59 @@ module inst_ram_blk_mem_gen_prim_wrapper_init
     .IS_RSTRAMB_INVERTED(1'b0),
     .IS_RSTREGARSTREG_INVERTED(1'b0),
     .IS_RSTREGB_INVERTED(1'b0),
+    .RAM_EXTENSION_A("NONE"),
+    .RAM_EXTENSION_B("NONE"),
     .RAM_MODE("TDP"),
     .RDADDR_COLLISION_HWCONFIG("PERFORMANCE"),
-    .READ_WIDTH_A(18),
-    .READ_WIDTH_B(18),
+    .READ_WIDTH_A(36),
+    .READ_WIDTH_B(36),
     .RSTREG_PRIORITY_A("REGCE"),
     .RSTREG_PRIORITY_B("REGCE"),
     .SIM_COLLISION_CHECK("ALL"),
     .SIM_DEVICE("7SERIES"),
-    .SRVAL_A(18'h00000),
-    .SRVAL_B(18'h00000),
+    .SRVAL_A(36'h000000000),
+    .SRVAL_B(36'h000000000),
     .WRITE_MODE_A("WRITE_FIRST"),
     .WRITE_MODE_B("WRITE_FIRST"),
-    .WRITE_WIDTH_A(18),
-    .WRITE_WIDTH_B(18)) 
-    \DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram 
-       (.ADDRARDADDR({1'b0,addra,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ADDRBWRADDR({1'b0,addra,1'b1,1'b0,1'b0,1'b0,1'b0}),
+    .WRITE_WIDTH_A(36),
+    .WRITE_WIDTH_B(36)) 
+    \DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram 
+       (.ADDRARDADDR({1'b1,addra,1'b1,1'b1,1'b1,1'b1,1'b1}),
+        .ADDRBWRADDR({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .CASCADEINA(1'b0),
+        .CASCADEINB(1'b0),
+        .CASCADEOUTA(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(clka),
         .CLKBWRCLK(clka),
-        .DIADI(dina[15:0]),
-        .DIBDI(dina[31:16]),
-        .DIPADIP({1'b0,1'b0}),
-        .DIPBDIP({1'b0,1'b0}),
-        .DOADO(douta[15:0]),
-        .DOBDO(douta[31:16]),
-        .DOPADOP({\DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_32 ,\DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_33 }),
-        .DOPBDOP({\DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_34 ,\DEVICE_7SERIES.NO_BMM_INFO.SP.WIDE_PRIM18.ram_n_35 }),
+        .DBITERR(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DBITERR_UNCONNECTED ),
+        .DIADI(dina),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DIPADIP({1'b0,1'b0,1'b0,1'b0}),
+        .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
+        .DOADO(douta),
+        .DOBDO(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DOBDO_UNCONNECTED [31:0]),
+        .DOPADOP({\DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_68 ,\DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_69 ,\DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_70 ,\DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_n_71 }),
+        .DOPBDOP(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_DOPBDOP_UNCONNECTED [3:0]),
+        .ECCPARITY(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(ena),
-        .ENBWREN(ena),
+        .ENBWREN(1'b0),
+        .INJECTDBITERR(1'b0),
+        .INJECTSBITERR(1'b0),
+        .RDADDRECC(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b0),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .WEA(wea[1:0]),
-        .WEBWE({1'b0,1'b0,wea[3:2]}));
+        .SBITERR(\NLW_DEVICE_7SERIES.WITH_BMM_INFO.SP.SIMPLE_PRIM36.ram_SBITERR_UNCONNECTED ),
+        .WEA(wea),
+        .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
 (* ORIG_REF_NAME = "blk_mem_gen_top" *) 
-module inst_ram_blk_mem_gen_top
+module data_ram_blk_mem_gen_top
    (douta,
     clka,
     ena,
@@ -422,18 +517,18 @@ module inst_ram_blk_mem_gen_top
   output [31:0]douta;
   input clka;
   input ena;
-  input [7:0]addra;
+  input [9:0]addra;
   input [31:0]dina;
   input [3:0]wea;
 
-  wire [7:0]addra;
+  wire [9:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
   wire ena;
   wire [3:0]wea;
 
-  inst_ram_blk_mem_gen_generic_cstr \valid.cstr 
+  data_ram_blk_mem_gen_generic_cstr \valid.cstr 
        (.addra(addra),
         .clka(clka),
         .dina(dina),
@@ -442,33 +537,33 @@ module inst_ram_blk_mem_gen_top
         .wea(wea));
 endmodule
 
-(* C_ADDRA_WIDTH = "8" *) (* C_ADDRB_WIDTH = "8" *) (* C_ALGORITHM = "1" *) 
+(* C_ADDRA_WIDTH = "32" *) (* C_ADDRB_WIDTH = "32" *) (* C_ALGORITHM = "1" *) 
 (* C_AXI_ID_WIDTH = "4" *) (* C_AXI_SLAVE_TYPE = "0" *) (* C_AXI_TYPE = "1" *) 
-(* C_BYTE_SIZE = "8" *) (* C_COMMON_CLK = "0" *) (* C_COUNT_18K_BRAM = "1" *) 
-(* C_COUNT_36K_BRAM = "0" *) (* C_CTRL_ECC_ALGO = "NONE" *) (* C_DEFAULT_DATA = "0" *) 
+(* C_BYTE_SIZE = "8" *) (* C_COMMON_CLK = "0" *) (* C_COUNT_18K_BRAM = "0" *) 
+(* C_COUNT_36K_BRAM = "1" *) (* C_CTRL_ECC_ALGO = "NONE" *) (* C_DEFAULT_DATA = "0" *) 
 (* C_DISABLE_WARN_BHV_COLL = "0" *) (* C_DISABLE_WARN_BHV_RANGE = "0" *) (* C_ELABORATION_DIR = "./" *) 
-(* C_ENABLE_32BIT_ADDRESS = "0" *) (* C_EN_DEEPSLEEP_PIN = "0" *) (* C_EN_ECC_PIPE = "0" *) 
+(* C_ENABLE_32BIT_ADDRESS = "1" *) (* C_EN_DEEPSLEEP_PIN = "0" *) (* C_EN_ECC_PIPE = "0" *) 
 (* C_EN_RDADDRA_CHG = "0" *) (* C_EN_RDADDRB_CHG = "0" *) (* C_EN_SAFETY_CKT = "0" *) 
-(* C_EN_SHUTDOWN_PIN = "0" *) (* C_EN_SLEEP_PIN = "0" *) (* C_EST_POWER_SUMMARY = "Estimated Power for IP     :     3.53845 mW" *) 
+(* C_EN_SHUTDOWN_PIN = "0" *) (* C_EN_SLEEP_PIN = "0" *) (* C_EST_POWER_SUMMARY = "Estimated Power for IP     :     2.96495 mW" *) 
 (* C_FAMILY = "artix7" *) (* C_HAS_AXI_ID = "0" *) (* C_HAS_ENA = "1" *) 
 (* C_HAS_ENB = "0" *) (* C_HAS_INJECTERR = "0" *) (* C_HAS_MEM_OUTPUT_REGS_A = "0" *) 
 (* C_HAS_MEM_OUTPUT_REGS_B = "0" *) (* C_HAS_MUX_OUTPUT_REGS_A = "0" *) (* C_HAS_MUX_OUTPUT_REGS_B = "0" *) 
 (* C_HAS_REGCEA = "0" *) (* C_HAS_REGCEB = "0" *) (* C_HAS_RSTA = "0" *) 
 (* C_HAS_RSTB = "0" *) (* C_HAS_SOFTECC_INPUT_REGS_A = "0" *) (* C_HAS_SOFTECC_OUTPUT_REGS_B = "0" *) 
-(* C_INITA_VAL = "0" *) (* C_INITB_VAL = "0" *) (* C_INIT_FILE = "inst_ram.mem" *) 
-(* C_INIT_FILE_NAME = "inst_ram.mif" *) (* C_INTERFACE_TYPE = "0" *) (* C_LOAD_INIT_FILE = "1" *) 
+(* C_INITA_VAL = "0" *) (* C_INITB_VAL = "0" *) (* C_INIT_FILE = "data_ram.mem" *) 
+(* C_INIT_FILE_NAME = "data_ram.mif" *) (* C_INTERFACE_TYPE = "0" *) (* C_LOAD_INIT_FILE = "1" *) 
 (* C_MEM_TYPE = "0" *) (* C_MUX_PIPELINE_STAGES = "0" *) (* C_PRIM_TYPE = "1" *) 
-(* C_READ_DEPTH_A = "256" *) (* C_READ_DEPTH_B = "256" *) (* C_READ_LATENCY_A = "1" *) 
+(* C_READ_DEPTH_A = "1024" *) (* C_READ_DEPTH_B = "1024" *) (* C_READ_LATENCY_A = "1" *) 
 (* C_READ_LATENCY_B = "1" *) (* C_READ_WIDTH_A = "32" *) (* C_READ_WIDTH_B = "32" *) 
 (* C_RSTRAM_A = "0" *) (* C_RSTRAM_B = "0" *) (* C_RST_PRIORITY_A = "CE" *) 
 (* C_RST_PRIORITY_B = "CE" *) (* C_SIM_COLLISION_CHECK = "ALL" *) (* C_USE_BRAM_BLOCK = "0" *) 
 (* C_USE_BYTE_WEA = "1" *) (* C_USE_BYTE_WEB = "1" *) (* C_USE_DEFAULT_DATA = "1" *) 
 (* C_USE_ECC = "0" *) (* C_USE_SOFTECC = "0" *) (* C_USE_URAM = "0" *) 
-(* C_WEA_WIDTH = "4" *) (* C_WEB_WIDTH = "4" *) (* C_WRITE_DEPTH_A = "256" *) 
-(* C_WRITE_DEPTH_B = "256" *) (* C_WRITE_MODE_A = "WRITE_FIRST" *) (* C_WRITE_MODE_B = "WRITE_FIRST" *) 
+(* C_WEA_WIDTH = "4" *) (* C_WEB_WIDTH = "4" *) (* C_WRITE_DEPTH_A = "1024" *) 
+(* C_WRITE_DEPTH_B = "1024" *) (* C_WRITE_MODE_A = "WRITE_FIRST" *) (* C_WRITE_MODE_B = "WRITE_FIRST" *) 
 (* C_WRITE_WIDTH_A = "32" *) (* C_WRITE_WIDTH_B = "32" *) (* C_XDEVICEFAMILY = "artix7" *) 
 (* ORIG_REF_NAME = "blk_mem_gen_v8_4_4" *) (* downgradeipidentifiedwarnings = "yes" *) 
-module inst_ram_blk_mem_gen_v8_4_4
+module data_ram_blk_mem_gen_v8_4_4
    (clka,
     rsta,
     ena,
@@ -537,7 +632,7 @@ module inst_ram_blk_mem_gen_v8_4_4
   input ena;
   input regcea;
   input [3:0]wea;
-  input [7:0]addra;
+  input [31:0]addra;
   input [31:0]dina;
   output [31:0]douta;
   input clkb;
@@ -545,7 +640,7 @@ module inst_ram_blk_mem_gen_v8_4_4
   input enb;
   input regceb;
   input [3:0]web;
-  input [7:0]addrb;
+  input [31:0]addrb;
   input [31:0]dinb;
   output [31:0]doutb;
   input injectsbiterr;
@@ -553,7 +648,7 @@ module inst_ram_blk_mem_gen_v8_4_4
   input eccpipece;
   output sbiterr;
   output dbiterr;
-  output [7:0]rdaddrecc;
+  output [31:0]rdaddrecc;
   input sleep;
   input deepsleep;
   input shutdown;
@@ -594,10 +689,10 @@ module inst_ram_blk_mem_gen_v8_4_4
   input s_axi_injectdbiterr;
   output s_axi_sbiterr;
   output s_axi_dbiterr;
-  output [7:0]s_axi_rdaddrecc;
+  output [31:0]s_axi_rdaddrecc;
 
   wire \<const0> ;
-  wire [7:0]addra;
+  wire [31:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
@@ -637,6 +732,30 @@ module inst_ram_blk_mem_gen_v8_4_4
   assign doutb[2] = \<const0> ;
   assign doutb[1] = \<const0> ;
   assign doutb[0] = \<const0> ;
+  assign rdaddrecc[31] = \<const0> ;
+  assign rdaddrecc[30] = \<const0> ;
+  assign rdaddrecc[29] = \<const0> ;
+  assign rdaddrecc[28] = \<const0> ;
+  assign rdaddrecc[27] = \<const0> ;
+  assign rdaddrecc[26] = \<const0> ;
+  assign rdaddrecc[25] = \<const0> ;
+  assign rdaddrecc[24] = \<const0> ;
+  assign rdaddrecc[23] = \<const0> ;
+  assign rdaddrecc[22] = \<const0> ;
+  assign rdaddrecc[21] = \<const0> ;
+  assign rdaddrecc[20] = \<const0> ;
+  assign rdaddrecc[19] = \<const0> ;
+  assign rdaddrecc[18] = \<const0> ;
+  assign rdaddrecc[17] = \<const0> ;
+  assign rdaddrecc[16] = \<const0> ;
+  assign rdaddrecc[15] = \<const0> ;
+  assign rdaddrecc[14] = \<const0> ;
+  assign rdaddrecc[13] = \<const0> ;
+  assign rdaddrecc[12] = \<const0> ;
+  assign rdaddrecc[11] = \<const0> ;
+  assign rdaddrecc[10] = \<const0> ;
+  assign rdaddrecc[9] = \<const0> ;
+  assign rdaddrecc[8] = \<const0> ;
   assign rdaddrecc[7] = \<const0> ;
   assign rdaddrecc[6] = \<const0> ;
   assign rdaddrecc[5] = \<const0> ;
@@ -657,6 +776,30 @@ module inst_ram_blk_mem_gen_v8_4_4
   assign s_axi_bresp[0] = \<const0> ;
   assign s_axi_bvalid = \<const0> ;
   assign s_axi_dbiterr = \<const0> ;
+  assign s_axi_rdaddrecc[31] = \<const0> ;
+  assign s_axi_rdaddrecc[30] = \<const0> ;
+  assign s_axi_rdaddrecc[29] = \<const0> ;
+  assign s_axi_rdaddrecc[28] = \<const0> ;
+  assign s_axi_rdaddrecc[27] = \<const0> ;
+  assign s_axi_rdaddrecc[26] = \<const0> ;
+  assign s_axi_rdaddrecc[25] = \<const0> ;
+  assign s_axi_rdaddrecc[24] = \<const0> ;
+  assign s_axi_rdaddrecc[23] = \<const0> ;
+  assign s_axi_rdaddrecc[22] = \<const0> ;
+  assign s_axi_rdaddrecc[21] = \<const0> ;
+  assign s_axi_rdaddrecc[20] = \<const0> ;
+  assign s_axi_rdaddrecc[19] = \<const0> ;
+  assign s_axi_rdaddrecc[18] = \<const0> ;
+  assign s_axi_rdaddrecc[17] = \<const0> ;
+  assign s_axi_rdaddrecc[16] = \<const0> ;
+  assign s_axi_rdaddrecc[15] = \<const0> ;
+  assign s_axi_rdaddrecc[14] = \<const0> ;
+  assign s_axi_rdaddrecc[13] = \<const0> ;
+  assign s_axi_rdaddrecc[12] = \<const0> ;
+  assign s_axi_rdaddrecc[11] = \<const0> ;
+  assign s_axi_rdaddrecc[10] = \<const0> ;
+  assign s_axi_rdaddrecc[9] = \<const0> ;
+  assign s_axi_rdaddrecc[8] = \<const0> ;
   assign s_axi_rdaddrecc[7] = \<const0> ;
   assign s_axi_rdaddrecc[6] = \<const0> ;
   assign s_axi_rdaddrecc[5] = \<const0> ;
@@ -710,8 +853,8 @@ module inst_ram_blk_mem_gen_v8_4_4
   assign sbiterr = \<const0> ;
   GND GND
        (.G(\<const0> ));
-  inst_ram_blk_mem_gen_v8_4_4_synth inst_blk_mem_gen
-       (.addra(addra),
+  data_ram_blk_mem_gen_v8_4_4_synth inst_blk_mem_gen
+       (.addra(addra[11:2]),
         .clka(clka),
         .dina(dina),
         .douta(douta),
@@ -720,7 +863,7 @@ module inst_ram_blk_mem_gen_v8_4_4
 endmodule
 
 (* ORIG_REF_NAME = "blk_mem_gen_v8_4_4_synth" *) 
-module inst_ram_blk_mem_gen_v8_4_4_synth
+module data_ram_blk_mem_gen_v8_4_4_synth
    (douta,
     clka,
     ena,
@@ -730,18 +873,18 @@ module inst_ram_blk_mem_gen_v8_4_4_synth
   output [31:0]douta;
   input clka;
   input ena;
-  input [7:0]addra;
+  input [9:0]addra;
   input [31:0]dina;
   input [3:0]wea;
 
-  wire [7:0]addra;
+  wire [9:0]addra;
   wire clka;
   wire [31:0]dina;
   wire [31:0]douta;
   wire ena;
   wire [3:0]wea;
 
-  inst_ram_blk_mem_gen_top \gnbram.gnativebmg.native_blk_mem_gen 
+  data_ram_blk_mem_gen_top \gnbram.gnative_mem_map_bmg.native_mem_map_blk_mem_gen 
        (.addra(addra),
         .clka(clka),
         .dina(dina),

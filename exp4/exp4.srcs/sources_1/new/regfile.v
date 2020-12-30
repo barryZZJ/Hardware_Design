@@ -30,11 +30,12 @@ module regfile(
     );
 
 	reg [31:0] rf[31:0];
-	integer i;
+	// integer i;
 	always @(posedge clk) begin
 		if (rst) begin
-			for (i = 0; i<32; i=i+1) 
-				rf[i] <= 32'b0;
+			// for (i = 0; i<32; i=i+1) 
+				// rf[i] <= 32'b0;
+			rf[0] <= 32'b0;
 		end else if(we3) begin
 			 rf[wa3] <= wd3;
 		end

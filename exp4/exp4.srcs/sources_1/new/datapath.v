@@ -27,6 +27,32 @@ module datapath(
     output pcsrcD,
     output wire stallF, stallD, flushE
 );
+
+//////////////////////////////////////
+// for debug:
+wire [31:0] instrE, instrM, instrW;
+floprc #(32) DE_instr (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(instrD),
+    .q(instrE)
+);
+flopenr #(32) EM_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrE),
+    .q(instrM)
+);
+flopenr #(32) MF_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrM),
+    .q(instrW)
+);
+/////////////////////////////////////
     
 
 //分别为：pc+4, 多路选择分支之后的pc, 下一条真正要执行的指令的pc
@@ -46,7 +72,7 @@ wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
@@ -297,14 +323,23 @@ mux2 #(5) mux_WA3(
 
 // hilo
 //TODO 等乘除法器写好
+assign hi_iE = hidstE == 2'b01 ? 32'b0 :
+               hidstE == 2'b10 ? 32'b1 :
+               hidstE == 2'b11 ? ALUsrcB1 :
+               32'bx;
+
+assign lo_iE = lodstE == 2'b01 ? 32'b0 :
+               lodstE == 2'b10 ? 32'b1 :
+               lodstE == 2'b11 ? ALUsrcB1 :
+               32'bx;
 // assign hi_iE = hidstE == 2'b01 ? 乘法hi :
 //                hidstE == 2'b10 ? 除法余数 :
-//                hidstE == 2'b11 ? rd2E  :
+//                hidstE == 2'b11 ? ALUsrcB1 :
 //                32'b0;
 
 // assign lo_iE = lodstE == 2'b01 ? 乘法lo :
 //                lodstE == 2'b10 ? 除法商 :
-//                lodstE == 2'b11 ? rd2E  :
+//                lodstE == 2'b11 ? ALUsrcB1 :
 //                32'b0;
 
 // ----------------------------------------

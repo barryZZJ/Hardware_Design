@@ -7,3 +7,7 @@
 *.jou
 *.log
 *.str
+funcTest_independent
+*.py
+input.txt
+test.coe

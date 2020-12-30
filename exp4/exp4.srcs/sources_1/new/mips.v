@@ -70,8 +70,9 @@ flopenrc #(32) FD_instr (
     .q(instrD)
 );
 
+//! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-floprc #(19) DE_signals (
+floprc #(21) DE_signals (
     .clk(clk),
     .rst(rst),
     .clear(flushE),
@@ -80,7 +81,7 @@ floprc #(19) DE_signals (
 );
 
 // exe to Mem flop for signals
-flopenr #(7) EM_signals (
+flopenr #(9) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
@@ -89,7 +90,7 @@ flopenr #(7) EM_signals (
 );
 
 // mem to wb flop for signals
-flopenr #(6) MW_signals (
+flopenr #(8) MW_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
@@ -116,7 +117,7 @@ controller c(
 	.hidstD(hidstD),
 	.lodstD(lodstD),
 	.hi_writeD(hi_writeD), 
-	.lo_writeD(lo_writeD),
+	.lo_writeD(lo_writeD)
 );
 
 datapath dp(

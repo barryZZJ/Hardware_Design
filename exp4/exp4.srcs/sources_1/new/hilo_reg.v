@@ -4,10 +4,9 @@ module hilo_reg(
     input clk, rst, 
     input weh, wel,
     input [31:0] hi, lo,
-    output [31:0] hi_o, lo_o
+    output reg [31:0] hi_o, lo_o
 );
 
-reg [31:0] hi_o, lo_o;
 
 always @(negedge clk) begin
     if (rst) begin
