@@ -250,6 +250,14 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
+
+//div
+div div(.clk(clk),.rst(rst),
+    .Signed_div_i(div_sign),
+    .Opdata1_i(a),.Opdata2_i(b),
+    .start_i(div_start),.annul_i(div_refresh)
+    ,.result_o(div_result),.ready_o(div_ready)); 
+
 //ALU
 alu alu(
     .a(ALUsrcA),
