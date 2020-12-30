@@ -310,6 +310,29 @@ alu alu(
     .res(aluoutE)
 );
 
+// 乘法器
+wire [63:0] mul_result;
+mul mul(
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+    
+    .res(mul_result)
+);
+
+// 除法器
+wire [63:0] div_result;
+wire divstallE; //除法发出的stall信号
+divWrappper div(
+    .clk(clk), .rst(rst),
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+
+    .div_result(div_result),
+    .divstall(divstallE)
+);
+
 assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
@@ -321,25 +344,15 @@ mux2 #(5) mux_WA3(
 ); 
 
 // hilo
-//TODO 等乘除法器写好
-assign hi_iE = hidstE == 2'b01 ? 32'b0 :
-               hidstE == 2'b10 ? 32'b1 :
+assign hi_iE = hidstE == 2'b01 ? mul_result[63:32] :
+               hidstE == 2'b10 ? div_result[63:32] :
                hidstE == 2'b11 ? ALUsrcA1 :
                32'bx;
 
-assign lo_iE = lodstE == 2'b01 ? 32'b0 :
-               lodstE == 2'b10 ? 32'b1 :
+assign lo_iE = lodstE == 2'b01 ? mul_result[31:0] :
+               lodstE == 2'b10 ? div_result[31:0] :
                lodstE == 2'b11 ? ALUsrcA1 :
                32'bx;
-// assign hi_iE = hidstE == 2'b01 ? 乘法hi :
-//                hidstE == 2'b10 ? 除法余数 :
-//                hidstE == 2'b11 ? ALUsrcA1 :
-//                32'b0;
-
-// assign lo_iE = lodstE == 2'b01 ? 乘法lo :
-//                lodstE == 2'b10 ? 除法商 :
-//                lodstE == 2'b11 ? ALUsrcA1 :
-//                32'b0;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -466,6 +479,7 @@ hazard hazard(
 	.mfloE(mfloE),
     .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
     .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
+    .divstallE(divstallE),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),

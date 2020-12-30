@@ -112,8 +112,6 @@ controller c(
 	.alucontrolD(alucontrolD),
 	.mfhiD(mfhiD),
 	.mfloD(mfloD),
-	// .mthiD(mthiD),
-	// .mtloD(mtloD),
 	.hidstD(hidstD),
 	.lodstD(lodstD),
 	.hi_writeD(hi_writeD), 
