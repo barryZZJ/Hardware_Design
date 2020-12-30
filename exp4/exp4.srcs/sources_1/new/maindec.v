@@ -5,6 +5,12 @@ module main_decoder(input [5:0] op,
                     // input [4:0] rt, //暂时没用
                     output reg regdst,
                     output reg regwrite,
+                    output [1:0] hidst,
+                    output [1:0] lodst,
+                    output hi_write,
+                    output lo_write,
+                    output reg mfhi,
+                    output reg mflo,
 
                     output reg alusrc,
                     output reg branch,
@@ -16,17 +22,17 @@ module main_decoder(input [5:0] op,
                     output reg jal,
                     output reg jr,
                     output reg bal,
-                    output reg jump,
-                    output reg mfhi,
-                    output reg mflo,
-                    output reg mthi,
-                    output reg mtlo,
-                    output [1:0] hidst,
-                    output [1:0] lodst,
-                    output hi_write,
-                    output lo_write
+                    output reg jump
                     );
-reg mul, div;
+
+wire mul, div;
+assign mul = op == `EXE_NOP & (funct == `EXE_MULT | funct == `EXE_MULTU);
+assign div = op == `EXE_NOP & (funct == `EXE_DIV | funct == `EXE_DIVU);
+
+wire mthi, mtlo;
+assign mthi = op == `EXE_NOP & funct == `EXE_MTHI;
+assign mtlo = op == `EXE_NOP & funct == `EXE_MTLO;
+
 assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
                {mul, div, mthi} == 3'b010 ? 2'b10 :
                {mul, div, mthi} == 3'b001 ? 2'b11 :
@@ -55,32 +61,45 @@ assign lo_write = mul | div | mtlo;
         jump     <= 1'b0;
         mfhi     <= 1'b0;
         mflo     <= 1'b0;
-        mthi     <= 1'b0;
-        mtlo     <= 1'b0;
-        mul      <= 1'b0;
-        div      <= 1'b0;
         case (op)
+            ////////////////////////////////////////
             // R-type
             // 逻辑运算指令（非立即数部分）
             // 移位指令
             // 数据移动指令
             // 算术运算指令（非立即数部分）
+            ////////////////////////////////////////
             `EXE_NOP: begin
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
                 case (funct)
-                    `EXE_MULT: mul  <= 1'b1;
-                    `EXE_MULTU: mul  <= 1'b1;
-                    `EXE_DIV : div  <= 1'b1;
-                    `EXE_DIVU : div  <= 1'b1;
                     `EXE_MFHI: mfhi <= 1'b1;
                     `EXE_MFLO: mflo <= 1'b1;
-                    `EXE_MTHI: mthi <= 1'b1;
-                    `EXE_MTLO: mtlo <= 1'b1;
+                    `EXE_MTHI: regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
+                    `EXE_MTLO: regwrite <= 1'b0;
                 endcase
             end
 
+            ////////////////////////////////////////
+            // 逻辑运算指令（立即数部分）
+            ////////////////////////////////////////
+            `EXE_ANDI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
 
+            end
+            `EXE_XORI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
+            `EXE_LUI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
+            `EXE_ORI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
 
 
 
@@ -142,7 +161,6 @@ assign lo_write = mul | div | mtlo;
                 memwrite <= 1'b1;
                 memen    <= 1'b1;
             end
-        
 
             ////////////////////////////////////////
             //
@@ -152,45 +170,22 @@ assign lo_write = mul | div | mtlo;
 
 
             `EXE_ADDI: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
             `EXE_ADDIU: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
             `EXE_SLTI: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
             `EXE_SLTIU: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
-                regdst   <= 1'b0;
                 alusrc   <= 1'b1;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
 
-            
-
-            
             ////////////////////////////////////////
             //
             // 分支跳转指令
@@ -199,68 +194,26 @@ assign lo_write = mul | div | mtlo;
             // jr
             `EXE_JR: begin
                 jump     <= 1'b1;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-                memen    <= 1'b0;
-                jal      <= 1'b0;
                 jr       <= 1'b1;
-                bal      <= 1'b0;
             end
             // jalr : 需要写寄存器
             `EXE_JALR: begin
-                jump     <= 1'b0;
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-                memen    <= 1'b0;
-                jal      <= 1'b0;
                 jr       <= 1'b1;
-                bal      <= 1'b0;
             end
             // j
             `EXE_J: begin
                 jump     <= 1'b1;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-                memen    <= 1'b0;
-                jal      <= 1'b0;
-                jr       <= 1'b0;
-                bal      <= 1'b0;
             end
             // jal : 需要写寄存器
             `EXE_JAL: begin
                 jump     <= 1'b1;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
-                branch   <= 1'b0;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
-                memen    <= 1'b0;
                 jal      <= 1'b1;
-                jr       <= 1'b0;
-                bal      <= 1'b0;
             end
             // beq
             `EXE_BEQ: begin
-                jump     <= 1'b0;
-                regwrite <= 1'b0;
-                regdst   <= 1'b0;
-                alusrc   <= 1'b0;
                 branch   <= 1'b1;
-                memwrite <= 1'b0;
-                memtoreg <= 1'b0;
             end
             // bgtz
             // blez

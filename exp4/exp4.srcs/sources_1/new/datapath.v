@@ -15,18 +15,51 @@ module datapath(
     input regdstE,
     input jumpD,
     input branchD,
+    input mfhiE,
+    input mfloE,
+    input [1:0] hidstE, hidstW,
+    input [1:0] lodstE, lodstW,
+    input hi_writeM, hi_writeW,
+    input lo_writeM, lo_writeW,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
-    output wire stallF, stallD, flushE
+    output wire stallF, stallD, stallE, flushE
 );
+
+//////////////////////////////////////
+// for debug:
+wire [31:0] instrE, instrM, instrW;
+flopenrc #(32) DE_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallE),
+    .clear(flushE),
+    .d(instrD),
+    .q(instrE)
+);
+flopenr #(32) EM_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrE),
+    .q(instrM)
+);
+flopenr #(32) MF_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrM),
+    .q(instrW)
+);
+/////////////////////////////////////
     
 
 //分别为：pc+4, 多路选择分支之后的pc, 下一条真正要执行的指令的pc
 wire [31:0] pc_branched, pc_realnext;
 
 //ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
+wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -39,21 +72,28 @@ wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
+wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 
 // Mem phase
 wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] writeregM;
+wire [31:0] hi_iM, lo_iM; // hilo input
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
 
+// hilo寄存器
+wire [31:0] hi_iW, lo_iW; // hilo input
+wire [31:0] hi_oW, lo_oW; // hilo output
+
 // hazard
 wire [1:0] forwardAE, forwardBE;
+wire [2:0] forwardHLE;
 wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
@@ -142,6 +182,7 @@ assign pcsrcD = branchD & equalD;
 //符号拓展
 signext sign_extend(
     .a(instrD[15:0]),
+    .type(instrD[29:28]),
     .y(extend_immD)
 );
 
@@ -179,45 +220,50 @@ mux2 #(32) mux_pcnext(
 // decode to execution flops
 
 // rd1
-floprc #(32) DE_rd1 (
+flopenrc #(32) DE_rd1 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd1D),
     .q(rd1E)
 );
 
 // rd2
-floprc #(32) DE_rd2 (
+flopenrc #(32) DE_rd2 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd2D),
     .q(rd2E)
 );
 
 // rs, rt, rd
-floprc #(15) DE_rt_rd (
+flopenrc #(15) DE_rt_rd (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d({rsD, rtD, rdD}),
     .q({rsE, rtE, rdE})
 );
 
 // sa 
-floprc #(5) DE_sa (
+flopenrc #(5) DE_sa (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(saD),
     .q(saE)
 );
 
 // extend_imm
-floprc #(32) DE_imm (
+flopenrc #(32) DE_imm (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(extend_immD),
     .q(extend_immE)
@@ -232,7 +278,7 @@ mux3 #(32) mux_ALUAsrc(
     .b(resultW),
     .c(aluoutM),
     .s(forwardAE),
-    .y(ALUsrcA)
+    .y(ALUsrcA1)
 );
 // ALU, B端输入值，rd1E(00),resultW(01)，aluoutM(10)
 mux3 #(32) mux_ALUBsrc1(
@@ -250,17 +296,19 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
-
-//div
-div div(.clk(clk),.rst(rst),
-    .Signed_div_i(div_sign),
-    .Opdata1_i(a),.Opdata2_i(b),
-    .start_i(div_start),.annul_i(div_refresh)
-    ,.result_o(div_result),.ready_o(div_ready)); 
+// 如果是mfhi/lo指令，则ALU A应该输入hi/lo寄存器的值，B输入的是0，同时要考虑转发。
+assign ALUsrcA2 = forwardHLE == 3'b000 ? ALUsrcA1 :
+                  forwardHLE == 3'b001 ? hi_oW :
+                  forwardHLE == 3'b010 ? lo_oW :
+                  forwardHLE == 3'b011 ? hi_iM :
+                  forwardHLE == 3'b100 ? lo_iM :
+                  forwardHLE == 3'b101 ? hi_iW :
+                  forwardHLE == 3'b110 ? lo_iW :
+                  32'bx;
 
 //ALU
 alu alu(
-    .a(ALUsrcA),
+    .a(ALUsrcA2),
     .b(ALUsrcB2),
     .sa(saE),
     .op(alucontrolE),
@@ -268,16 +316,49 @@ alu alu(
     .res(aluoutE)
 );
 
+// 乘法器
+wire [63:0] mul_result;
+mul mul(
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+    
+    .res(mul_result)
+);
+
+// 除法器
+wire [63:0] div_result;
+wire divstallE; //除法发出的stall信号
+divWrapper div(
+    .clk(clk), .rst(rst),
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+
+    .div_result(div_result),
+    .divstall(divstallE)
+);
+
 assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
-
 mux2 #(5) mux_WA3(
 	.a(rdE), //instr[15:11]
 	.b(rtE), //instr[20:16]
 	.s(regdstE),
 	.y(writeregE)
 ); 
+
+// hilo
+assign hi_iE = hidstE == 2'b01 ? mul_result[63:32] :
+               hidstE == 2'b10 ? div_result[63:32] :
+               hidstE == 2'b11 ? ALUsrcA1 :
+               32'bx;
+
+assign lo_iE = lodstE == 2'b01 ? mul_result[31:0] :
+               lodstE == 2'b10 ? div_result[31:0] :
+               lodstE == 2'b11 ? ALUsrcA1 :
+               32'bx;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -308,6 +389,16 @@ flopenr #(5) EM_writereg (
     .d(writeregE),
     .q(writeregM)
 );
+
+// hilo
+flopenr #(64) EM_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iE, lo_iE}),
+    .q({hi_iM, lo_iM})
+);
+
 
 
 // ----------------------------------------
@@ -344,6 +435,15 @@ flopenr #(5) MW_writereg (
     .q(writeregW)
 );
 
+// hilo
+flopenr #(64) MW_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iM, lo_iM}),
+    .q({hi_iW, lo_iW})
+);
+
 // ----------------------------------------
 // Write Back 
 
@@ -353,6 +453,15 @@ mux2 #(32) mux_WD3(
 	.b(aluoutW),//来自ALU计算结果
 	.s(memtoregW),
 	.y(resultW)
+);
+
+//hilo寄存器
+hilo_reg hilo(
+    .clk(clk), .rst(rst), 
+    .weh(hi_writeW),
+    .wel(lo_writeW),
+    .hi(hi_iW), .lo(lo_iW),
+    .hi_o(hi_oW), .lo_o(lo_oW)
 );
 
 // ----------------------------------------
@@ -372,13 +481,20 @@ hazard hazard(
     .memtoregE(memtoregE),
     .memtoregM(memtoregM),
     .branchD(branchD),
+    .mfhiE(mfhiE),
+	.mfloE(mfloE),
+    .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
+    .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
+    .divstallE(divstallE),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),
+    .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
     .stallF(stallF),
     .stallD(stallD),
+    .stallE(stallE),
     .flushE(flushE)
 );
 

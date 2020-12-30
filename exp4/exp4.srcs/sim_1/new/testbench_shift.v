@@ -22,23 +22,23 @@
 
 module testbench_shift();
 
-reg clock_50;
+reg clk;
 reg rst;
 
 initial begin
-    clock_50 = 1'b0;
-    forever # 10 clock_50 = ~clock_50;
+    clk = 1'b0;
+    forever # 10 clk = ~clk;
 end
 
 initial begin
-    rst = 0;
-    #200 rst= 1;
+    rst = 1;
+    #200 rst= 0;
     #1000 $stop;
 end
 
 
-mycpuTop top(
-    .clk(clock_50),
+top dut(
+    .clk(clk),
     .rst(rst),
     .instr(), 
     .pc(),

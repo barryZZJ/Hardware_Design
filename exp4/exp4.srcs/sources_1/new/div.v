@@ -4,22 +4,22 @@
 module div(
 	input clk,rst,
 	input Signed_div_i,
-	input [31:0] Opdata1_i,Opdata2_i,
-	input start_i,annul_i,
+	input [31:0] Opdata1_i, Opdata2_i,
+	input start_i, annul_i,
 	output wire [63:0] result_o,
 	output reg ready_o
     );
-	//除法需要运算周期(对于小型数字会优化运算次数)
+	//除法�?要运算周�?(对于小型数字会优化运算次�?)
 	reg [4:0] div_max;
 	//除法周期计数
 	reg [4:0] div_count;
-	//状态
+	//状�??
 	reg [1:0] main_state;
 	//计算结果
 	reg [63:0] result;
-	//保留两个输入,避免在外界更新输入的时候导致异常
+	//保留两个输入,避免在外界更新输入的时�?�导致异�?
 	reg [31:0] in_num1,in_num2;
-	//被除数
+	//被除�?
 	reg [31:0] div_num1;
 	//除数
 	reg [31:0] div_num2;
@@ -42,8 +42,8 @@ module div(
 		//除使能信号期间的处理
 		else if(start_i)begin
 		case(main_state)
-		//一切就绪,等待除使能信号
-		//初始化数据,进入计算状态
+		//�?切就�?,等待除使能信�?
+		//初始化数�?,进入计算状�??
 		2'b00:begin
 			main_state<=2'b01;
 			if(Signed_div_i)begin
@@ -56,7 +56,7 @@ module div(
 				div_num1=Opdata1_i;
 				div_num2=Opdata2_i;		
 			end
-			//简化周期
+			//�?化周�?
 			div_max=div_num1[31]?5'd31:
 					div_num1[30]?5'd30:
 					div_num1[29]?5'd29:
@@ -90,9 +90,9 @@ module div(
 					div_num1[1]?5'd1:5'd0;
 			result={32'h00000000,(div_num1<<(5'd31-div_max))};
 			in_num1=Opdata1_i;
-			in_num2=Opdata2_i;
+			in_num2=Opdata2_i; 
 		end
-		//计算中,一共32周期
+		//计算�?,�?�?32周期
 		2'b01:begin
 			//整体左移
 			result = result << 1;
@@ -102,7 +102,7 @@ module div(
 				result[63:32]=result[63:32]-div_num2; 
 			end
 			else begin result[0]=0; end
-			//判断执行次数,达到指定次数后进入符号结算阶段
+			//判断执行次数,达到指定次数后进入符号结算阶�?
 			if(div_count==div_max)begin
 				main_state<=2'b10;
 			end
@@ -118,11 +118,11 @@ module div(
 			main_state<=2'b11;
 			ready_o<=1;
 		end
-		//等待取值
-		endcase		
+		//等待取�??
+		endcase
 		end
 		else if(annul_i)begin
-			//重置所有值
+			//重置�?有�??
 			div_max<=0;
 			div_count<=0;
 			main_state<=0;

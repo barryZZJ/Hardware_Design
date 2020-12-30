@@ -1,46 +1,37 @@
 `timescale 1ns / 1ps
 
-module hazard(
-              //fetch stage
-              output stallF, 
-
-              //decode stage
-              input [4:0] rsD,
+module hazard(input [4:0] rsD,
               input [4:0] rtD,
-              input branchD,
-              output forwardAD,
-              output forwardBD,
-              output stallD, 
-
-              //execute stage
               input [4:0] rsE,
               input [4:0] rtE,
               input [4:0] writeregE,
+              input [4:0] writeregM,
+              input [4:0] writeregW,
               input regwriteE,
+              input regwriteM,
+              input regwriteW,
               input memtoregE,
+              input memtoregM,
+              input branchD,
+              input mfhiE,
+              input mfloE,
+              input hi_writeM, hi_writeW,
+              input lo_writeM, lo_writeW,
               input divstallE,
+              
               output [1:0] forwardAE,
               output [1:0] forwardBE,
-              output [1:0] forward_hiloE,
-              output flushE,
-              output stallE,
+              output [2:0] forwardHLE,
+              output forwardAD,
+              output forwardBD,
+              output stallF, stallD, stallE, flushE
+              );
 
-              //mem stage
-              input [4:0] writeregM,
-              input regwriteM,
-              input hilowriteM,
-              input memtoregM,
-
-              //write back stage
-              input regwriteW,
-              input [4:0] writeregW
-     );
-
-
-
+// --------------------------------
+// æ•°æ®å†’é™©
 
 // forward
-//execute stageÊı¾İÇ°ÍÆ
+//execute stage
 //
 //
 assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
@@ -50,17 +41,24 @@ assign forwardBE = ((rtE != 0) && (rtE == writeregM) && regwriteM) ? 2'b10 :
                    ((rtE != 0) && (rtE == writeregW) && regwriteW) ? 2'b01 :
                    2'b00;
 
-//decode stageÊı¾İÇ°ÍÆ
+// æ£€æŸ¥hiloå†’é™©ï¼šå¦‚æœEé˜¶æ®µæ­£åœ¨è¯»hilo(mf)ï¼Œä¸”å‘ç°Mæˆ–Wé˜¶æ®µè¦å†™hilo(hi_write, lo_write)ï¼Œåˆ™æŠŠå¯¹åº”çš„hi_i, lo_iå‰æ¨ï¼Œå¦åˆ™ç›´æ¥è¾“å‡ºhi_o, lo_o
+assign forwardHLE = mfhiE ? (hi_writeM ? 3'b011 : 
+                             hi_writeW ? 3'b101 :
+                             3'b001) :
+                    mfloE ? (lo_writeM ? 3'b100 :
+                             lo_writeW ? 3'b110 :
+                             3'b010) :
+                    3'b000;
+
 assign forwardAD = ((rsD != 0) && (rsD == writeregM) && regwriteM);
 assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 
 
-//³ı·¨µ¼ÖÂÊı¾İÔİÍ££¬Ğ´ÔÚstall²¿·Ö
 // stall
 wire lwstall;
 //stallF, stallD, flushE;
 wire branchstall;
-assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; ////È¡×Öµ¼ÖÂµÄÊı¾İÔİÍ£(Ö»Í£Ò»¸öÖÜÆÚ,¶Áµ½Êı¾İÒÔºóÔÚWriteBack¶ÎÇ°ÍÆ)
+assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // åˆ¤æ–­ D é˜¶æ®µ rs æˆ– rt çš„å¯„å­˜å™¨å·æ˜¯ä¸æ˜¯Eé˜¶æ®µ lw æŒ‡ä»¤è¦å†™å…¥çš„å¯„å­˜å™¨å·ï¼›
 assign branchstall = branchD && regwriteE && 
                        (writeregE == rsD || writeregE == rtD) ||
                        branchD && memtoregM &&
@@ -71,7 +69,6 @@ assign stallD = lwstall || branchstall || divstallE;
 assign stallE = divstallE;
 
 assign flushE = lwstall || branchstall;
-assign flushM = divstallE;
 
 
 
