@@ -29,8 +29,8 @@ module hazard(input [4:0] rsD,
               output [2:0] forwardHLE,
               output forwardAD,
               output forwardBD,
-              output wire stallF, stallD, flushE,
-              output wire branchFlushD
+              output wire stallF, stallD, flushE
+              // output wire branchFlushD
               );
 
 // --------------------------------
@@ -69,10 +69,10 @@ assign branchstall = branchD && regwriteE &&
 
 assign stallF = lwstall || branchstall;
 assign stallD = lwstall || branchstall;
-// assign flushE = lwstall || branchstall;
+assign flushE = lwstall || branchstall;
 // 可能有bug
-assign #1 flushE = lwstall | jumpD | branchD;
+// assign #1 flushE = lwstall | jumpD | branchD;
 //
-assign branchFlushD = (branchD && !balD);
+// assign branchFlushD = (branchD && !balD);
 
 endmodule

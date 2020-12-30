@@ -24,10 +24,7 @@ mips mips(
 
 inst_ram inst_ram(
 	.clka(~clk),
-	.ena(1'b1),      // input wire ena
-	.wea(4'b0000),      // input wire [3 : 0] wea
-	.addra({2'b0, pc[7:2]}),
-	.dina(32'b0),    // input wire [31 : 0] dina
+	.addra(pc),
 	.douta(instr)
 );
 
@@ -36,8 +33,8 @@ data_ram data_ram(
 	.ena(1'b1),
 	.wea({4{memwrite}}),
 	.addra(dataadr),
-	.dina(writedata),	 // ÒªÐ´Èë´æ´¢Æ÷ÖÐµÄÊý¾Ý
-	.douta(readdata)	 // ´Ó´æ´¢Æ÷ÖÐ¶Á³öµÄÊý¾Ý
+	.dina(writedata),	 // ÒªÐ´ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
+	.douta(readdata)	 // ï¿½Ó´æ´¢ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 );
 
 endmodule

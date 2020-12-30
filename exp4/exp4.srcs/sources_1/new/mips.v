@@ -62,7 +62,7 @@ wire hi_writeW, lo_writeW;
 // hazard
 wire stallF, stallD, flushE;
 
-wire branchFlushD;
+// wire branchFlushD;
 
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
@@ -79,7 +79,7 @@ flopenrc #(32) FD_instr (
 floprc #(25) DE_signals (
     .clk(clk),
     .rst(rst),
-    .clear(flushE || branchFlushD), // 添加
+    .clear(flushE),
     .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
     .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
 );
@@ -167,8 +167,8 @@ datapath dp(
     .jalE(jalE),
     .jrE(jrE),
 	.balE(balE),
-    .balD(balD),
-	.branchFlushD(branchFlushD)
+    .balD(balD)
+	// .branchFlushD(branchFlushD)
 );
 	
 endmodule

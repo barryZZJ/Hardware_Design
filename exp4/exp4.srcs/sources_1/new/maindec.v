@@ -162,6 +162,7 @@ assign lo_write = mul | div | mtlo;
             end
             // jal : 需要写寄存器
             `EXE_JAL: begin
+                regwrite <= 1'b1;
                 jump     <= 1'b1;
                 jal      <= 1'b1;
             end
@@ -205,12 +206,14 @@ assign lo_write = mul | div | mtlo;
                     // bltzal
                     // if rs < 0 then branch
                     `EXE_BLTZAL: begin
+                        regwrite <= 1'b1;
                         branch   <= 1'b1;
                         bal      <= 1'b1;
                     end
                     // bgezal
                     // if rs >= 0 then branch
                     `EXE_BGEZAL: begin
+                        regwrite <= 1'b1;
                         branch   <= 1'b1;
                         bal      <= 1'b1;
                     end

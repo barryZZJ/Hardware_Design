@@ -46,6 +46,7 @@ module funcTest(
     initial begin
         rst = 1;
         #200 rst= 0;
-        #1000 $stop;
+        #1500 $stop;
     end
+
 endmodule

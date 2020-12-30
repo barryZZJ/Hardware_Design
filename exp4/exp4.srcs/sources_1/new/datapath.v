@@ -31,8 +31,8 @@ module datapath(
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
-    output wire stallF, stallD, flushE,
-    output wire branchFlushD
+    output wire stallF, stallD, flushE
+    // output wire branchFlushD
 );
 
 //////////////////////////////////////
@@ -147,7 +147,7 @@ flopenrc #(32) FD_pc_4 (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(1'b0),
     .d(pc_4F),
     .q(pc_4D)
 );
@@ -212,6 +212,8 @@ mux2 #(32) mux_equalsrc2(
 );
 
 // assign equalD = (equalsrc1 == equalsrc2);
+// equalD : compare模块判断是否满足跳转条件
+// branchD
 assign pcsrcD = branchD & equalD;
 
 //符号拓展
@@ -421,7 +423,7 @@ flopenr #(32) EM_aluout (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d(aluoutE),
+    .d(aluout2E),
     .q(aluoutM)
 );
 
@@ -549,8 +551,8 @@ hazard hazard(
     .flushE(flushE),
     // new
     .jumpD(jumpD),
-    .balD(balD),
-    .branchFlushD(branchFlushD)
+    .balD(balD)
+    //.branchFlushD(branchFlushD)
 );
 
 
