@@ -26,12 +26,12 @@ module main_decoder(input [5:0] op,
                     );
 
 wire mul, div;
-assign mul = op == `EXE_MULT | op == `EXE_MULTU;
-assign div = op == `EXE_DIV | op == `EXE_DIVU;
+assign mul = op == `EXE_NOP & (funct == `EXE_MULT | funct == `EXE_MULTU);
+assign div = op == `EXE_NOP & (funct == `EXE_DIV | funct == `EXE_DIVU);
 
 wire mthi, mtlo;
-assign mthi = op == `EXE_MTHI;
-assign mtlo = op == `EXE_MTLO;
+assign mthi = op == `EXE_NOP & funct == `EXE_MTHI;
+assign mtlo = op == `EXE_NOP & funct == `EXE_MTLO;
 
 assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
                {mul, div, mthi} == 3'b010 ? 2'b10 :
@@ -76,10 +76,7 @@ assign lo_write = mul | div | mtlo;
                     `EXE_MFHI: mfhi <= 1'b1;
                     `EXE_MFLO: mflo <= 1'b1;
                     `EXE_MTHI: regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
-                    `EXE_MTLO: begin
-                        mtlo <= 1'b1;
-                        regwrite <= 1'b0;
-                    end
+                    `EXE_MTLO: regwrite <= 1'b0;
                 endcase
             end
 

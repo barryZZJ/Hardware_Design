@@ -323,7 +323,7 @@ mul mul(
 // 除法器
 wire [63:0] div_result;
 wire divstallE; //除法发出的stall信号
-divWrappper div(
+divWrapper div(
     .clk(clk), .rst(rst),
     .a(ALUsrcA2),
     .b(ALUsrcB2),

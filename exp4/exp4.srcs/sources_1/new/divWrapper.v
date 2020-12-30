@@ -26,39 +26,44 @@ module divWrapper(input clk, rst,
     );
     
     always@(*) begin
-        case(op)
-            
-            //有符号除法
-            `EXE_DIV_OP: begin
-                div_sign <= 1;
-                //状态机
-                if (!div_ready) begin
-                    div_start   <= 1;
-                    divstall    <= 1;
-                    div_refresh <= 0;
-                end else if (div_ready) begin
-                    div_start   <= 0;
-                    divstall    <= 0;
-                    div_refresh <= 1;
+        if (rst) begin
+            div_start   <= 1'b0;
+            div_sign    <= 1'b0;
+            div_refresh <= 1'b0;
+            divstall    <= 1'b0;
+        end else begin
+            case(op)
+                //有符号除法
+                `EXE_DIV_OP: begin
+                    div_sign <= 1;
+                    //状态机
+                    if (!div_ready) begin
+                        div_start   <= 1;
+                        divstall    <= 1;
+                        div_refresh <= 0;
+                    end else if (div_ready) begin
+                        div_start   <= 0;
+                        divstall    <= 0;
+                        div_refresh <= 1;
+                    end
                 end
-            end
 
-            //无符号除法
-            `EXE_DIVU_OP:begin
-                div_sign <= 0;
-                //状态机
-                if (!div_ready) begin
-                    div_start   <= 1;
-                    divstall    <= 1;
-                    div_refresh <= 0;
-                end else if (div_ready) begin
-                    div_start   <= 0;
-                    divstall    <= 0;
-                    div_refresh <= 1;
+                //无符号除法
+                `EXE_DIVU_OP:begin
+                    div_sign <= 0;
+                    //状态机
+                    if (!div_ready) begin
+                        div_start   <= 1;
+                        divstall    <= 1;
+                        div_refresh <= 0;
+                    end else if (div_ready) begin
+                        div_start   <= 0;
+                        divstall    <= 0;
+                        div_refresh <= 1;
+                    end
                 end
-            end
-        endcase
-        
+            endcase
+        end
     end
     
 endmodule

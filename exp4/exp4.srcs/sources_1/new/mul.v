@@ -17,14 +17,20 @@ always @(*) begin
         res <= a * b;
     else if (op == `EXE_MULT_OP) begin
         // 有符号
-        if (!a[31] & !b[31])
+        if (a[31] == 1'b1 & b[31] == 1'b1)
+            // a负，b负
             res <= nega * negb;
-        else if (a[31] & !b[31])
+        else if (a[31] == 1'b0 & b[31] == 1'b1)
+            // a正，b负
             res <= -(a * negb);
-        else if (!a[31] & b[31])
-            res <= -(nega * negb);
+        else if (a[31] == 1'b1 & b[31] == 1'b0)
+            // a负，b正
+            res <= -(nega * b);
         else
+            // a正，b正
             res <= a * b;
+    end else begin
+        res <= 64'bx;
     end
 end
 
