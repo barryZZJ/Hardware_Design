@@ -12,7 +12,7 @@ module hazard(input [4:0] rsD,
               input regwriteW,
               input memtoregE,
               input memtoregM,
-              
+
 
               // 分支跳转部分
               input branchD,
@@ -21,6 +21,7 @@ module hazard(input [4:0] rsD,
 
               output [1:0] forwardAE,
               output [1:0] forwardBE,
+              output [2:0] forwardHLE,
               output forwardAD,
               output forwardBD,
               output wire stallF, stallD, flushE,
@@ -46,7 +47,7 @@ assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 wire lwstall;
 //stallF, stallD, flushE;
 wire branchstall;
-assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // . �ж� decode �׶� rs �� rt �ĵ�ַ�Ƿ��� lw ָ��Ҫд��ĵ�ַ��
+assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; 
 assign branchstall = branchD && regwriteE && 
                        (writeregE == rsD || writeregE == rtD) ||
                        branchD && memtoregM &&

@@ -34,7 +34,7 @@ module datapath(
 wire [31:0] pc_branched, pc_realnext;
 
 //ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
+wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, ALUsrcB3, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -50,19 +50,26 @@ wire [ 5:0] opD;
 // Execute phase
 wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
+wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 
 // Mem phase
 wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] writeregM;
+wire [31:0] hi_iM, lo_iM; // hilo input
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
 
+// hilo寄存器
+wire [31:0] hi_iW, lo_iW; // hilo input
+wire [31:0] hi_oW, lo_oW; // hilo output
+
 // hazard
 wire [1:0] forwardAE, forwardBE;
+wire [2:0] forwardHLE;
 wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
@@ -177,6 +184,7 @@ assign pcsrcD = branchD & equalD;
 //符号拓展
 signext sign_extend(
     .a(instrD[15:0]),
+    .type(instrD[29:28]),
     .y(extend_immD)
 );
 
@@ -315,7 +323,7 @@ eqcmp eqcmp(
 //ALU
 alu alu(
     .a(ALUsrcA),
-    .b(ALUsrcB2),
+    .b(ALUsrcB3),
     .sa(saE),
     .op(alucontrolE),
     
@@ -325,13 +333,24 @@ alu alu(
 assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
-
 mux2 #(5) mux_WA3(
 	.a(rdE), //instr[15:11]
 	.b(rtE), //instr[20:16]
 	.s(regdstE),
 	.y(writeregE)
 ); 
+
+// hilo
+//TODO 等乘除法器写好
+// assign hi_iE = hidstE == 2'b01 ? 乘法hi :
+//                hidstE == 2'b10 ? 除法余数 :
+//                hidstE == 2'b11 ? rd2E  :
+//                32'b0;
+
+// assign lo_iE = lodstE == 2'b01 ? 乘法lo :
+//                lodstE == 2'b10 ? 除法商 :
+//                lodstE == 2'b11 ? rd2E  :
+//                32'b0;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -362,6 +381,16 @@ flopenr #(5) EM_writereg (
     .d(writereg2E),
     .q(writeregM)
 );
+
+// hilo
+flopenr #(64) EM_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iE, lo_iE}),
+    .q({hi_iM, lo_iM})
+);
+
 
 
 // ----------------------------------------
@@ -398,6 +427,15 @@ flopenr #(5) MW_writereg (
     .q(writeregW)
 );
 
+// hilo
+flopenr #(64) MW_hilo (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d({hi_iM, lo_iM}),
+    .q({hi_iW, lo_iW})
+);
+
 // ----------------------------------------
 // Write Back 
 
@@ -408,6 +446,15 @@ mux2 #(32) mux_WD3(
 	.s(memtoregW),
 	.y(resultW)
 );
+
+//hilo寄存器
+/*hilo_reg hilo(
+    .clk(clk), .rst(rst), 
+    .weh(hi_writeW),
+    .wel(lo_writeW),
+    .hi(hi_iW), .lo(lo_iW),
+    .hi_o(hi_oW), .lo_o(lo_oW)
+);*/
 
 // ----------------------------------------
 // hazard
@@ -426,9 +473,12 @@ hazard hazard(
     .memtoregE(memtoregE),
     .memtoregM(memtoregM),
     .branchD(branchD),
+    .mfhiE(mfhiE),
+	.mfloE(mfloE),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),
+    .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
     .stallF(stallF),

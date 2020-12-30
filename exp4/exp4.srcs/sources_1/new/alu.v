@@ -70,19 +70,16 @@ module alu #(WIDTH = 32)
             // bgez
             // bgezal
 
-            default: begin
-                res <= 8'b0000_0000;
-            end
 
+
+            `EXE_ADD_OP : res <= a + b;
+            `EXE_SUB_OP : res <= a - b;
+            `EXE_SLT_OP : res <= (a<b) ? 1 : 0;
+            default: 
+                res <= 8'b0;
         endcase
     end
-/*assign res = (op == `EXE_AND_OP) ? a & b:
-             (op == `EXE_OR_OP) ? a | b:
-             (op == `EXE_ADD_OP) ? a + b:
-             (op == `EXE_SUB_OP) ? a - b:
-             (op == `EXE_SLT_OP) ? (a<b) ? 1 : 0 :
-             8'b0;
-*/
+
 assign zero = ((a-b) == 0);
     
 endmodule

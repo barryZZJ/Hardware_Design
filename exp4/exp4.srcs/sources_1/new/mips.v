@@ -31,22 +31,33 @@ module mips(
 	
 // Decode phase
 wire [31:0] instrD;
-wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD;
+wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
+//  mthiD, mtloD;
+wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
 wire memenD, jalD, jrD, balD;
 
 
 // Execution phase
-wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE;
+wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
+//  mthiE, mtloE;
+wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
 wire memenE, jalE, jrE, balE;
 
+
 // Mem phase
-wire regwriteM, memtoregM; 
+wire regwriteM, memtoregM;
+//  mfhiM, mfloM, mthiM, mtloM; 
+wire [1:0] hidstM, lodstM;
+wire hi_writeM, lo_writeM;
 //memwriteM;
 
 // WB phase
 wire regwriteW, memtoregW;
+//  mfhiW, mfloW, mthiW, mtloW;
+wire [1:0] hidstW, lodstW;
+wire hi_writeW, lo_writeW;
 
 // hazard
 wire stallF, stallD, flushE;
@@ -73,21 +84,21 @@ floprc #(17) DE_signals (
 );
 
 // exe to Mem flop for signals
-flopenr #(3) EM_signals (
+flopenr #(7) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteE, memtoregE, memwriteE}),
-    .q({regwriteM, memtoregM, memwriteM})
+    .d({regwriteE, memtoregE, memwriteE, hidstE, lodstE, hi_writeE, lo_writeE}),
+    .q({regwriteM, memtoregM, memwriteM, hidstM, lodstM, hi_writeM, lo_writeM})
 );
 
 // mem to wb flop for signals
-flopenr #(2) MW_signals (
+flopenr #(6) MW_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteM, memtoregM}),
-    .q({regwriteW, memtoregW})
+    .d({regwriteM, memtoregM, hidstM, lodstM, hi_writeM, lo_writeM}),
+    .q({regwriteW, memtoregW, hidstW, lodstW, hi_writeW, lo_writeW})
 );
 
 controller c(
@@ -125,6 +136,13 @@ datapath dp(
 	.regdstE(regdstE),
 	.jumpD(jumpD),
 	.branchD(branchD),
+	//.mfhiE(mfhiE),
+	//.mfloE(mfloE),
+	// .mthiE(mthiE), .mthiW(mthiW),
+	// .mtloE(mtloE), .mtloW(mtloW),
+	//.hidstE(hidstE), .hidstW(hidstW),
+	//.lodstE(lodstE), .lodstW(lodstW),
+	//.hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
 	
 	.pc(pc),
 	.pcsrcD(pcsrcD),

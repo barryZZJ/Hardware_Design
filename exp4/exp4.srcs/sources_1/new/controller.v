@@ -3,6 +3,7 @@
 module controller(input [5:0] op,
                   input [5:0] funct,
                   input [4:0] rt,
+
                   output regwriteD,
                   output memtoregD,
                   output memwriteD,
@@ -15,6 +16,7 @@ module controller(input [5:0] op,
                   output jalD,
                   output jrD,
                   output balD
+
                   );
 
 
@@ -23,9 +25,12 @@ main_decoder main_decoder(
     .op(op),
     .funct(funct),
     .rt(rt),
+
     .regdst(regdstD),
     .regwrite(regwriteD),
+
     .alusrc(alusrcD),
+
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
     .branch(branchD),
