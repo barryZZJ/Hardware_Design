@@ -69,7 +69,7 @@ flopenrc #(32) FD_instr (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(1'b0),
     .d(instr),
     .q(instrD)
 );
@@ -148,11 +148,12 @@ datapath dp(
 	.branchD(branchD),
 	.mfhiE(mfhiE),
 	.mfloE(mfloE),
-	// .mthiE(mthiE), .mthiW(mthiW),
-	// .mtloE(mtloE), .mtloW(mtloW),
 	.hidstE(hidstE), .hidstW(hidstW),
 	.lodstE(lodstE), .lodstW(lodstW),
-	.hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
+	.hi_writeM(hi_writeM), 
+	.hi_writeW(hi_writeW), 
+	.lo_writeM(lo_writeM),
+	.lo_writeW(lo_writeW),
 	
 	.pc(pc),
 	.pcsrcD(pcsrcD),

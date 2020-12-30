@@ -61,11 +61,14 @@ assign lo_write = mul | div | mtlo;
         mul      <= 1'b0;
         div      <= 1'b0;
         case (op)
+            ////////////////////////////////////////
             // R-type
             // 逻辑运算指令（非立即数部分）
             // 移位指令
             // 数据移动指令
             // 算术运算指令（非立即数部分）
+            // 分支跳转 jr and jalr
+            ////////////////////////////////////////
             `EXE_NOP: begin
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
@@ -82,25 +85,39 @@ assign lo_write = mul | div | mtlo;
                         mtlo <= 1'b1;
                         regwrite <= 1'b0;
                     end
+                    `EXE_JR: begin
+                        jump     <= 1'b1;
+                        jr       <= 1'b1;
+                    end
+                    `EXE_JALR: begin
+                        regwrite <= 1'b1;
+                        //regdst   <= 1'b1;
+                        jr       <= 1'b1;
+                    end
+
+
                 endcase
             end
 
+            ////////////////////////////////////////
             // 逻辑运算指令（立即数部分）
+            ////////////////////////////////////////
             `EXE_ANDI: begin
                 regwrite <= 1'b1;
-                regdst   <= 1'b1;
+                alusrc   <= 1'b1;
+
             end
             `EXE_XORI: begin
                 regwrite <= 1'b1;
-                regdst   <= 1'b1;
+                alusrc   <= 1'b1;
             end
             `EXE_LUI: begin
                 regwrite <= 1'b1;
-                regdst   <= 1'b1;
+                alusrc   <= 1'b1;
             end
             `EXE_ORI: begin
                 regwrite <= 1'b1;
-                regdst   <= 1'b1;
+                alusrc   <= 1'b1;
             end
 
 
@@ -139,17 +156,6 @@ assign lo_write = mul | div | mtlo;
             // 分支跳转指令
             //
             ////////////////////////////////////////
-            // jr
-            `EXE_JR: begin
-                jump     <= 1'b1;
-                jr       <= 1'b1;
-            end
-            // jalr : 需要写寄存器
-            `EXE_JALR: begin
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;
-                jr       <= 1'b1;
-            end
             // j
             `EXE_J: begin
                 jump     <= 1'b1;
@@ -159,16 +165,16 @@ assign lo_write = mul | div | mtlo;
                 jump     <= 1'b1;
                 jal      <= 1'b1;
             end
-            // beq
-            // if rs = rt then branch
-            `EXE_BEQ: begin
-                jal      <= 1'b1;
-                branch   <= 1'b1;
-            end
-
+            
             // 所有分支指令的第0-15bit存储的都是offset
             // 如果发生转移，那么将offset左移2位，并符号扩展至32位
             // 然后与延迟槽指令的地址相加，加法的结果就是转移目的地址
+            // beq
+            // if rs = rt then branch
+            `EXE_BEQ: begin
+                //jal      <= 1'b1;
+                branch   <= 1'b1;
+            end
             // bgtz
             // if rs > 0 then branch
             `EXE_BGTZ: begin
@@ -184,27 +190,31 @@ assign lo_write = mul | div | mtlo;
             `EXE_BNE: begin
                 branch   <= 1'b1;
             end
-            // bltz
-            // if rs < 0 then branch
-            `EXE_BLTZ: begin
-                branch   <= 1'b1;
-            end
-            // bgez
-            // if rs >= 0 then branch
-            `EXE_BGEZ: begin
-                branch   <= 1'b1;
-            end
-            // bltzal
-            // if rs < 0 then branch
-            `EXE_BLTZAL: begin
-                branch   <= 1'b1;
-                bal      <= 1'b1;
-            end
-            // bgezal
-            // if rs >= 0 then branch
-                `EXE_BGEZAL: begin
-                branch   <= 1'b1;
-                bal      <= 1'b1;
+            `EXE_REGIMM_INST: begin
+                case (rt)
+                    // bltz
+                    // if rs < 0 then branch
+                    `EXE_BLTZ: begin
+                        branch   <= 1'b1;
+                    end
+                    // bgez
+                    // if rs >= 0 then branch
+                    `EXE_BGEZ: begin
+                        branch   <= 1'b1;
+                    end
+                    // bltzal
+                    // if rs < 0 then branch
+                    `EXE_BLTZAL: begin
+                        branch   <= 1'b1;
+                        bal      <= 1'b1;
+                    end
+                    // bgezal
+                    // if rs >= 0 then branch
+                    `EXE_BGEZAL: begin
+                        branch   <= 1'b1;
+                        bal      <= 1'b1;
+                    end
+                endcase
             end
             default: begin
                 

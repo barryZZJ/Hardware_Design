@@ -19,6 +19,12 @@ module alu #(WIDTH = 32)
             // 将 16 位立即数 imm 写入寄存器 rt 的高 16 位，寄存器 rt 的低 16 位置 0
             `EXE_LUI_OP : res <= {b[15:0], 16'b0};
             `EXE_ORI_OP : res <= a | b;
+            // 数据移动指令
+            `EXE_MFHI_OP: res <= a + b;
+            `EXE_MFLO_OP: res <= a + b;
+            // 存hilo寄存器不用其他计算
+            `EXE_MTHI_OP : res <= 32'b0;
+            `EXE_MTLO_OP : res <= 32'b0;
 
             ////////////////////////////////////////
             //

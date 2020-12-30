@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="520229fs"></ZoomStartTime>
-      <ZoomEndTime time="685830fs"></ZoomEndTime>
-      <Cursor1Time time="242200fs"></Cursor1Time>
+      <ZoomStartTime time="91700fs"></ZoomStartTime>
+      <ZoomEndTime time="178901fs"></ZoomEndTime>
+      <Cursor1Time time="286700fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="193"></NameColumnWidth>
-      <ValueColumnWidth column_width="108"></ValueColumnWidth>
+      <ValueColumnWidth column_width="93"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="21" />
+   <WVObjectSize size="17" />
    <wvobject fp_name="/funcTest/dut/mips/FD_instr/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -31,6 +31,14 @@
    <wvobject fp_name="/funcTest/dut/mips/FD_instr/q" type="array">
       <obj_property name="ElementShortName">q[31:0]</obj_property>
       <obj_property name="ObjectShortName">q[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/funcTest/dut/mips/FD_instr/en" type="logic">
+      <obj_property name="ElementShortName">en</obj_property>
+      <obj_property name="ObjectShortName">en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/funcTest/dut/mips/FD_instr/clear" type="logic">
+      <obj_property name="ElementShortName">clear</obj_property>
+      <obj_property name="ObjectShortName">clear</obj_property>
    </wvobject>
    <wvobject fp_name="/funcTest/dut/mips/dp/regfile/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
@@ -68,41 +76,71 @@
       <obj_property name="ElementShortName">rd2[31:0]</obj_property>
       <obj_property name="ObjectShortName">rd2[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/regfile/rf" type="array">
-      <obj_property name="ElementShortName">rf[31:0][31:0]</obj_property>
-      <obj_property name="ObjectShortName">rf[31:0][31:0]</obj_property>
+   <wvobject fp_name="/funcTest/dut/mips/dp/regfile/rf[1]" type="array">
+      <obj_property name="ElementShortName">[1][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[1][31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/alu/a" type="array">
-      <obj_property name="ElementShortName">a[31:0]</obj_property>
-      <obj_property name="ObjectShortName">a[31:0]</obj_property>
+   <wvobject fp_name="group3653" type="group">
+      <obj_property name="label">ALU</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/funcTest/dut/mips/dp/alu/a" type="array">
+         <obj_property name="ElementShortName">a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/alu/b" type="array">
+         <obj_property name="ElementShortName">b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/alu/op" type="array">
+         <obj_property name="ElementShortName">op[7:0]</obj_property>
+         <obj_property name="ObjectShortName">op[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/alu/sa" type="array">
+         <obj_property name="ElementShortName">sa[4:0]</obj_property>
+         <obj_property name="ObjectShortName">sa[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/alu/res" type="array">
+         <obj_property name="ElementShortName">res[31:0]</obj_property>
+         <obj_property name="ObjectShortName">res[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/c/aludec/op" type="array">
+         <obj_property name="ElementShortName">op[5:0]</obj_property>
+         <obj_property name="ObjectShortName">op[5:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/c/aludec/funct" type="array">
+         <obj_property name="ElementShortName">funct[5:0]</obj_property>
+         <obj_property name="ObjectShortName">funct[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/c/aludec/alucontrol" type="array">
+         <obj_property name="ElementShortName">alucontrol[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrol[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/alu/b" type="array">
-      <obj_property name="ElementShortName">b[31:0]</obj_property>
-      <obj_property name="ObjectShortName">b[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/alu/op" type="array">
-      <obj_property name="ElementShortName">op[7:0]</obj_property>
-      <obj_property name="ObjectShortName">op[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/alu/sa" type="array">
-      <obj_property name="ElementShortName">sa[4:0]</obj_property>
-      <obj_property name="ObjectShortName">sa[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/dp/alu/res" type="array">
-      <obj_property name="ElementShortName">res[31:0]</obj_property>
-      <obj_property name="ObjectShortName">res[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/c/aludec/op" type="array">
-      <obj_property name="ElementShortName">op[5:0]</obj_property>
-      <obj_property name="ObjectShortName">op[5:0]</obj_property>
-      <obj_property name="Radix">BINARYRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/c/aludec/funct" type="array">
-      <obj_property name="ElementShortName">funct[5:0]</obj_property>
-      <obj_property name="ObjectShortName">funct[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/funcTest/dut/mips/c/aludec/alucontrol" type="array">
-      <obj_property name="ElementShortName">alucontrol[7:0]</obj_property>
-      <obj_property name="ObjectShortName">alucontrol[7:0]</obj_property>
+   <wvobject fp_name="group3659" type="group">
+      <obj_property name="label">cmp</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/funcTest/dut/mips/dp/eqcmp/a" type="array">
+         <obj_property name="ElementShortName">a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/eqcmp/b" type="array">
+         <obj_property name="ElementShortName">b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/eqcmp/op" type="array">
+         <obj_property name="ElementShortName">op[5:0]</obj_property>
+         <obj_property name="ObjectShortName">op[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/eqcmp/rt" type="array">
+         <obj_property name="ElementShortName">rt[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rt[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/funcTest/dut/mips/dp/eqcmp/y" type="logic">
+         <obj_property name="ElementShortName">y</obj_property>
+         <obj_property name="ObjectShortName">y</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

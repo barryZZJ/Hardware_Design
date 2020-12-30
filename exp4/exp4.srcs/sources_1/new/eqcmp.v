@@ -32,8 +32,8 @@ module eqcmp(
                 (op == `EXE_BGTZ) ? ((a[31] == 1'b0) && (a != `ZeroWord)):
                 (op == `EXE_BLEZ) ? ((a[31] == 1'b1) || (a == `ZeroWord)):
                 ((op == `EXE_REGIMM_INST) && ((rt == `EXE_BGEZ) || (rt == `EXE_BGEZAL)))
-                 ? ((a[31] == 1'b0) && (a == `ZeroWord)):
+                 ? (a[31] == 1'b0):
                 ((op == `EXE_REGIMM_INST) && ((rt == `EXE_BLTZ) || (rt == `EXE_BLTZAL)))
-                 ? ((a[31] == 1'b1) || (a != `ZeroWord)):
+                 ? (a[31] == 1'b1):
                 1'b0;
 endmodule
