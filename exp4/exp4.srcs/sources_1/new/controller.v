@@ -12,10 +12,20 @@ module controller(input [5:0] op,
                   output alusrcD,
                   output regdstD,
                   output jumpD,
+                  
                   output memenD,
                   output jalD,
                   output jrD,
-                  output balD
+                  output balD,
+                  
+                  output mfhiD,
+                  output mfloD,
+                //   output mthiD,
+                //   output mtloD,
+                  output [1:0] hidstD,
+                  output [1:0] lodstD,
+                  output hi_writeD,
+                  output lo_writeD
 
                   );
 
@@ -38,7 +48,16 @@ main_decoder main_decoder(
     .memen(memenD),
     .jal(jalD),
     .jr(jrD),
-    .bal(balD)
+    .bal(balD),
+    .mfhi(mfhiD),
+	.mflo(mfloD),
+	// .mthi(mthiD),
+	// .mtlo(mtloD),
+	.hidst(hidstD),
+	.lodst(lodstD),
+    .hi_write(hi_writeD), 
+	.lo_write(lo_writeD)
+    
     );
 
 

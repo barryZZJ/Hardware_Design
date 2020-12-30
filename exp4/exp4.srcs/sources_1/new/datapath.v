@@ -22,12 +22,45 @@ module datapath(
     input balD,
     input balE,
 
-    
+    input mfhiE,
+    input mfloE,
+    // input mthiE, mthiW, 
+    // input mtloE, mtloW, 
+    input [1:0] hidstE, hidstW,
+    input [1:0] lodstE, lodstW,
+    input hi_writeW, lo_writeW,
+
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
     output wire stallF, stallD, flushE,
     output wire branchFlushD
 );
+
+//////////////////////////////////////
+// for debug:
+wire [31:0] instrE, instrM, instrW;
+floprc #(32) DE_instr (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(instrD),
+    .q(instrE)
+);
+flopenr #(32) EM_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrE),
+    .q(instrM)
+);
+flopenr #(32) MF_instr (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(instrM),
+    .q(instrW)
+);
+/////////////////////////////////////
     
 
 //分别为：pc+4, 多路选择分支之后的pc, 下一条真正要执行的指令的pc
@@ -48,10 +81,11 @@ wire [ 5:0] opD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] pc_4E, rd1E, rd2E, extend_immE, aluoutE, writedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
+wire [31:0] pcplus8E;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -218,21 +252,13 @@ mux2 #(32) mux_pcnext(
 	.y(pc_realnext)
 );
 
-// jump and branch
-
-// 控制是否将返回地址写入31号寄存器
-mux2 #(5) wrmux2 (
-	.a(5'b11111),
-	.b(writeregE),
-	.s(jalE | balE),
-	.y(writereg2E)
-);
-// 控制被写数据是否为PC+8
-mux2 #(32) wrmux3 (
-	.a(pcplus8E),
-	.b(aluoutE),
-	.s(jalE | jrE | balE),
-	.y(aluout2E)
+// branch指令判断
+eqcmp eqcmp(
+    .a(equalsrc1),
+    .b(equalsrc2),
+    .op(opD),
+    .rt(rtD),
+    .y(equalD)
 );
 
 
@@ -284,6 +310,14 @@ floprc #(32) DE_imm (
     .q(extend_immE)
 );
 
+floprc #(32) DE_pc (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(pc_8D),
+    .q(pcplus8E)
+);
+
 // ----------------------------------------
 // Exe 
 
@@ -311,13 +345,23 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
-// branch指令判断
-eqcmp eqcmp(
-    .a(equalsrc1),
-    .b(equalsrc2),
-    .op(opD),
-    .rt(rtD),
-    .y(equalD)
+
+// jump and branch
+
+// 控制是否将返回地址写入31号寄存器
+mux2 #(5) wrmux2 (
+	.a(5'b11111),
+	.b(writeregE),
+	.s(jalE | balE),
+	.y(writereg2E)
+);
+
+// 控制被写数据是否为PC+8
+mux2 #(32) wrmux3 (
+	.a(pcplus8E),
+	.b(aluoutE),
+	.s(jalE | jrE | balE),
+	.y(aluout2E)
 );
 
 //ALU
@@ -342,14 +386,23 @@ mux2 #(5) mux_WA3(
 
 // hilo
 //TODO 等乘除法器写好
+assign hi_iE = hidstE == 2'b01 ? 32'b0 :
+               hidstE == 2'b10 ? 32'b1 :
+               hidstE == 2'b11 ? ALUsrcB1 :
+               32'bx;
+
+assign lo_iE = lodstE == 2'b01 ? 32'b0 :
+               lodstE == 2'b10 ? 32'b1 :
+               lodstE == 2'b11 ? ALUsrcB1 :
+               32'bx;
 // assign hi_iE = hidstE == 2'b01 ? 乘法hi :
 //                hidstE == 2'b10 ? 除法余数 :
-//                hidstE == 2'b11 ? rd2E  :
+//                hidstE == 2'b11 ? ALUsrcB1 :
 //                32'b0;
 
 // assign lo_iE = lodstE == 2'b01 ? 乘法lo :
 //                lodstE == 2'b10 ? 除法商 :
-//                lodstE == 2'b11 ? rd2E  :
+//                lodstE == 2'b11 ? ALUsrcB1 :
 //                32'b0;
 
 // ----------------------------------------
@@ -448,13 +501,13 @@ mux2 #(32) mux_WD3(
 );
 
 //hilo寄存器
-/*hilo_reg hilo(
+hilo_reg hilo(
     .clk(clk), .rst(rst), 
     .weh(hi_writeW),
     .wel(lo_writeW),
     .hi(hi_iW), .lo(lo_iW),
     .hi_o(hi_oW), .lo_o(lo_oW)
-);*/
+);
 
 // ----------------------------------------
 // hazard

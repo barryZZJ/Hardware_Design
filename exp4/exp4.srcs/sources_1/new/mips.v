@@ -74,17 +74,18 @@ flopenrc #(32) FD_instr (
     .q(instrD)
 );
 
+//! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-floprc #(17) DE_signals (
+floprc #(25) DE_signals (
     .clk(clk),
     .rst(rst),
     .clear(flushE || branchFlushD), // 添加
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD,memenD,jalD,jrD,balD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE,memenE,jalE,jrE,balE})
+    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
+    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
 );
 
 // exe to Mem flop for signals
-flopenr #(7) EM_signals (
+flopenr #(9) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
@@ -93,7 +94,7 @@ flopenr #(7) EM_signals (
 );
 
 // mem to wb flop for signals
-flopenr #(6) MW_signals (
+flopenr #(8) MW_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
@@ -117,7 +118,16 @@ controller c(
 	.memenD(memenD),
     .jalD(jalD),
     .jrD(jrD),
-    .balD(balD)
+    .balD(balD),
+
+	.mfhiD(mfhiD),
+	.mfloD(mfloD),
+	// .mthiD(mthiD),
+	// .mtloD(mtloD),
+	.hidstD(hidstD),
+	.lodstD(lodstD),
+	.hi_writeD(hi_writeD), 
+	.lo_writeD(lo_writeD)
 );
 
 datapath dp(
@@ -136,13 +146,13 @@ datapath dp(
 	.regdstE(regdstE),
 	.jumpD(jumpD),
 	.branchD(branchD),
-	//.mfhiE(mfhiE),
-	//.mfloE(mfloE),
+	.mfhiE(mfhiE),
+	.mfloE(mfloE),
 	// .mthiE(mthiE), .mthiW(mthiW),
 	// .mtloE(mtloE), .mtloW(mtloW),
-	//.hidstE(hidstE), .hidstW(hidstW),
-	//.lodstE(lodstE), .lodstW(lodstW),
-	//.hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
+	.hidstE(hidstE), .hidstW(hidstW),
+	.lodstE(lodstE), .lodstW(lodstW),
+	.hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
 	
 	.pc(pc),
 	.pcsrcD(pcsrcD),

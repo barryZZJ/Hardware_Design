@@ -12,3 +12,16 @@
 下降沿写?
 寄存器是先写后读
 数据前推：同lw，stall一周期+forward
+添加hidst, lodst信号，选择写入hilo的数据来源
+
+12/30:
+修改hilo设计，改为在wb写hilo，在ex读hilo，作为ALU操作数之一，并沿流水线传下去
+实现前推，解决冒险问题，添加forwardHLE信号
+
+
+遇到的bug记录：
+1.由于regwriteE, memtoregE信号为Z，导致lwstall为x，导致flushE为x，导致流水线一直stall，pc没法正常获取指令。
+产生原因：between-stage中间寄存器的WIDTH与实际信号没对上
+
+2.lui没有写回寄存器
+产生原因：maindecoder里解码LUI指令时没有正确赋值regwrite和regdst信号
