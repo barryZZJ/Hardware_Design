@@ -25,3 +25,16 @@
 
 2.lui没有写回寄存器
 产生原因：maindecoder里解码LUI指令时没有正确赋值regwrite和regdst信号
+
+3.maindec.v中，funct变化时alucontrol没有变化
+产生原因：分支指令解码不应该放在maindec.v中，导致case(op)分支到EXE_BLTZ5'b00000去了。
+
+4.pc没加4
+产生原因：除法器各个reg信号没有初始化为0
+
+5.除法结果不对
+原因：除法器的div_sign判断有无符号除法没有保持状态，一个周期后立马归零了；
+原因：E阶段没有stall，导致alucontrol往下流了
+
+12/31
+完善lb, lh, sb, sh

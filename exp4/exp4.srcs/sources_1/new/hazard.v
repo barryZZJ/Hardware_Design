@@ -23,20 +23,23 @@ module hazard(input [4:0] rsD,
               input mfloE,
               input hi_writeM, hi_writeW,
               input lo_writeM, lo_writeW,
+              input divstallE,
               
               output [1:0] forwardAE,
               output [1:0] forwardBE,
               output [2:0] forwardHLE,
               output forwardAD,
               output forwardBD,
-              output wire stallF, stallD, flushE
-              // output wire branchFlushD
+              output stallF, stallD, stallE, flushE
               );
 
 // --------------------------------
 // 数据冒险
 
 // forward
+//execute stage
+//
+//
 assign forwardAE = ((rsE != 0) && (rsE == writeregM) && regwriteM) ? 2'b10 :
                    ((rsE != 0) && (rsE == writeregW) && regwriteW) ? 2'b01 :
                    2'b00;
@@ -56,7 +59,7 @@ assign forwardHLE = mfhiE ? (hi_writeM ? 3'b011 :
 assign forwardAD = ((rsD != 0) && (rsD == writeregM) && regwriteM);
 assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 
-// --------------------------------
+
 // stall
 wire lwstall;
 //stallF, stallD, flushE;
@@ -67,8 +70,10 @@ assign branchstall = branchD && regwriteE &&
                        branchD && memtoregM &&
                        (writeregM == rsD || writeregM == rtD);
 
-assign stallF = lwstall || branchstall;
-assign stallD = lwstall || branchstall;
+assign stallF = lwstall || branchstall || divstallE;
+assign stallD = lwstall || branchstall || divstallE;
+assign stallE = divstallE;
+
 assign flushE = lwstall || branchstall;
 // 可能有bug
 // assign #1 flushE = lwstall | jumpD | branchD;

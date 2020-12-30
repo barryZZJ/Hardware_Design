@@ -60,7 +60,7 @@ wire [1:0] hidstW, lodstW;
 wire hi_writeW, lo_writeW;
 
 // hazard
-wire stallF, stallD, flushE;
+wire stallF, stallD, stallE, flushE;
 
 // wire branchFlushD;
 
@@ -79,6 +79,7 @@ flopenrc #(32) FD_instr (
 floprc #(25) DE_signals (
     .clk(clk),
     .rst(rst),
+	.en(~stallE),
     .clear(flushE),
     .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
     .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
@@ -122,8 +123,6 @@ controller c(
 
 	.mfhiD(mfhiD),
 	.mfloD(mfloD),
-	// .mthiD(mthiD),
-	// .mtloD(mtloD),
 	.hidstD(hidstD),
 	.lodstD(lodstD),
 	.hi_writeD(hi_writeD), 
@@ -161,6 +160,7 @@ datapath dp(
 	.mem_WriteData(writedata),
 	.stallF(stallF),
 	.stallD(stallD),
+	.stallE(stallE),
 	.flushE(flushE),
 	// jump and branch
 	.memenE(memenE),
@@ -169,6 +169,9 @@ datapath dp(
 	.balE(balE),
     .balD(balD)
 	// .branchFlushD(branchFlushD)
+
+	
+
 );
 	
 endmodule

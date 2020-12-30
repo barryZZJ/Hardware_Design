@@ -5,6 +5,12 @@ module main_decoder(input [5:0] op,
                     input [4:0] rt,
                     output reg regdst,
                     output reg regwrite,
+                    output [1:0] hidst,
+                    output [1:0] lodst,
+                    output hi_write,
+                    output lo_write,
+                    output reg mfhi,
+                    output reg mflo,
 
                     output reg alusrc,
                     output reg branch,
@@ -16,18 +22,17 @@ module main_decoder(input [5:0] op,
                     output reg jal,
                     output reg jr,
                     output reg bal,
-                    output reg jump,
-                    output reg mfhi,
-                    output reg mflo,
-                    // output reg mthi,
-                    // output reg mtlo,
-                    output [1:0] hidst,
-                    output [1:0] lodst,
-                    output hi_write,
-                    output lo_write
+                    output reg jump
                     );
-reg mul, div;
-reg mthi, mtlo;
+
+wire mul, div;
+assign mul = op == `EXE_NOP & (funct == `EXE_MULT | funct == `EXE_MULTU);
+assign div = op == `EXE_NOP & (funct == `EXE_DIV | funct == `EXE_DIVU);
+
+wire mthi, mtlo;
+assign mthi = op == `EXE_NOP & funct == `EXE_MTHI;
+assign mtlo = op == `EXE_NOP & funct == `EXE_MTLO;
+
 assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
                {mul, div, mthi} == 3'b010 ? 2'b10 :
                {mul, div, mthi} == 3'b001 ? 2'b11 :
@@ -56,10 +61,6 @@ assign lo_write = mul | div | mtlo;
         jump     <= 1'b0;
         mfhi     <= 1'b0;
         mflo     <= 1'b0;
-        mthi     <= 1'b0;
-        mtlo     <= 1'b0;
-        mul      <= 1'b0;
-        div      <= 1'b0;
         case (op)
             ////////////////////////////////////////
             // R-type
@@ -73,28 +74,20 @@ assign lo_write = mul | div | mtlo;
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
                 case (funct)
-                    `EXE_MULT: mul  <= 1'b1;
-                    `EXE_DIV : div  <= 1'b1;
                     `EXE_MFHI: mfhi <= 1'b1;
                     `EXE_MFLO: mflo <= 1'b1;
-                    `EXE_MTHI: begin
-                        mthi <= 1'b1;
-                        regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
-                    end
-                    `EXE_MTLO: begin
-                        mtlo <= 1'b1;
-                        regwrite <= 1'b0;
-                    end
+                    `EXE_MTHI: regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
+                    `EXE_MTLO: regwrite <= 1'b0;
+
                     `EXE_JR: begin
                         jump     <= 1'b1;
                         jr       <= 1'b1;
                     end
                     `EXE_JALR: begin
-                        regwrite <= 1'b1;
-                        //regdst   <= 1'b1;
                         jr       <= 1'b1;
                     end
 
+                    
 
                 endcase
             end
@@ -127,17 +120,58 @@ assign lo_write = mul | div | mtlo;
             // 访存指令
             //
             ////////////////////////////////////////
-
+            // lb
+            `EXE_LB: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+                memtoreg <= 1'b1;
+                memen    <= 1'b1;
+            end
+            // lbu
+            `EXE_LBU: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+                memtoreg <= 1'b1;
+                memen    <= 1'b1;
+            end
+            // lh
+            `EXE_LH: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+                memtoreg <= 1'b1;
+                memen    <= 1'b1;
+            end
+            // lhu
+            `EXE_LHU: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+                memtoreg <= 1'b1;
+                memen    <= 1'b1;
+            end
             // lw
             `EXE_LW: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memen    <= 1'b1;
+            end
+            // sb
+           `EXE_SB: begin
+                alusrc   <= 1'b1;
+                memwrite <= 1'b1;
+                memen    <= 1'b1;
+            end
+            // sh
+           `EXE_SH: begin
+                alusrc   <= 1'b1;
+                memwrite <= 1'b1;
+                memen    <= 1'b1;
             end
             // sw
             `EXE_SW: begin
                 alusrc   <= 1'b1;
                 memwrite <= 1'b1;
+                memen    <= 1'b1;
             end
 
             ////////////////////////////////////////
@@ -146,7 +180,20 @@ assign lo_write = mul | div | mtlo;
             //
             ////////////////////////////////////////
 
+
             `EXE_ADDI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
+            `EXE_ADDIU: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
+            `EXE_SLTI: begin
+                regwrite <= 1'b1;
+                alusrc   <= 1'b1;
+            end
+            `EXE_SLTIU: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
             end
@@ -173,7 +220,6 @@ assign lo_write = mul | div | mtlo;
             // beq
             // if rs = rt then branch
             `EXE_BEQ: begin
-                //jal      <= 1'b1;
                 branch   <= 1'b1;
             end
             // bgtz

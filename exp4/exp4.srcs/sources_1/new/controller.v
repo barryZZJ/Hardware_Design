@@ -20,8 +20,6 @@ module controller(input [5:0] op,
                   
                   output mfhiD,
                   output mfloD,
-                //   output mthiD,
-                //   output mtloD,
                   output [1:0] hidstD,
                   output [1:0] lodstD,
                   output hi_writeD,
@@ -38,6 +36,12 @@ main_decoder main_decoder(
 
     .regdst(regdstD),
     .regwrite(regwriteD),
+	.hidst(hidstD),
+	.lodst(lodstD),
+    .hi_write(hi_writeD), 
+	.lo_write(lo_writeD),
+	.mfhi(mfhiD),
+	.mflo(mfloD),
 
     .alusrc(alusrcD),
 

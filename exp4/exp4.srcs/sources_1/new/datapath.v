@@ -31,16 +31,16 @@ module datapath(
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
-    output wire stallF, stallD, flushE
-    // output wire branchFlushD
+    output wire stallF, stallD, stallE, flushE
 );
 
 //////////////////////////////////////
 // for debug:
 wire [31:0] instrE, instrM, instrW;
-floprc #(32) DE_instr (
+flopenrc #(32) DE_instr (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(instrD),
     .q(instrE)
@@ -267,45 +267,50 @@ eqcmp eqcmp(
 // decode to execution flops
 
 // rd1
-floprc #(32) DE_rd1 (
+flopenrc #(32) DE_rd1 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd1D),
     .q(rd1E)
 );
 
 // rd2
-floprc #(32) DE_rd2 (
+flopenrc #(32) DE_rd2 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(rd2D),
     .q(rd2E)
 );
 
 // rs, rt, rd
-floprc #(15) DE_rt_rd (
+flopenrc #(15) DE_rt_rd (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d({rsD, rtD, rdD}),
     .q({rsE, rtE, rdE})
 );
 
 // sa 
-floprc #(5) DE_sa (
+flopenrc #(5) DE_sa (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(saD),
     .q(saE)
 );
 
 // extend_imm
-floprc #(32) DE_imm (
+flopenrc #(32) DE_imm (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(extend_immD),
     .q(extend_immE)
@@ -384,6 +389,29 @@ alu alu(
     .res(aluoutE)
 );
 
+// 乘法器
+wire [63:0] mul_result;
+mul mul(
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+    
+    .res(mul_result)
+);
+
+// 除法器
+wire [63:0] div_result;
+wire divstallE; //除法发出的stall信号
+divWrapper div(
+    .clk(clk), .rst(rst),
+    .a(ALUsrcA2),
+    .b(ALUsrcB2),
+    .op(alucontrolE),
+
+    .div_result(div_result),
+    .divstall(divstallE)
+);
+
 assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
@@ -395,25 +423,15 @@ mux2 #(5) mux_WA3(
 ); 
 
 // hilo
-//TODO 等乘除法器写好
-assign hi_iE = hidstE == 2'b01 ? 32'b0 :
-               hidstE == 2'b10 ? 32'b1 :
+assign hi_iE = hidstE == 2'b01 ? mul_result[63:32] :
+               hidstE == 2'b10 ? div_result[63:32] :
                hidstE == 2'b11 ? ALUsrcA1 :
                32'bx;
 
-assign lo_iE = lodstE == 2'b01 ? 32'b0 :
-               lodstE == 2'b10 ? 32'b1 :
+assign lo_iE = lodstE == 2'b01 ? mul_result[31:0] :
+               lodstE == 2'b10 ? div_result[31:0] :
                lodstE == 2'b11 ? ALUsrcA1 :
                32'bx;
-// assign hi_iE = hidstE == 2'b01 ? 乘法hi :
-//                hidstE == 2'b10 ? 除法余数 :
-//                hidstE == 2'b11 ? ALUsrcA1 :
-//                32'b0;
-
-// assign lo_iE = lodstE == 2'b01 ? 乘法lo :
-//                lodstE == 2'b10 ? 除法商 :
-//                lodstE == 2'b11 ? ALUsrcA1 :
-//                32'b0;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -540,6 +558,7 @@ hazard hazard(
 	.mfloE(mfloE),
     .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
     .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
+    .divstallE(divstallE),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),
@@ -548,11 +567,13 @@ hazard hazard(
     .forwardBD(forwardBD),
     .stallF(stallF),
     .stallD(stallD),
+    .stallE(stallE),
     .flushE(flushE),
-    // new
+    // jump and branch
     .jumpD(jumpD),
     .balD(balD)
-    //.branchFlushD(branchFlushD)
+    
+    
 );
 
 
