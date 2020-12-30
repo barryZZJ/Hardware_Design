@@ -15,12 +15,13 @@ module datapath(
     input regdstE,
     input jumpD,
     input branchD,
-    input mfhiE, mfhiW, 
-    input mfloE, mfloW, 
-    input mthiE, mthiW, 
-    input mtloE, mtloW, 
-    input mulE, mulW,
-    input divE, divW,
+    input mfhiE,
+    input mfloE,
+    // input mthiE, mthiW, 
+    // input mtloE, mtloW, 
+    input [1:0] hidstE, hidstW,
+    input [1:0] lodstE, lodstW,
+    input hi_writeW, lo_writeW,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output pcsrcD,
@@ -32,7 +33,7 @@ module datapath(
 wire [31:0] pc_branched, pc_realnext;
 
 //ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
-wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
+wire [31:0] ALUsrcA, ALUsrcB1, ALUsrcB2, ALUsrcB3, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
@@ -61,12 +62,12 @@ wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
 
 // hilo寄存器
-wire hi_writeW, lo_writeW;
 wire [31:0] hi_iW, lo_iW; // hilo input
 wire [31:0] hi_oW, lo_oW; // hilo output
 
 // hazard
 wire [1:0] forwardAE, forwardBE;
+wire [2:0] forwardHLE;
 wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
@@ -264,10 +265,20 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
+// 如果是mfhi/lo指令，则ALU应该输入hi/lo寄存器的值，同时要考虑转发。
+assign ALUsrcB3 = forwardHLE == 3'b000 ? ALUsrcB2 :
+                  forwardHLE == 3'b001 ? hi_oW :
+                  forwardHLE == 3'b010 ? lo_oW :
+                  forwardHLE == 3'b011 ? hi_iM :
+                  forwardHLE == 3'b100 ? lo_iM :
+                  forwardHLE == 3'b101 ? hi_iW :
+                  forwardHLE == 3'b110 ? lo_iW :
+                  32'bx;
+
 //ALU
 alu alu(
     .a(ALUsrcA),
-    .b(ALUsrcB2),
+    .b(ALUsrcB3),
     .sa(saE),
     .op(alucontrolE),
     
@@ -277,26 +288,24 @@ alu alu(
 assign writedataE = ALUsrcB1; // B输入第一个选择器之后的结果
 
 // 寄存器堆写入地址 writereg
-
-assign writeregE = {mfhiE | mfloE, regdstE} == 2'b00 ? rtE : rdE;
-
-// mux2 #(5) mux_WA3(
-// 	.a(rdE), //instr[15:11]
-// 	.b(rtE), //instr[20:16]
-// 	.s(regdstE),
-// 	.y(writeregE)
-// ); 
+mux2 #(5) mux_WA3(
+	.a(rdE), //instr[15:11]
+	.b(rtE), //instr[20:16]
+	.s(regdstE),
+	.y(writeregE)
+); 
 
 // hilo
 //TODO 等乘除法器写好
-// assign hi_iE = {mulE, divE, mthiE} == 3'b100 ? 乘法hi :
-//                {mulE, divE, mthiE} == 3'b010 ? 除法hi :
-//                {mulE, divE, mthiE} == 3'b001 ? rd2E  :
-//                                                32'b0;
-// assign lo_iE = {mulE, divE, mtloE} == 3'b100 ? 乘法lo :
-//                {mulE, divE, mtloE} == 3'b010 ? 除法lo :
-//                {mulE, divE, mtloE} == 3'b001 ? rd2E  :
-//                                                32'b0;
+// assign hi_iE = hidstE == 2'b01 ? 乘法hi :
+//                hidstE == 2'b10 ? 除法余数 :
+//                hidstE == 2'b11 ? rd2E  :
+//                32'b0;
+
+// assign lo_iE = lodstE == 2'b01 ? 乘法lo :
+//                lodstE == 2'b10 ? 除法商 :
+//                lodstE == 2'b11 ? rd2E  :
+//                32'b0;
 
 // ----------------------------------------
 // execution to Mem flops
@@ -386,20 +395,14 @@ flopenr #(64) MW_hilo (
 // Write Back 
 
 //mux, 寄存器堆写入数据来自存储器 or ALU ，memtoReg
-// mux2 #(32) mux_WD3(
-// 	.a(readdataW),//来自数据存储器
-// 	.b(aluoutW),//来自ALU计算结果
-// 	.s(memtoregW),
-// 	.y(resultW)
-// );
-assign resultW = {mfhiW, mfloW} == 2'b00 ? (memtoregW == 1'b1 ? readdataW : aluoutW) : 
-                 {mfhiW, mfloW} == 2'b10 ? hi_oW :
-                 {mfhiW, mfloW} == 2'b01 ? lo_oW :
-                 32'b0;
+mux2 #(32) mux_WD3(
+	.a(readdataW),//来自数据存储器
+	.b(aluoutW),//来自ALU计算结果
+	.s(memtoregW),
+	.y(resultW)
+);
 
 //hilo寄存器
-assign hi_writeW = mulW | divW | mthiW;
-assign lo_writeW = mulW | divW | mtloW;
 hilo_reg hilo(
     .clk(clk), .rst(rst), 
     .weh(hi_writeW),
@@ -425,13 +428,12 @@ hazard hazard(
     .memtoregE(memtoregE),
     .memtoregM(memtoregM),
     .branchD(branchD),
-    .mfhiE(mfhiE), .mfhiM(mfhiM), .mfhiW(mfhiW),
-	.mfloE(mfloE), .mfloM(mfloM), .mfloW(mfloW),
-	.mthiE(mthiE), .mthiM(mthiM), .mthiW(mthiW),
-	.mtloE(mtloE), .mtloM(mtloM), .mtloW(mtloW),
+    .mfhiE(mfhiE),
+	.mfloE(mfloE),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),
+    .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
     .stallF(stallF),

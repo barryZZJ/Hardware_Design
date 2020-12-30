@@ -19,14 +19,15 @@ module main_decoder(input [5:0] op,
                     output reg jump,
                     output reg mfhi,
                     output reg mflo,
-                    output reg mthi,
-                    output reg mtlo,
+                    // output reg mthi,
+                    // output reg mtlo,
                     output [1:0] hidst,
                     output [1:0] lodst,
                     output hi_write,
                     output lo_write
                     );
 reg mul, div;
+reg mthi, mtlo;
 assign hidst = {mul, div, mthi} == 3'b100 ? 2'b01 :
                {mul, div, mthi} == 3'b010 ? 2'b10 :
                {mul, div, mthi} == 3'b001 ? 2'b11 :
@@ -73,8 +74,14 @@ assign lo_write = mul | div | mtlo;
                     `EXE_DIV : div  <= 1'b1;
                     `EXE_MFHI: mfhi <= 1'b1;
                     `EXE_MFLO: mflo <= 1'b1;
-                    `EXE_MTHI: mthi <= 1'b1;
-                    `EXE_MTLO: mtlo <= 1'b1;
+                    `EXE_MTHI: begin
+                        mthi <= 1'b1;
+                        regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
+                    end
+                    `EXE_MTLO: begin
+                        mtlo <= 1'b1;
+                        regwrite <= 1'b0;
+                    end
                 endcase
             end
 
