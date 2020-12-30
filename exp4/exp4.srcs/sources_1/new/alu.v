@@ -6,31 +6,43 @@ module alu #(WIDTH = 32)
              input [WIDTH-1:0] b,//操作数2
              input [7:0] op,
              input [4:0] sa,
-             input [63:0] hilo_i,//乘除法hilo寄存器：输入
-             output reg [63:0] hilo_o,//乘除法hilo寄存器：输出
+
+             output reg [63:0] hilo_result,
              output reg [WIDTH-1:0] res,
+             output reg divstall,//除法发出的stall信号
+
              output reg overflow,//算术运算溢出
-             output wire stall_div,
+            
              output zero);
 
-           //中间变量
+           
            reg [WIDTH-1:0] numa,numb;//考虑溢出情况算术运算，中间变量
-           reg [31:0]nresult;//有溢出的算术运算的中间变量结果
-           reg [63:0]hilo_tempu;
-           wire[31:0] mult_a,mult_b;
-           wire [63:0]hilo_temp,result_div;
-           wire div_ready,sign_div,start_div;
+           reg [31:0]nresult;//有溢出的算术运算的中间变量结量
+
+           reg [31:0] mult_a,mult_b;
+
+           wire  [63:0]div_result;
+           wire div_ready;
+           reg div_start;
+           reg  div_sign;
+           reg div_refresh;
         //乘法
-         assign mult_a = ((op ==`EXE_MULT_OP)&&(a[31]==1'b1))?(~a+1):a;
-         assign mult_b = ((op ==`EXE_MULT_OP)&&(b[31]==1'b1))?(~b+1):b;
-         assign hilo_temp = ((op ==`EXE_MULT_OP)&&(a[31] ^ b[31] == 1'b1))?~(mult_a * mult_b)+1:mult_a*mult_b;  
-        //除法
-        assign signed_div = (op ==`EXE_DIV_OP)?1:0;
-        assign start_div= (op ==`EXE_DIV_OP | op ==`EXE_DIVU_OP)?1'b1:1'b0;
-        assign div_ready=~stall_div;
-    div div(~clk, rst, a, b, start_div, signed_div, stall_div, result_div);   
+         //assign mult_a = ((op ==`EXE_MULT_OP)&&(a[31]==1'b1))?(~a+1):a;
+        // assign mult_b = ((op ==`EXE_MULT_OP)&&(b[31]==1'b1))?(~b+1):b;
+        // assign hilo_result = ((op ==`EXE_MULT_OP)&&(a[31] ^ b[31] == 1'b1))?~(mult_a * mult_b)+1:mult_a*mult_b;  
+
+        //除法模块调用
+        
+    div div(.clk(clk),.rst(rst),
+    .Signed_div_i(div_sign),
+    .Opdata1_i(a),.Opdata2_i(b),
+    .start_i(div_start),.annul_i(div_refresh)
+    ,.result_o(div_result),.ready_o(div_ready));   
+ 
+
         always@(*)begin
-            
+           // overflow=0;
+         // divstall = 0;
       
          case(op)
 
@@ -45,20 +57,20 @@ module alu #(WIDTH = 32)
             // 移位指令
             //
             ////////////////////////////////////////
-            // 操作数 sa:shamt b:rt
+            // 操作量 sa:shamt b:rt
             // sxx rd,rt,shamt
-            // 逻辑移位，空位填零
+            // 逻辑移位，空位填量
             // sll
             `EXE_SLL_OP : res <= b << sa;
             // srl
             `EXE_SRL_OP : res <= b >> sa;
-            // 算术右移，空位填符号位
+            // 算术右移，空位填符号量
             // sra
             `EXE_SRA_OP : begin
                 // equals : res =  ({b, 1'b0} << ~sa) | (b >> sa) ;
                 res = ({32{b[31]}} << (6'd32 - {1'b0, sa})) | (b >> sa) ;
             end
-            // 操作数 a:rs b:rt
+            // 操作量 a:rs b:rt
             // sxxv rd,rs,rt
             // sllv
             `EXE_SLLV_OP: res <= b << a[4:0];
@@ -96,7 +108,7 @@ module alu #(WIDTH = 32)
                        res <= numa + numb; 
                    end
               end
-         `EXE_SUBU_OP://无符号减法
+         `EXE_SUBU_OP://无符号减量
               begin
                   numa <= a;
                   numb <= ~b+1;
@@ -148,19 +160,66 @@ module alu #(WIDTH = 32)
                 res <= 32'b1;
                 else res <= 32'b0;
             end
-          //乘法
-             `EXE_MULT_OP:hilo_o = hilo_temp;
-            `EXE_MULTU_OP:begin
-                numa = a;
-                numb = b;
-                hilo_tempu = numa * numb;
-                hilo_o = hilo_tempu;
-            end
-          //除法
-            `EXE_DIV_OP:hilo_o <= result_div;
-            `EXE_DIVU_OP:hilo_o <= result_div;
 
-          //访存指令
+       ///////////////
+       ////乘法除法////
+       ///////////////
+
+          //有符号乘法
+          `EXE_MULT_OP:begin
+              mult_a = a[31]?(~a+1):a;
+              mult_b = b[31]?(~b+1):b;
+              hilo_result=(a[31]^b[31])?(~(mult_a*mult_b)+1):(mult_a*mult_b);
+              res = 32'h00000000;
+          end
+          //无符号乘法
+          `EXE_MULTU_OP:begin
+             hilo_result=a*mult_b;
+             res =32'h00000000;
+          end
+
+          //有符号除法
+          `EXE_DIV_OP:begin
+            div_sign<=1;
+            //状态机
+            if(!div_ready)begin
+                div_start<=1;
+                divstall <= 1;
+                div_refresh<=0;
+            end
+            else if(div_ready)begin
+                div_start<=0;
+                divstall = 0;
+                div_refresh<=1;
+                hilo_result = div_result;
+                res = 32'h00000000;
+            end
+        end
+          //无符号除法
+           `EXE_DIVU_OP:begin
+            div_sign<=0;
+            //状态机
+            if(!div_ready)begin
+                div_start<=1;
+                divstall = 1;
+                div_refresh<=0;
+            end
+            else if(div_ready)begin
+                div_start<=0;
+                divstall = 0;
+                div_refresh<=1;
+                hilo_result = div_result;
+                res = 32'h00000000;
+            end
+        end
+         
+
+
+
+
+          ///////////
+          //访存指令//
+         ////////////
             `EXE_LB_OP:res <= a + b;
             `EXE_LBU_OP:res <= a + b;
             `EXE_LH_OP:res <= a + b;

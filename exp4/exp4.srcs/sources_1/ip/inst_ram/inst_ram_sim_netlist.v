@@ -1,10 +1,10 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Tue Dec 29 13:48:53 2020
-// Host        : DESKTOP-SF27CT1 running 64-bit major release  (build 9200)
+// Date        : Wed Dec 30 02:17:55 2020
+// Host        : LAPTOP-F40F44HG running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               C:/Users/Hp/Desktop/Hardware_Design/exp4/exp4.srcs/sources_1/ip/inst_ram/inst_ram_sim_netlist.v
+//               e:/hw/Hardware_Design/exp4/exp4.srcs/sources_1/ip/inst_ram/inst_ram_sim_netlist.v
 // Design      : inst_ram
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,7 +12,7 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "inst_ram,blk_mem_gen_v8_4_3,{}" *) (* downgradeipidentifiedwarnings = "yes" *) (* x_core_info = "blk_mem_gen_v8_4_3,Vivado 2019.1" *) 
+(* CHECK_LICENSE_TYPE = "inst_ram,blk_mem_gen_v8_4_4,{}" *) (* downgradeipidentifiedwarnings = "yes" *) (* x_core_info = "blk_mem_gen_v8_4_4,Vivado 2019.2" *) 
 (* NotValidForBitStream *)
 module inst_ram
    (clka,
@@ -97,9 +97,9 @@ module inst_ram
   (* C_INITA_VAL = "0" *) 
   (* C_INITB_VAL = "0" *) 
   (* C_INIT_FILE = "inst_ram.mem" *) 
-  (* C_INIT_FILE_NAME = "inst_ram.mif" *) 
+  (* C_INIT_FILE_NAME = "no_coe_file_loaded" *) 
   (* C_INTERFACE_TYPE = "0" *) 
-  (* C_LOAD_INIT_FILE = "1" *) 
+  (* C_LOAD_INIT_FILE = "0" *) 
   (* C_MEM_TYPE = "0" *) 
   (* C_MUX_PIPELINE_STAGES = "0" *) 
   (* C_PRIM_TYPE = "1" *) 
@@ -131,7 +131,7 @@ module inst_ram
   (* C_WRITE_WIDTH_B = "32" *) 
   (* C_XDEVICEFAMILY = "artix7" *) 
   (* downgradeipidentifiedwarnings = "yes" *) 
-  inst_ram_blk_mem_gen_v8_4_3 U0
+  inst_ram_blk_mem_gen_v8_4_4 U0
        (.addra(addra),
         .addrb({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .clka(clka),
@@ -297,9 +297,9 @@ module inst_ram_blk_mem_gen_prim_wrapper_init
     .INITP_05(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_06(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INITP_07(256'h0000000000000000000000000000000000000000000000000000000000000000),
-    .INIT_00(256'h0064202A10A7000A00A428200064282400E220252067FFF72003000C20020005),
-    .INIT_01(256'h8C020050AC67004400E238220085382000E2202A200500000000000010800002),
-    .INIT_02(256'h00000000000000000000000000000000AC020054200200010000000008000013),
+    .INIT_00(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_01(256'h0000000000000000000000000000000000000000000000000000000000000000),
+    .INIT_02(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_03(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_04(256'h0000000000000000000000000000000000000000000000000000000000000000),
     .INIT_05(256'h0000000000000000000000000000000000000000000000000000000000000000),
@@ -456,7 +456,7 @@ endmodule
 (* C_HAS_REGCEA = "0" *) (* C_HAS_REGCEB = "0" *) (* C_HAS_RSTA = "0" *) 
 (* C_HAS_RSTB = "0" *) (* C_HAS_SOFTECC_INPUT_REGS_A = "0" *) (* C_HAS_SOFTECC_OUTPUT_REGS_B = "0" *) 
 (* C_INITA_VAL = "0" *) (* C_INITB_VAL = "0" *) (* C_INIT_FILE = "inst_ram.mem" *) 
-(* C_INIT_FILE_NAME = "inst_ram.mif" *) (* C_INTERFACE_TYPE = "0" *) (* C_LOAD_INIT_FILE = "1" *) 
+(* C_INIT_FILE_NAME = "no_coe_file_loaded" *) (* C_INTERFACE_TYPE = "0" *) (* C_LOAD_INIT_FILE = "0" *) 
 (* C_MEM_TYPE = "0" *) (* C_MUX_PIPELINE_STAGES = "0" *) (* C_PRIM_TYPE = "1" *) 
 (* C_READ_DEPTH_A = "256" *) (* C_READ_DEPTH_B = "256" *) (* C_READ_LATENCY_A = "1" *) 
 (* C_READ_LATENCY_B = "1" *) (* C_READ_WIDTH_A = "32" *) (* C_READ_WIDTH_B = "32" *) 
@@ -467,8 +467,8 @@ endmodule
 (* C_WEA_WIDTH = "4" *) (* C_WEB_WIDTH = "4" *) (* C_WRITE_DEPTH_A = "256" *) 
 (* C_WRITE_DEPTH_B = "256" *) (* C_WRITE_MODE_A = "WRITE_FIRST" *) (* C_WRITE_MODE_B = "WRITE_FIRST" *) 
 (* C_WRITE_WIDTH_A = "32" *) (* C_WRITE_WIDTH_B = "32" *) (* C_XDEVICEFAMILY = "artix7" *) 
-(* ORIG_REF_NAME = "blk_mem_gen_v8_4_3" *) (* downgradeipidentifiedwarnings = "yes" *) 
-module inst_ram_blk_mem_gen_v8_4_3
+(* ORIG_REF_NAME = "blk_mem_gen_v8_4_4" *) (* downgradeipidentifiedwarnings = "yes" *) 
+module inst_ram_blk_mem_gen_v8_4_4
    (clka,
     rsta,
     ena,
@@ -710,7 +710,7 @@ module inst_ram_blk_mem_gen_v8_4_3
   assign sbiterr = \<const0> ;
   GND GND
        (.G(\<const0> ));
-  inst_ram_blk_mem_gen_v8_4_3_synth inst_blk_mem_gen
+  inst_ram_blk_mem_gen_v8_4_4_synth inst_blk_mem_gen
        (.addra(addra),
         .clka(clka),
         .dina(dina),
@@ -719,8 +719,8 @@ module inst_ram_blk_mem_gen_v8_4_3
         .wea(wea));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_v8_4_3_synth" *) 
-module inst_ram_blk_mem_gen_v8_4_3_synth
+(* ORIG_REF_NAME = "blk_mem_gen_v8_4_4_synth" *) 
+module inst_ram_blk_mem_gen_v8_4_4_synth
    (douta,
     clka,
     ena,

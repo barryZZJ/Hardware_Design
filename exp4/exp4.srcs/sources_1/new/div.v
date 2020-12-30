@@ -1,90 +1,137 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2020/12/29 19:59:51
-// Design Name: 
-// Module Name: div
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-//参考硬综2019PPT1第36页定义
-//divident 被除数    divisor 除数    quotient 商     remainder 余数
+
+
 module div(
-    input               clk,
-    input               rst,
-    input [31:0]        a,
-    input [31:0]        b,
-    input               start,
-    input               sign,
-    output wire         stall_div,
-    output [63:0]       result
+	input clk,rst,
+	input Signed_div_i,
+	input [31:0] Opdata1_i,Opdata2_i,
+	input start_i,annul_i,
+	output wire [63:0] result_o,
+	output reg ready_o
     );
+	//除法需要运算周期(对于小型数字会优化运算次数)
+	reg [4:0] div_max;
+	//除法周期计数
+	reg [4:0] div_count;
+	//状态
+	reg [1:0] main_state;
+	//计算结果
+	reg [63:0] result;
+	//保留两个输入,避免在外界更新输入的时候导致异常
+	reg [31:0] in_num1,in_num2;
+	//被除数
+	reg [31:0] div_num1;
+	//除数
+	reg [31:0] div_num2;
 
-    reg [31:0] a_tmp,b_tmp;
-    reg [63:0] SR; //shift register
-    reg [32 :0] NEG_DIVISOR;  //divisor 2's complement
-    wire [31:0] REMAINER, QUOTIENT;
-    assign REMAINER = SR[63:32];
-    assign QUOTIENT = SR[31: 0];
+	assign result_o = result;
 
-    wire [31:0] divident_abs;
-    wire [32:0] divisor_abs;
-    wire [31:0] remainer, quotient;
-
-    assign divident_abs = (sign & a[31]) ? ~a + 1'b1 : a;
-    //余数符号与被除数相同
-    assign remainer = (sign & a_tmp[31]) ? ~REMAINER + 1'b1 : REMAINER;
-    assign quotient = sign & (a_tmp[31] ^ b_tmp[31]) ? ~QUOTIENT + 1'b1 : QUOTIENT;
-    assign result = {remainer,quotient};
-
-    wire CO;
-    wire [32:0] sub_result;
-    wire [32:0] mux_result;
-    
-    assign {CO,sub_result} = {1'b0,REMAINER} + NEG_DIVISOR;//sub
-    assign mux_result = CO ? sub_result : {1'b0,REMAINER};//mux
-
-    //状态机
-    reg [5:0] cnt;
-    reg start_cnt;
-    always @(posedge clk, posedge rst) begin
-        if(rst) begin
-            cnt <= 0;
-            start_cnt <= 0;
-        end
-        else if(!start_cnt & start) begin
-            cnt <= 1;
-            start_cnt <= 1;
-            //Register init
-            a_tmp<=a;
-            b_tmp<=b;
-            SR[63:0] <= {31'b0,divident_abs,1'b0}; //左移1bit
-            NEG_DIVISOR <= (sign & b[31]) ? {1'b1,b} : ~{1'b0,b} + 1'b1; 
-        end
-        else if(start_cnt) begin
-            if(cnt==32) begin
-                cnt <= 0;
-                start_cnt <= 0;
-                //输出结果
-                SR[63:32] <= mux_result[31:0];
-                SR[31:0] <= {SR[30:0],CO};
-            end
-            else begin
-                cnt <= cnt + 1;
-                SR[63:0] <= {mux_result[30:0],SR[31:0],CO}; // 写，左移
-            end
-        end
-    end
-    assign stall_div = |cnt; //只有当cnt=0时不暂停
+	always @(posedge clk or posedge rst) begin
+		if (rst) begin
+			// reset
+			div_max<=0;
+			div_count<=0;
+			main_state<=0;
+			result<=0;
+			ready_o<=0;
+			div_num1<=0;
+			div_num2<=0;
+			in_num1<=0;
+			in_num2<=0;
+		end
+		//除使能信号期间的处理
+		else if(start_i)begin
+		case(main_state)
+		//一切就绪,等待除使能信号
+		//初始化数据,进入计算状态
+		2'b00:begin
+			main_state<=2'b01;
+			if(Signed_div_i)begin
+				//div_max = 5'd30;
+				div_num1=Opdata1_i[31] ? (~Opdata1_i)+1 : Opdata1_i;
+				div_num2=Opdata2_i[31] ? (~Opdata2_i)+1 : Opdata2_i;
+			end
+			else begin 
+				//div_max = 5'd31;
+				div_num1=Opdata1_i;
+				div_num2=Opdata2_i;		
+			end
+			//简化周期
+			div_max=div_num1[31]?5'd31:
+					div_num1[30]?5'd30:
+					div_num1[29]?5'd29:
+					div_num1[28]?5'd28:
+					div_num1[27]?5'd27:
+					div_num1[26]?5'd26:
+					div_num1[25]?5'd25:
+					div_num1[24]?5'd24:
+					div_num1[23]?5'd23:
+					div_num1[22]?5'd22:
+					div_num1[21]?5'd21:
+					div_num1[20]?5'd20:
+					div_num1[19]?5'd19:
+					div_num1[18]?5'd18:
+					div_num1[17]?5'd17:
+					div_num1[16]?5'd16:
+					div_num1[15]?5'd15:
+					div_num1[14]?5'd14:
+					div_num1[13]?5'd13:
+					div_num1[12]?5'd12:
+					div_num1[11]?5'd11:
+					div_num1[10]?5'd10:
+					div_num1[9]?5'd9:
+					div_num1[8]?5'd8:
+					div_num1[7]?5'd7:
+					div_num1[6]?5'd6:
+					div_num1[5]?5'd5:
+					div_num1[4]?5'd4:
+					div_num1[3]?5'd3:
+					div_num1[2]?5'd2:
+					div_num1[1]?5'd1:5'd0;
+			result={32'h00000000,(div_num1<<(5'd31-div_max))};
+			in_num1=Opdata1_i;
+			in_num2=Opdata2_i;
+		end
+		//计算中,一共32周期
+		2'b01:begin
+			//整体左移
+			result = result << 1;
+			//试减
+			if(result[63:32]>=div_num2)begin 
+				result[0]=1;
+				result[63:32]=result[63:32]-div_num2; 
+			end
+			else begin result[0]=0; end
+			//判断执行次数,达到指定次数后进入符号结算阶段
+			if(div_count==div_max)begin
+				main_state<=2'b10;
+			end
+			//执行次数增加
+			div_count=div_count+1;	
+		end
+		//符号处理
+		2'b10:begin
+			if(Signed_div_i)begin
+				result[31:0]=(in_num1[31]^in_num2[31]) ? (~result[31:0])+1 : result[31:0];
+				result[63:32]=in_num1[31] ? (~result[63:32])+1 : result[63:32];
+			end
+			main_state<=2'b11;
+			ready_o<=1;
+		end
+		//等待取值
+		endcase		
+		end
+		else if(annul_i)begin
+			//重置所有值
+			div_max<=0;
+			div_count<=0;
+			main_state<=0;
+			result<=0;
+			ready_o<=0;
+			div_num1<=0;
+			div_num2<=0;
+			in_num1<=0;
+			in_num2<=0;
+		end
+	end
 endmodule
