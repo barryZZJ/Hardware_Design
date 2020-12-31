@@ -80,10 +80,14 @@ assign lo_write = mul | div | mtlo;
                     `EXE_MTLO: regwrite <= 1'b0;
 
                     `EXE_JR: begin
+                        regwrite <= 1'b0;
+                        // regdst   <= 1'b0;
                         jump     <= 1'b1;
                         jr       <= 1'b1;
                     end
                     `EXE_JALR: begin
+                        // regdst   <= 1'b0;
+                        jal      <= 1'b1;
                         jr       <= 1'b1;
                     end
 
@@ -210,8 +214,9 @@ assign lo_write = mul | div | mtlo;
             // jal : 需要写寄存器
             `EXE_JAL: begin
                 regwrite <= 1'b1;
-                jump     <= 1'b1;
+                // regdst   <= 1'b0;
                 jal      <= 1'b1;
+                jump     <= 1'b1;
             end
             
             // 所有分支指令的第0-15bit存储的都是offset

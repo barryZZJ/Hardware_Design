@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-
+`include "defines.vh"
 module mul#(WIDTH = 32)
            (input [WIDTH-1:0] a,
             input [WIDTH-1:0] b,

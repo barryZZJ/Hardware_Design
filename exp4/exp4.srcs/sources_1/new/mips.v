@@ -43,7 +43,7 @@ wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
 //  mthiE, mtloE;
 wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
-wire memenE, jalE, jrE, balE;
+wire memenE, jalE, jrE, balE, jumpE;
 
 
 // Mem phase
@@ -76,13 +76,13 @@ flopenrc #(32) FD_instr (
 
 //! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-floprc #(25) DE_signals (
+flopenrc #(26) DE_signals (
     .clk(clk),
     .rst(rst),
 	.en(~stallE),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
+    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jumpD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
+    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jumpE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
 );
 
 // exe to Mem flop for signals
@@ -144,6 +144,7 @@ datapath dp(
 	.alusrcE(alusrcE),
 	.regdstE(regdstE),
 	.jumpD(jumpD),
+	.jrD(jrD),
 	.branchD(branchD),
 	.mfhiE(mfhiE),
 	.mfloE(mfloE),
@@ -166,6 +167,7 @@ datapath dp(
 	.memenE(memenE),
     .jalE(jalE),
     .jrE(jrE),
+	.jumpE(jumpE),
 	.balE(balE),
     .balD(balD)
 	// .branchFlushD(branchFlushD)

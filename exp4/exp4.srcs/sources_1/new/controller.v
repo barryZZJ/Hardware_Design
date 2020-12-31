@@ -44,23 +44,17 @@ main_decoder main_decoder(
 	.mflo(mfloD),
 
     .alusrc(alusrcD),
+    .branch(branchD),
 
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
-    .branch(branchD),
+    
     .jump(jumpD),
+
     .memen(memenD),
     .jal(jalD),
     .jr(jrD),
-    .bal(balD),
-    .mfhi(mfhiD),
-	.mflo(mfloD),
-	// .mthi(mthiD),
-	// .mtlo(mtloD),
-	.hidst(hidstD),
-	.lodst(lodstD),
-    .hi_write(hi_writeD), 
-	.lo_write(lo_writeD)
+    .bal(balD)
     
     );
 

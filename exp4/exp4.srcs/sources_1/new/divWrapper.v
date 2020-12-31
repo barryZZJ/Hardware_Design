@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-
+`include "defines.vh"
 module divWrapper(input clk, rst,
                   input [31:0] a,
                   input [31:0] b,

@@ -14,11 +14,13 @@ module datapath(
     input alusrcE,
     input regdstE,
     input jumpD,
+    input jrD,
     input branchD,
 
     input memenE,
     input jalE,
     input jrE,
+    input jumpE,
     input balD,
     input balE,
 
@@ -77,6 +79,8 @@ wire [31:0] pc_4F,pc_8F;
 wire [31:0] pcF, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
 wire [ 5:0] opD;
+
+wire [31:0]pc_jump;
 // wire pcsrcD;
 
 // Execute phase
@@ -110,8 +114,6 @@ wire [31:0] equalsrc1, equalsrc2;
 // branch and jump
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
-
-
 // ----------------------------------------
 // Fetch 
 
@@ -236,20 +238,21 @@ adder pc_branch_adder (
 	.y(pcbranchD)
 );
 
-//mux, PC指向选择, PC+4(0), pc_src(1)
+// mux, PC指向选择, PC+4(0), pc_src(1)
 // pc_branched: 用来跟jump地址再选一次
 mux2 #(32) mux_pcbranch(
-	.a(pcbranchD),//来自数据存储器
-	.b(pc_4F),//来自加法器计算结果
+	.a(pcbranchD),  //来自数据存储器
+	.b(pc_4F),      //来自加法器计算结果
 	.s(pcsrcD),
 	.y(pc_branched)
 );
-
+// equalsrc1是rd1的前推结果
+assign pc_jump = (jrD == 1'b1) ? equalsrc1 : {pc_4D[31:28],instrD[25:0],2'b00};
 //mux, 选择分支之后的pc与jump_addr
 mux2 #(32) mux_pcnext(
-	.a(jump_addr),
+	.a(pc_jump),
 	.b(pc_branched),
-	.s(jumpD),
+	.s(jumpD | jrD),        // 这里信号量配置不一样
 	.y(pc_realnext)
 );
 
@@ -355,18 +358,22 @@ mux2 #(32) mux_ALUBsrc2(
 // jump and branch
 
 // 控制是否将返回地址写入31号寄存器
-mux2 #(5) wrmux2 (
+/*mux2 #(5) wrmux2 (
 	.a(5'b11111),
 	.b(writeregE),
 	.s(jalE | balE),
 	.y(writereg2E)
-);
+);*/
+assign writereg2E = (jumpE == 1'b0 && jrE == 1'b1 && rdE == 5'b00000) ? 5'b11111 :
+                    (jumpE == 1'b0 && jrE == 1'b1 && rdE != 5'b00000) ? rdE : 
+                    (balE == 1'b1 | jalE == 1'b1) ? 5'b11111 :
+                    writeregE; 
 
 // 控制被写数据是否为PC+8
 mux2 #(32) wrmux3 (
 	.a(pcplus8E),
 	.b(aluoutE),
-	.s(jalE | jrE | balE),
+	.s(jalE | balE),
 	.y(aluout2E)
 );
 // 如果是mfhi/lo指令，则ALU A应该输入hi/lo寄存器的值，B输入的是0，同时要考虑转发。
@@ -565,6 +572,7 @@ hazard hazard(
     .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
+
     .stallF(stallF),
     .stallD(stallD),
     .stallE(stallE),
