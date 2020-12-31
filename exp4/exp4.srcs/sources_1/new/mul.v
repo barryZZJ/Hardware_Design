@@ -7,6 +7,7 @@ module mul#(WIDTH = 32)
             output reg [WIDTH*2-1:0] res
             );
 
+// TODO 是否需要改进成IP核？
 wire [WIDTH-1:0] nega, negb;
 assign nega = -a;
 assign negb = -b;

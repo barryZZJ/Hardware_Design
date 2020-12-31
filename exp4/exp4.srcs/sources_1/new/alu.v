@@ -146,7 +146,6 @@ always @(*) begin
 end
 
 
-// TODO sel大小端可能要修改，addr含义还不确定
 // base+[offset/4] （a + {b[31:2], 2'b0}）找到要读/写的那个字的地址，这个地址可以不是按字对齐，
 // offset mod 4的结果（b[1:0]）相当于指定修改这个字里的哪个字节/半字，用这个数得到对应的sel
 assign offset = b[1:0];

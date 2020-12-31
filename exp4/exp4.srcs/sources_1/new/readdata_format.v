@@ -6,8 +6,6 @@ module readdata_format(input [7:0] op,
                        output reg [31:0] finalreaddata);
 
 // 大端读写，低地址在高位
-// TODO addr还不确定含义
-
 always @(*) begin
 	case(op)
         `EXE_LW_OP: finalreaddata <= readdata;
