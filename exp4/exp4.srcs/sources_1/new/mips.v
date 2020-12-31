@@ -26,7 +26,8 @@ module mips(
 	input wire[31:0] readdata,
 	output wire memwriteM,
 	output wire[31:0] pc,
-	output wire[31:0] aluoutM, writedata
+	output wire[31:0] aluoutM, writedata,
+	output wire [3:0] mem_wea
 );
 	
 // Decode phase
@@ -48,6 +49,7 @@ wire hi_writeE, lo_writeE;
 wire regwriteM, memtoregM;
 //  mfhiM, mfloM, mthiM, mtloM; 
 wire [1:0] hidstM, lodstM;
+wire [7:0] alucontrolM;
 wire hi_writeM, lo_writeM;
 //memwriteM;
 
@@ -55,6 +57,7 @@ wire hi_writeM, lo_writeM;
 wire regwriteW, memtoregW;
 //  mfhiW, mfloW, mthiW, mtloW;
 wire [1:0] hidstW, lodstW;
+wire [7:0] alucontrolW;
 wire hi_writeW, lo_writeW;
 
 // hazard
@@ -82,21 +85,21 @@ flopenrc #(21) DE_signals (
 );
 
 // exe to Mem flop for signals
-flopenr #(9) EM_signals (
+flopenr #(17) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteE, memtoregE, memwriteE, hidstE, lodstE, hi_writeE, lo_writeE}),
-    .q({regwriteM, memtoregM, memwriteM, hidstM, lodstM, hi_writeM, lo_writeM})
+    .d({regwriteE, memtoregE, memwriteE, hidstE, lodstE, hi_writeE, lo_writeE, alucontrolE}),
+    .q({regwriteM, memtoregM, memwriteM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM})
 );
 
 // mem to wb flop for signals
-flopenr #(8) MW_signals (
+flopenr #(16) MW_signals (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteM, memtoregM, hidstM, lodstM, hi_writeM, lo_writeM}),
-    .q({regwriteW, memtoregW, hidstW, lodstW, hi_writeW, lo_writeW})
+    .d({regwriteM, memtoregM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM}),
+    .q({regwriteW, memtoregW, hidstW, lodstW, hi_writeW, lo_writeW, alucontrolW})
 );
 
 controller c(
@@ -130,7 +133,7 @@ datapath dp(
 	.memtoregW(memtoregW),
 	.memtoregE(memtoregE),
 	.memtoregM(memtoregM),
-	.alucontrolE(alucontrolE),
+	.alucontrolE(alucontrolE), .alucontrolW(alucontrolW),
 	.alusrcE(alusrcE),
 	.regdstE(regdstE),
 	.jumpD(jumpD),
@@ -148,6 +151,7 @@ datapath dp(
 	.pcsrcD(pcsrcD),
 	.aluoutM(aluoutM),
 	.mem_WriteData(writedata),
+	.mem_wea(mem_wea),
 	.stallF(stallF),
 	.stallD(stallD),
 	.stallE(stallE),

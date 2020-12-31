@@ -4,7 +4,12 @@ module alu #(WIDTH = 32)
              input [WIDTH-1:0] b,
              input [4:0] sa,
              input [7:0] op,
+             input [31:0] writedata,
+             
              output reg [WIDTH-1:0] res,
+             output reg [3:0] sel,
+             output reg [31:0] finalwritedata,
+             output [1:0] offset,
              output overflow, //算术运算溢出
              output zero);
 // ! 在这里添加
@@ -62,25 +67,6 @@ always @(*) begin
         `EXE_SRAV_OP: begin
             res = ({32{b[31]}} << (6'd32 - {1'b0, a[4:0]})) | (b >> a[4:0]) ;
         end
-        ////////////////////////////////////////
-        //
-        // 分支跳转指令
-        //
-        ////////////////////////////////////////
-        // jr
-
-        // jalr
-        // j
-        // jal
-
-        // beq
-        // bgtz
-        // blez
-        // bne
-        // bltz
-        // bltzal
-        // bgez
-        // bgezal
 
         // 算术运算指令
         // + - 是无符号，但是结果有符号
@@ -145,38 +131,55 @@ always @(*) begin
         ///////////
         //访存指令//
         ////////////
-        `EXE_LB_OP : res <= a + b;
-        `EXE_LBU_OP: res <= a + b;
-        `EXE_LH_OP : res <= a + b;
-        `EXE_LHU_OP: res <= a + b;
-        `EXE_LW_OP : res <= a + b;
-        `EXE_SW_OP : res <= a + b;      
-        `EXE_SB_OP : res <= a + b;
-        `EXE_SH_OP : res <= a + b;
-        
-        ////////////////////////////////////////
-        //
-        // 分支跳转指令
-        //
-        ////////////////////////////////////////
-        // jr
-
-        // jalr
-        // j
-        // jal
-
-        // beq
-        // bgtz
-        // blez
-        // bne
-        // bltz
-        // bltzal
-        // bgez
-        // bgezal
-
+        `EXE_LB_OP : res <= a + {b[31:2], 2'b0};
+        `EXE_LBU_OP: res <= a + {b[31:2], 2'b0};
+        `EXE_LH_OP : res <= a + {b[31:2], 2'b0};
+        `EXE_LHU_OP: res <= a + {b[31:2], 2'b0};
+        `EXE_LW_OP : res <= a + {b[31:2], 2'b0};
+        `EXE_SW_OP : res <= a + {b[31:2], 2'b0};      
+        `EXE_SB_OP : res <= a + {b[31:2], 2'b0};
+        `EXE_SH_OP : res <= a + {b[31:2], 2'b0};
 
 
         default: res <= 32'b0;
+    endcase
+end
+
+
+// TODO sel大小端可能要修改，addr含义还不确定
+// base+[offset/4] （a + {b[31:2], 2'b0}）找到要读/写的那个字的地址，这个地址可以不是按字对齐，
+// offset mod 4的结果（b[1:0]）相当于指定修改这个字里的哪个字节/半字，用这个数得到对应的sel
+assign offset = b[1:0];
+
+always @(*) begin
+    case (op)
+        `EXE_LW_OP, `EXE_LB_OP, `EXE_LBU_OP, `EXE_LH_OP, `EXE_LHU_OP : sel <= 4'b0000;
+        `EXE_SW_OP : begin
+            finalwritedata <= writedata;
+            sel <= 4'b1111;
+        end
+        `EXE_SH_OP : begin
+            finalwritedata <= {writedata[15:0], writedata[15:0]};
+            case (offset[1:0])
+                2'b00 :   sel <= 4'b1100;
+                2'b10 :   sel <= 4'b0011;
+                default : sel <= 4'b0000;
+            endcase
+        end
+        `EXE_SB_OP: begin
+            finalwritedata <= {writedata[7:0], writedata[7:0], writedata[7:0], writedata[7:0]};
+            case (offset[1:0])
+                2'b00 :   sel <= 4'b1000;
+                2'b01 :   sel <= 4'b0100;
+                2'b10 :   sel <= 4'b0010;
+                2'b11 :   sel <= 4'b0001;
+                default : sel <= 4'b0000;
+            endcase 
+        end
+        default : begin
+            finalwritedata <= writedata;
+            sel <= 4'b0000;
+        end
     endcase
 end
 

@@ -10,7 +10,7 @@ module datapath(
     input memtoregW,
     input memtoregE,
     input memtoregM,
-    input [7:0]alucontrolE,
+    input [7:0]alucontrolE, alucontrolW,
     input alusrcE,
     input regdstE,
     input jumpD,
@@ -23,6 +23,7 @@ module datapath(
     input lo_writeM, lo_writeW,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
+    output [3:0] mem_wea,
     output pcsrcD,
     output wire stallF, stallD, stallE, flushE
 );
@@ -72,20 +73,26 @@ wire [ 4:0] rsD, rtD, rdD, saD;
     //wire pcsrcD;
 
 // Execute phase
-wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
+wire [ 3:0] selE;
+wire [ 1:0] offsetE;
 
 // Mem phase
 wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
+wire [ 3:0] selM;
+wire [ 1:0] offsetM;
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
+wire [ 1:0] offsetW;
+wire [31:0] finalreaddataW;
 
 // hilo寄存器
 wire [31:0] hi_iW, lo_iW; // hilo input
@@ -312,8 +319,12 @@ alu alu(
     .b(ALUsrcB2),
     .sa(saE),
     .op(alucontrolE),
+    .writedata(writedataE),
     
-    .res(aluoutE)
+    .res(aluoutE),
+    .sel(selE),
+    .finalwritedata(finalwritedataE),
+    .offset(offsetE)
 );
 
 // 乘法器
@@ -377,7 +388,7 @@ flopenr #(32) EM_writedata (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d(writedataE),
+    .d(finalwritedataE),
     .q(writedataM)
 );
 
@@ -399,11 +410,28 @@ flopenr #(64) EM_hilo (
     .q({hi_iM, lo_iM})
 );
 
+// sel
+flopenr #(4) EM_sel (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(selE),
+    .q(selM)
+);
 
+// offset
+flopenr #(2) EM_offset (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(offsetE),
+    .q(offsetM)
+);
 
 // ----------------------------------------
 // Mem 
 assign mem_WriteData = writedataM;
+assign mem_wea = selM;
 
 // ----------------------------------------
 // Mem to wb flops
@@ -444,12 +472,29 @@ flopenr #(64) MW_hilo (
     .q({hi_iW, lo_iW})
 );
 
+flopenr #(2) MW_offset (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .d(offsetM),
+    .q(offsetW)
+);
+
 // ----------------------------------------
 // Write Back 
 
+// 根据load指令类型不同得到真正的readdata
+readdata_format rdf(
+    .op(alucontrolW),
+    .offset(offsetW),
+    .readdata(readdataW),
+    .finalreaddata(finalreaddataW)
+);
+
+
 //mux, 寄存器堆写入数据来自存储器 or ALU ，memtoReg
 mux2 #(32) mux_WD3(
-	.a(readdataW),//来自数据存储器
+	.a(finalreaddataW),//来自数据存储器
 	.b(aluoutW),//来自ALU计算结果
 	.s(memtoregW),
 	.y(resultW)

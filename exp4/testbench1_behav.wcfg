@@ -1,0 +1,1329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="mips_min_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="mips_min_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="203001fs"></ZoomEndTime>
+      <Cursor1Time time="1950000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="200"></NameColumnWidth>
+      <ValueColumnWidth column_width="144"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
+   <wvobject fp_name="group149" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/clock_50" type="logic">
+         <obj_property name="ElementShortName">clock_50</obj_property>
+         <obj_property name="ObjectShortName">clock_50</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/instr" type="array">
+         <obj_property name="ElementShortName">instr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/writedata" type="array">
+         <obj_property name="ElementShortName">writedata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">writedata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dataadr" type="array">
+         <obj_property name="ElementShortName">dataadr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dataadr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/memwrite" type="logic">
+         <obj_property name="ElementShortName">memwrite</obj_property>
+         <obj_property name="ObjectShortName">memwrite</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group162" type="group">
+      <obj_property name="label">top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/instr" type="array">
+         <obj_property name="ElementShortName">instr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/writedata" type="array">
+         <obj_property name="ElementShortName">writedata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">writedata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/dataadr" type="array">
+         <obj_property name="ElementShortName">dataadr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dataadr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/memwrite" type="logic">
+         <obj_property name="ElementShortName">memwrite</obj_property>
+         <obj_property name="ObjectShortName">memwrite</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/readdata" type="array">
+         <obj_property name="ElementShortName">readdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">readdata[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group161" type="group">
+      <obj_property name="label">mips</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/instr" type="array">
+         <obj_property name="ElementShortName">instr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/readdata" type="array">
+         <obj_property name="ElementShortName">readdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">readdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memwriteM" type="logic">
+         <obj_property name="ElementShortName">memwriteM</obj_property>
+         <obj_property name="ObjectShortName">memwriteM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/aluoutM" type="array">
+         <obj_property name="ElementShortName">aluoutM[31:0]</obj_property>
+         <obj_property name="ObjectShortName">aluoutM[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/writedata" type="array">
+         <obj_property name="ElementShortName">writedata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">writedata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/instrD" type="array">
+         <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regwriteD" type="logic">
+         <obj_property name="ElementShortName">regwriteD</obj_property>
+         <obj_property name="ObjectShortName">regwriteD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memtoregD" type="logic">
+         <obj_property name="ElementShortName">memtoregD</obj_property>
+         <obj_property name="ObjectShortName">memtoregD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memwriteD" type="logic">
+         <obj_property name="ElementShortName">memwriteD</obj_property>
+         <obj_property name="ObjectShortName">memwriteD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/branchD" type="logic">
+         <obj_property name="ElementShortName">branchD</obj_property>
+         <obj_property name="ObjectShortName">branchD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/alusrcD" type="logic">
+         <obj_property name="ElementShortName">alusrcD</obj_property>
+         <obj_property name="ObjectShortName">alusrcD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regdstD" type="logic">
+         <obj_property name="ElementShortName">regdstD</obj_property>
+         <obj_property name="ObjectShortName">regdstD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/jumpD" type="logic">
+         <obj_property name="ElementShortName">jumpD</obj_property>
+         <obj_property name="ObjectShortName">jumpD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/pcsrcD" type="logic">
+         <obj_property name="ElementShortName">pcsrcD</obj_property>
+         <obj_property name="ObjectShortName">pcsrcD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/mfhiD" type="logic">
+         <obj_property name="ElementShortName">mfhiD</obj_property>
+         <obj_property name="ObjectShortName">mfhiD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/mfloD" type="logic">
+         <obj_property name="ElementShortName">mfloD</obj_property>
+         <obj_property name="ObjectShortName">mfloD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hidstD" type="array">
+         <obj_property name="ElementShortName">hidstD[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstD[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lodstD" type="array">
+         <obj_property name="ElementShortName">lodstD[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstD[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/alucontrolD" type="array">
+         <obj_property name="ElementShortName">alucontrolD[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrolD[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hi_writeD" type="logic">
+         <obj_property name="ElementShortName">hi_writeD</obj_property>
+         <obj_property name="ObjectShortName">hi_writeD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lo_writeD" type="logic">
+         <obj_property name="ElementShortName">lo_writeD</obj_property>
+         <obj_property name="ObjectShortName">lo_writeD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regwriteE" type="logic">
+         <obj_property name="ElementShortName">regwriteE</obj_property>
+         <obj_property name="ObjectShortName">regwriteE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memtoregE" type="logic">
+         <obj_property name="ElementShortName">memtoregE</obj_property>
+         <obj_property name="ObjectShortName">memtoregE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memwriteE" type="logic">
+         <obj_property name="ElementShortName">memwriteE</obj_property>
+         <obj_property name="ObjectShortName">memwriteE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/alusrcE" type="logic">
+         <obj_property name="ElementShortName">alusrcE</obj_property>
+         <obj_property name="ObjectShortName">alusrcE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regdstE" type="logic">
+         <obj_property name="ElementShortName">regdstE</obj_property>
+         <obj_property name="ObjectShortName">regdstE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/mfhiE" type="logic">
+         <obj_property name="ElementShortName">mfhiE</obj_property>
+         <obj_property name="ObjectShortName">mfhiE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/mfloE" type="logic">
+         <obj_property name="ElementShortName">mfloE</obj_property>
+         <obj_property name="ObjectShortName">mfloE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hidstE" type="array">
+         <obj_property name="ElementShortName">hidstE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lodstE" type="array">
+         <obj_property name="ElementShortName">lodstE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/alucontrolE" type="array">
+         <obj_property name="ElementShortName">alucontrolE[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrolE[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hi_writeE" type="logic">
+         <obj_property name="ElementShortName">hi_writeE</obj_property>
+         <obj_property name="ObjectShortName">hi_writeE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lo_writeE" type="logic">
+         <obj_property name="ElementShortName">lo_writeE</obj_property>
+         <obj_property name="ObjectShortName">lo_writeE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regwriteM" type="logic">
+         <obj_property name="ElementShortName">regwriteM</obj_property>
+         <obj_property name="ObjectShortName">regwriteM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memtoregM" type="logic">
+         <obj_property name="ElementShortName">memtoregM</obj_property>
+         <obj_property name="ObjectShortName">memtoregM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hidstM" type="array">
+         <obj_property name="ElementShortName">hidstM[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstM[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lodstM" type="array">
+         <obj_property name="ElementShortName">lodstM[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstM[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hi_writeM" type="logic">
+         <obj_property name="ElementShortName">hi_writeM</obj_property>
+         <obj_property name="ObjectShortName">hi_writeM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lo_writeM" type="logic">
+         <obj_property name="ElementShortName">lo_writeM</obj_property>
+         <obj_property name="ObjectShortName">lo_writeM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/regwriteW" type="logic">
+         <obj_property name="ElementShortName">regwriteW</obj_property>
+         <obj_property name="ObjectShortName">regwriteW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/memtoregW" type="logic">
+         <obj_property name="ElementShortName">memtoregW</obj_property>
+         <obj_property name="ObjectShortName">memtoregW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hidstW" type="array">
+         <obj_property name="ElementShortName">hidstW[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstW[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lodstW" type="array">
+         <obj_property name="ElementShortName">lodstW[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstW[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/hi_writeW" type="logic">
+         <obj_property name="ElementShortName">hi_writeW</obj_property>
+         <obj_property name="ObjectShortName">hi_writeW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/lo_writeW" type="logic">
+         <obj_property name="ElementShortName">lo_writeW</obj_property>
+         <obj_property name="ObjectShortName">lo_writeW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/stallF" type="logic">
+         <obj_property name="ElementShortName">stallF</obj_property>
+         <obj_property name="ObjectShortName">stallF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/stallD" type="logic">
+         <obj_property name="ElementShortName">stallD</obj_property>
+         <obj_property name="ObjectShortName">stallD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/flushE" type="logic">
+         <obj_property name="ElementShortName">flushE</obj_property>
+         <obj_property name="ObjectShortName">flushE</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group163" type="group">
+      <obj_property name="label">controller</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/op" type="array">
+         <obj_property name="ElementShortName">op[5:0]</obj_property>
+         <obj_property name="ObjectShortName">op[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/funct" type="array">
+         <obj_property name="ElementShortName">funct[5:0]</obj_property>
+         <obj_property name="ObjectShortName">funct[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/regwriteD" type="logic">
+         <obj_property name="ElementShortName">regwriteD</obj_property>
+         <obj_property name="ObjectShortName">regwriteD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/memtoregD" type="logic">
+         <obj_property name="ElementShortName">memtoregD</obj_property>
+         <obj_property name="ObjectShortName">memtoregD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/memwriteD" type="logic">
+         <obj_property name="ElementShortName">memwriteD</obj_property>
+         <obj_property name="ObjectShortName">memwriteD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/branchD" type="logic">
+         <obj_property name="ElementShortName">branchD</obj_property>
+         <obj_property name="ObjectShortName">branchD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/alucontrolD" type="array">
+         <obj_property name="ElementShortName">alucontrolD[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrolD[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/alusrcD" type="logic">
+         <obj_property name="ElementShortName">alusrcD</obj_property>
+         <obj_property name="ObjectShortName">alusrcD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/regdstD" type="logic">
+         <obj_property name="ElementShortName">regdstD</obj_property>
+         <obj_property name="ObjectShortName">regdstD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/jumpD" type="logic">
+         <obj_property name="ElementShortName">jumpD</obj_property>
+         <obj_property name="ObjectShortName">jumpD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/mfhiD" type="logic">
+         <obj_property name="ElementShortName">mfhiD</obj_property>
+         <obj_property name="ObjectShortName">mfhiD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/mfloD" type="logic">
+         <obj_property name="ElementShortName">mfloD</obj_property>
+         <obj_property name="ObjectShortName">mfloD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/hidstD" type="array">
+         <obj_property name="ElementShortName">hidstD[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstD[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/lodstD" type="array">
+         <obj_property name="ElementShortName">lodstD[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstD[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/hi_writeD" type="logic">
+         <obj_property name="ElementShortName">hi_writeD</obj_property>
+         <obj_property name="ObjectShortName">hi_writeD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/lo_writeD" type="logic">
+         <obj_property name="ElementShortName">lo_writeD</obj_property>
+         <obj_property name="ObjectShortName">lo_writeD</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group238" type="group">
+      <obj_property name="label">main decoder</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/op" type="array">
+         <obj_property name="ElementShortName">op[5:0]</obj_property>
+         <obj_property name="ObjectShortName">op[5:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/funct" type="array">
+         <obj_property name="ElementShortName">funct[5:0]</obj_property>
+         <obj_property name="ObjectShortName">funct[5:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/regdst" type="logic">
+         <obj_property name="ElementShortName">regdst</obj_property>
+         <obj_property name="ObjectShortName">regdst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/regwrite" type="logic">
+         <obj_property name="ElementShortName">regwrite</obj_property>
+         <obj_property name="ObjectShortName">regwrite</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/alusrc" type="logic">
+         <obj_property name="ElementShortName">alusrc</obj_property>
+         <obj_property name="ObjectShortName">alusrc</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/branch" type="logic">
+         <obj_property name="ElementShortName">branch</obj_property>
+         <obj_property name="ObjectShortName">branch</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/memwrite" type="logic">
+         <obj_property name="ElementShortName">memwrite</obj_property>
+         <obj_property name="ObjectShortName">memwrite</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/memtoreg" type="logic">
+         <obj_property name="ElementShortName">memtoreg</obj_property>
+         <obj_property name="ObjectShortName">memtoreg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/memen" type="logic">
+         <obj_property name="ElementShortName">memen</obj_property>
+         <obj_property name="ObjectShortName">memen</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/jal" type="logic">
+         <obj_property name="ElementShortName">jal</obj_property>
+         <obj_property name="ObjectShortName">jal</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/jr" type="logic">
+         <obj_property name="ElementShortName">jr</obj_property>
+         <obj_property name="ObjectShortName">jr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/bal" type="logic">
+         <obj_property name="ElementShortName">bal</obj_property>
+         <obj_property name="ObjectShortName">bal</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/jump" type="logic">
+         <obj_property name="ElementShortName">jump</obj_property>
+         <obj_property name="ObjectShortName">jump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/mfhi" type="logic">
+         <obj_property name="ElementShortName">mfhi</obj_property>
+         <obj_property name="ObjectShortName">mfhi</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/mflo" type="logic">
+         <obj_property name="ElementShortName">mflo</obj_property>
+         <obj_property name="ObjectShortName">mflo</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/hidst" type="array">
+         <obj_property name="ElementShortName">hidst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/lodst" type="array">
+         <obj_property name="ElementShortName">lodst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/hi_write" type="logic">
+         <obj_property name="ElementShortName">hi_write</obj_property>
+         <obj_property name="ObjectShortName">hi_write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/lo_write" type="logic">
+         <obj_property name="ElementShortName">lo_write</obj_property>
+         <obj_property name="ObjectShortName">lo_write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/mul" type="logic">
+         <obj_property name="ElementShortName">mul</obj_property>
+         <obj_property name="ObjectShortName">mul</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/div" type="logic">
+         <obj_property name="ElementShortName">div</obj_property>
+         <obj_property name="ObjectShortName">div</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/mthi" type="logic">
+         <obj_property name="ElementShortName">mthi</obj_property>
+         <obj_property name="ObjectShortName">mthi</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/main_decoder/mtlo" type="logic">
+         <obj_property name="ElementShortName">mtlo</obj_property>
+         <obj_property name="ObjectShortName">mtlo</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group250" type="group">
+      <obj_property name="label">aludec</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/aludec/op" type="array">
+         <obj_property name="ElementShortName">op[5:0]</obj_property>
+         <obj_property name="ObjectShortName">op[5:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/aludec/funct" type="array">
+         <obj_property name="ElementShortName">funct[5:0]</obj_property>
+         <obj_property name="ObjectShortName">funct[5:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/c/aludec/alucontrol" type="array">
+         <obj_property name="ElementShortName">alucontrol[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrol[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group411" type="group">
+      <obj_property name="label">alu</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/a" type="array">
+         <obj_property name="ElementShortName">a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/b" type="array">
+         <obj_property name="ElementShortName">b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/sa" type="array">
+         <obj_property name="ElementShortName">sa[4:0]</obj_property>
+         <obj_property name="ObjectShortName">sa[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/op" type="array">
+         <obj_property name="ElementShortName">op[7:0]</obj_property>
+         <obj_property name="ObjectShortName">op[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/res" type="array">
+         <obj_property name="ElementShortName">res[31:0]</obj_property>
+         <obj_property name="ObjectShortName">res[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/zero" type="logic">
+         <obj_property name="ElementShortName">zero</obj_property>
+         <obj_property name="ObjectShortName">zero</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alu/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group174" type="group">
+      <obj_property name="label">datapath</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrD" type="array">
+         <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrE" type="array">
+         <obj_property name="ElementShortName">instrE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrM" type="array">
+         <obj_property name="ElementShortName">instrM[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrM[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrW" type="array">
+         <obj_property name="ElementShortName">instrW[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrW[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/readdata" type="array">
+         <obj_property name="ElementShortName">readdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">readdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regwriteE" type="logic">
+         <obj_property name="ElementShortName">regwriteE</obj_property>
+         <obj_property name="ObjectShortName">regwriteE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regwriteM" type="logic">
+         <obj_property name="ElementShortName">regwriteM</obj_property>
+         <obj_property name="ObjectShortName">regwriteM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regwriteW" type="logic">
+         <obj_property name="ElementShortName">regwriteW</obj_property>
+         <obj_property name="ObjectShortName">regwriteW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/memtoregW" type="logic">
+         <obj_property name="ElementShortName">memtoregW</obj_property>
+         <obj_property name="ObjectShortName">memtoregW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/memtoregE" type="logic">
+         <obj_property name="ElementShortName">memtoregE</obj_property>
+         <obj_property name="ObjectShortName">memtoregE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/memtoregM" type="logic">
+         <obj_property name="ElementShortName">memtoregM</obj_property>
+         <obj_property name="ObjectShortName">memtoregM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alucontrolE" type="array">
+         <obj_property name="ElementShortName">alucontrolE[7:0]</obj_property>
+         <obj_property name="ObjectShortName">alucontrolE[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/alusrcE" type="logic">
+         <obj_property name="ElementShortName">alusrcE</obj_property>
+         <obj_property name="ObjectShortName">alusrcE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regdstE" type="logic">
+         <obj_property name="ElementShortName">regdstE</obj_property>
+         <obj_property name="ObjectShortName">regdstE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/jumpD" type="logic">
+         <obj_property name="ElementShortName">jumpD</obj_property>
+         <obj_property name="ObjectShortName">jumpD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/branchD" type="logic">
+         <obj_property name="ElementShortName">branchD</obj_property>
+         <obj_property name="ObjectShortName">branchD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mfhiE" type="logic">
+         <obj_property name="ElementShortName">mfhiE</obj_property>
+         <obj_property name="ObjectShortName">mfhiE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mfloE" type="logic">
+         <obj_property name="ElementShortName">mfloE</obj_property>
+         <obj_property name="ObjectShortName">mfloE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hidstE" type="array">
+         <obj_property name="ElementShortName">hidstE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hidstW" type="array">
+         <obj_property name="ElementShortName">hidstW[1:0]</obj_property>
+         <obj_property name="ObjectShortName">hidstW[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/lodstE" type="array">
+         <obj_property name="ElementShortName">lodstE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/lodstW" type="array">
+         <obj_property name="ElementShortName">lodstW[1:0]</obj_property>
+         <obj_property name="ObjectShortName">lodstW[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/aluoutM" type="array">
+         <obj_property name="ElementShortName">aluoutM[31:0]</obj_property>
+         <obj_property name="ObjectShortName">aluoutM[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mem_WriteData" type="array">
+         <obj_property name="ElementShortName">mem_WriteData[31:0]</obj_property>
+         <obj_property name="ObjectShortName">mem_WriteData[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pcsrcD" type="logic">
+         <obj_property name="ElementShortName">pcsrcD</obj_property>
+         <obj_property name="ObjectShortName">pcsrcD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/stallF" type="logic">
+         <obj_property name="ElementShortName">stallF</obj_property>
+         <obj_property name="ObjectShortName">stallF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/stallD" type="logic">
+         <obj_property name="ElementShortName">stallD</obj_property>
+         <obj_property name="ObjectShortName">stallD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/flushE" type="logic">
+         <obj_property name="ElementShortName">flushE</obj_property>
+         <obj_property name="ObjectShortName">flushE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc_branched" type="array">
+         <obj_property name="ElementShortName">pc_branched[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_branched[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc_realnext" type="array">
+         <obj_property name="ElementShortName">pc_realnext[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_realnext[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/ALUsrcA1" type="array">
+         <obj_property name="ElementShortName">ALUsrcA1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ALUsrcA1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/ALUsrcA2" type="array">
+         <obj_property name="ElementShortName">ALUsrcA2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ALUsrcA2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/ALUsrcB1" type="array">
+         <obj_property name="ElementShortName">ALUsrcB1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ALUsrcB1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/ALUsrcB2" type="array">
+         <obj_property name="ElementShortName">ALUsrcB2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ALUsrcB2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/sl2_imm" type="array">
+         <obj_property name="ElementShortName">sl2_imm[31:0]</obj_property>
+         <obj_property name="ObjectShortName">sl2_imm[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/sl2_j_addr" type="array">
+         <obj_property name="ElementShortName">sl2_j_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">sl2_j_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/jump_addr" type="array">
+         <obj_property name="ElementShortName">jump_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">jump_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/resultW" type="array">
+         <obj_property name="ElementShortName">resultW[31:0]</obj_property>
+         <obj_property name="ObjectShortName">resultW[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc_4F" type="array">
+         <obj_property name="ElementShortName">pc_4F[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_4F[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pcF" type="array">
+         <obj_property name="ElementShortName">pcF[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pcF[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pc_4D" type="array">
+         <obj_property name="ElementShortName">pc_4D[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_4D[31:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/pcbranchD" type="array">
+         <obj_property name="ElementShortName">pcbranchD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pcbranchD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rd1D" type="array">
+         <obj_property name="ElementShortName">rd1D[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd1D[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rd2D" type="array">
+         <obj_property name="ElementShortName">rd2D[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd2D[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/extend_immD" type="array">
+         <obj_property name="ElementShortName">extend_immD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">extend_immD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rsD" type="array">
+         <obj_property name="ElementShortName">rsD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rsD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rtD" type="array">
+         <obj_property name="ElementShortName">rtD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rtD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rdD" type="array">
+         <obj_property name="ElementShortName">rdD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rdD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/saD" type="array">
+         <obj_property name="ElementShortName">saD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">saD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rd1E" type="array">
+         <obj_property name="ElementShortName">rd1E[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd1E[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rd2E" type="array">
+         <obj_property name="ElementShortName">rd2E[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd2E[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/extend_immE" type="array">
+         <obj_property name="ElementShortName">extend_immE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">extend_immE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/aluoutE" type="array">
+         <obj_property name="ElementShortName">aluoutE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">aluoutE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/writedataE" type="array">
+         <obj_property name="ElementShortName">writedataE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">writedataE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rsE" type="array">
+         <obj_property name="ElementShortName">rsE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rsE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rtE" type="array">
+         <obj_property name="ElementShortName">rtE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rtE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/rdE" type="array">
+         <obj_property name="ElementShortName">rdE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rdE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/writeregE" type="array">
+         <obj_property name="ElementShortName">writeregE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/saE" type="array">
+         <obj_property name="ElementShortName">saE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">saE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/writedataM" type="array">
+         <obj_property name="ElementShortName">writedataM[31:0]</obj_property>
+         <obj_property name="ObjectShortName">writedataM[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/writeregM" type="array">
+         <obj_property name="ElementShortName">writeregM[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregM[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/aluoutW" type="array">
+         <obj_property name="ElementShortName">aluoutW[31:0]</obj_property>
+         <obj_property name="ObjectShortName">aluoutW[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/readdataW" type="array">
+         <obj_property name="ElementShortName">readdataW[31:0]</obj_property>
+         <obj_property name="ObjectShortName">readdataW[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/writeregW" type="array">
+         <obj_property name="ElementShortName">writeregW[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregW[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="group287" type="group">
+         <obj_property name="label">hilo</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/mips_min_tb/dut/clk" type="logic">
+            <obj_property name="ElementShortName">clk</obj_property>
+            <obj_property name="ObjectShortName">clk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrD" type="array">
+            <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+            <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrE" type="array">
+            <obj_property name="ElementShortName">instrE[31:0]</obj_property>
+            <obj_property name="ObjectShortName">instrE[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrM" type="array">
+            <obj_property name="ElementShortName">instrM[31:0]</obj_property>
+            <obj_property name="ObjectShortName">instrM[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrW" type="array">
+            <obj_property name="ElementShortName">instrW[31:0]</obj_property>
+            <obj_property name="ObjectShortName">instrW[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/hi_iE" type="array">
+            <obj_property name="ElementShortName">hi_iE[31:0]</obj_property>
+            <obj_property name="ObjectShortName">hi_iE[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/lo_iE" type="array">
+            <obj_property name="ElementShortName">lo_iE[31:0]</obj_property>
+            <obj_property name="ObjectShortName">lo_iE[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/hi_iM" type="array">
+            <obj_property name="ElementShortName">hi_iM[31:0]</obj_property>
+            <obj_property name="ObjectShortName">hi_iM[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/lo_iM" type="array">
+            <obj_property name="ElementShortName">lo_iM[31:0]</obj_property>
+            <obj_property name="ObjectShortName">lo_iM[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/hi_iW" type="array">
+            <obj_property name="ElementShortName">hi_iW[31:0]</obj_property>
+            <obj_property name="ObjectShortName">hi_iW[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/lo_iW" type="array">
+            <obj_property name="ElementShortName">lo_iW[31:0]</obj_property>
+            <obj_property name="ObjectShortName">lo_iW[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/hi_writeW" type="logic">
+            <obj_property name="ElementShortName">hi_writeW</obj_property>
+            <obj_property name="ObjectShortName">hi_writeW</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/lo_writeW" type="logic">
+            <obj_property name="ElementShortName">lo_writeW</obj_property>
+            <obj_property name="ObjectShortName">lo_writeW</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/hi_oW" type="array">
+            <obj_property name="ElementShortName">hi_oW[31:0]</obj_property>
+            <obj_property name="ObjectShortName">hi_oW[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/lo_oW" type="array">
+            <obj_property name="ElementShortName">lo_oW[31:0]</obj_property>
+            <obj_property name="ObjectShortName">lo_oW[31:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/forwardAE" type="array">
+         <obj_property name="ElementShortName">forwardAE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardAE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/forwardBE" type="array">
+         <obj_property name="ElementShortName">forwardBE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardBE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/forwardHLE" type="array">
+         <obj_property name="ElementShortName">forwardHLE[2:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardHLE[2:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/forwardAD" type="logic">
+         <obj_property name="ElementShortName">forwardAD</obj_property>
+         <obj_property name="ObjectShortName">forwardAD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/forwardBD" type="logic">
+         <obj_property name="ElementShortName">forwardBD</obj_property>
+         <obj_property name="ObjectShortName">forwardBD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/equalD" type="logic">
+         <obj_property name="ElementShortName">equalD</obj_property>
+         <obj_property name="ObjectShortName">equalD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/equalsrc1" type="array">
+         <obj_property name="ElementShortName">equalsrc1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">equalsrc1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/equalsrc2" type="array">
+         <obj_property name="ElementShortName">equalsrc2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">equalsrc2[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group531" type="group">
+      <obj_property name="label">regfile</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/we3" type="logic">
+         <obj_property name="ElementShortName">we3</obj_property>
+         <obj_property name="ObjectShortName">we3</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/ra1" type="array">
+         <obj_property name="ElementShortName">ra1[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ra1[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/ra2" type="array">
+         <obj_property name="ElementShortName">ra2[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ra2[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/wa3" type="array">
+         <obj_property name="ElementShortName">wa3[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wa3[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/wd3" type="array">
+         <obj_property name="ElementShortName">wd3[31:0]</obj_property>
+         <obj_property name="ObjectShortName">wd3[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rd1" type="array">
+         <obj_property name="ElementShortName">rd1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rd2" type="array">
+         <obj_property name="ElementShortName">rd2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rd2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf" type="array">
+         <obj_property name="ElementShortName">rf[31:0][31:0]</obj_property>
+         <obj_property name="ObjectShortName">rf[31:0][31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="group321" type="group">
+         <obj_property name="label">0~5</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf[4]" type="array">
+            <obj_property name="ElementShortName">[4][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf[3]" type="array">
+            <obj_property name="ElementShortName">[3][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf[2]" type="array">
+            <obj_property name="ElementShortName">[2][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf[1]" type="array">
+            <obj_property name="ElementShortName">[1][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/mips_min_tb/dut/mips/dp/regfile/rf[0]" type="array">
+            <obj_property name="ElementShortName">[0][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group344" type="group">
+      <obj_property name="label">hiloreg</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/weh" type="logic">
+         <obj_property name="ElementShortName">weh</obj_property>
+         <obj_property name="ObjectShortName">weh</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/wel" type="logic">
+         <obj_property name="ElementShortName">wel</obj_property>
+         <obj_property name="ObjectShortName">wel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/hi" type="array">
+         <obj_property name="ElementShortName">hi[31:0]</obj_property>
+         <obj_property name="ObjectShortName">hi[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/lo" type="array">
+         <obj_property name="ElementShortName">lo[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lo[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/hi_o" type="array">
+         <obj_property name="ElementShortName">hi_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">hi_o[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hilo/lo_o" type="array">
+         <obj_property name="ElementShortName">lo_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lo_o[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group267" type="group">
+      <obj_property name="label">hazard</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/rsD" type="array">
+         <obj_property name="ElementShortName">rsD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rsD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/rtD" type="array">
+         <obj_property name="ElementShortName">rtD[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rtD[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/rsE" type="array">
+         <obj_property name="ElementShortName">rsE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rsE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/rtE" type="array">
+         <obj_property name="ElementShortName">rtE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rtE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/writeregE" type="array">
+         <obj_property name="ElementShortName">writeregE[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregE[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/writeregM" type="array">
+         <obj_property name="ElementShortName">writeregM[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregM[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/writeregW" type="array">
+         <obj_property name="ElementShortName">writeregW[4:0]</obj_property>
+         <obj_property name="ObjectShortName">writeregW[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/regwriteE" type="logic">
+         <obj_property name="ElementShortName">regwriteE</obj_property>
+         <obj_property name="ObjectShortName">regwriteE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/regwriteM" type="logic">
+         <obj_property name="ElementShortName">regwriteM</obj_property>
+         <obj_property name="ObjectShortName">regwriteM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/regwriteW" type="logic">
+         <obj_property name="ElementShortName">regwriteW</obj_property>
+         <obj_property name="ObjectShortName">regwriteW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/memtoregE" type="logic">
+         <obj_property name="ElementShortName">memtoregE</obj_property>
+         <obj_property name="ObjectShortName">memtoregE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/memtoregM" type="logic">
+         <obj_property name="ElementShortName">memtoregM</obj_property>
+         <obj_property name="ObjectShortName">memtoregM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/branchD" type="logic">
+         <obj_property name="ElementShortName">branchD</obj_property>
+         <obj_property name="ObjectShortName">branchD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/mfhiE" type="logic">
+         <obj_property name="ElementShortName">mfhiE</obj_property>
+         <obj_property name="ObjectShortName">mfhiE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/mfloE" type="logic">
+         <obj_property name="ElementShortName">mfloE</obj_property>
+         <obj_property name="ObjectShortName">mfloE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/hi_writeM" type="logic">
+         <obj_property name="ElementShortName">hi_writeM</obj_property>
+         <obj_property name="ObjectShortName">hi_writeM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/hi_writeW" type="logic">
+         <obj_property name="ElementShortName">hi_writeW</obj_property>
+         <obj_property name="ObjectShortName">hi_writeW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/lo_writeM" type="logic">
+         <obj_property name="ElementShortName">lo_writeM</obj_property>
+         <obj_property name="ObjectShortName">lo_writeM</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/lo_writeW" type="logic">
+         <obj_property name="ElementShortName">lo_writeW</obj_property>
+         <obj_property name="ObjectShortName">lo_writeW</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/divstallE" type="logic">
+         <obj_property name="ElementShortName">divstallE</obj_property>
+         <obj_property name="ObjectShortName">divstallE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/forwardAE" type="array">
+         <obj_property name="ElementShortName">forwardAE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardAE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/forwardBE" type="array">
+         <obj_property name="ElementShortName">forwardBE[1:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardBE[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/forwardHLE" type="array">
+         <obj_property name="ElementShortName">forwardHLE[2:0]</obj_property>
+         <obj_property name="ObjectShortName">forwardHLE[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/forwardAD" type="logic">
+         <obj_property name="ElementShortName">forwardAD</obj_property>
+         <obj_property name="ObjectShortName">forwardAD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/forwardBD" type="logic">
+         <obj_property name="ElementShortName">forwardBD</obj_property>
+         <obj_property name="ObjectShortName">forwardBD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/stallF" type="logic">
+         <obj_property name="ElementShortName">stallF</obj_property>
+         <obj_property name="ObjectShortName">stallF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/stallD" type="logic">
+         <obj_property name="ElementShortName">stallD</obj_property>
+         <obj_property name="ObjectShortName">stallD</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/flushE" type="logic">
+         <obj_property name="ElementShortName">flushE</obj_property>
+         <obj_property name="ObjectShortName">flushE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/lwstall" type="logic">
+         <obj_property name="ElementShortName">lwstall</obj_property>
+         <obj_property name="ObjectShortName">lwstall</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/hazard/branchstall" type="logic">
+         <obj_property name="ElementShortName">branchstall</obj_property>
+         <obj_property name="ObjectShortName">branchstall</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group300" type="group">
+      <obj_property name="label">mul</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/a" type="array">
+         <obj_property name="ElementShortName">a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/b" type="array">
+         <obj_property name="ElementShortName">b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/op" type="array">
+         <obj_property name="ElementShortName">op[7:0]</obj_property>
+         <obj_property name="ObjectShortName">op[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/res" type="array">
+         <obj_property name="ElementShortName">res[63:0]</obj_property>
+         <obj_property name="ObjectShortName">res[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/nega" type="array">
+         <obj_property name="ElementShortName">nega[31:0]</obj_property>
+         <obj_property name="ObjectShortName">nega[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/negb" type="array">
+         <obj_property name="ElementShortName">negb[31:0]</obj_property>
+         <obj_property name="ObjectShortName">negb[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/mul/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group308" type="group">
+      <obj_property name="label">divwarpper</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrD" type="array">
+         <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrE" type="array">
+         <obj_property name="ElementShortName">instrE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/a" type="array">
+         <obj_property name="ElementShortName">a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/b" type="array">
+         <obj_property name="ElementShortName">b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/op" type="array">
+         <obj_property name="ElementShortName">op[7:0]</obj_property>
+         <obj_property name="ObjectShortName">op[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div_result" type="array">
+         <obj_property name="ElementShortName">div_result[63:0]</obj_property>
+         <obj_property name="ObjectShortName">div_result[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/divstall" type="logic">
+         <obj_property name="ElementShortName">divstall</obj_property>
+         <obj_property name="ObjectShortName">divstall</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div_ready" type="logic">
+         <obj_property name="ElementShortName">div_ready</obj_property>
+         <obj_property name="ObjectShortName">div_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div_start" type="logic">
+         <obj_property name="ElementShortName">div_start</obj_property>
+         <obj_property name="ObjectShortName">div_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div_sign" type="logic">
+         <obj_property name="ElementShortName">div_sign</obj_property>
+         <obj_property name="ObjectShortName">div_sign</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div_refresh" type="logic">
+         <obj_property name="ElementShortName">div_refresh</obj_property>
+         <obj_property name="ObjectShortName">div_refresh</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group320" type="group">
+      <obj_property name="label">div</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrD" type="array">
+         <obj_property name="ElementShortName">instrD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/instrE" type="array">
+         <obj_property name="ElementShortName">instrE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instrE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/Signed_div_i" type="logic">
+         <obj_property name="ElementShortName">Signed_div_i</obj_property>
+         <obj_property name="ObjectShortName">Signed_div_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/Opdata1_i" type="array">
+         <obj_property name="ElementShortName">Opdata1_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">Opdata1_i[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/Opdata2_i" type="array">
+         <obj_property name="ElementShortName">Opdata2_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">Opdata2_i[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/start_i" type="logic">
+         <obj_property name="ElementShortName">start_i</obj_property>
+         <obj_property name="ObjectShortName">start_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/annul_i" type="logic">
+         <obj_property name="ElementShortName">annul_i</obj_property>
+         <obj_property name="ObjectShortName">annul_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/result_o" type="array">
+         <obj_property name="ElementShortName">result_o[63:0]</obj_property>
+         <obj_property name="ObjectShortName">result_o[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/ready_o" type="logic">
+         <obj_property name="ElementShortName">ready_o</obj_property>
+         <obj_property name="ObjectShortName">ready_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/div_max" type="array">
+         <obj_property name="ElementShortName">div_max[4:0]</obj_property>
+         <obj_property name="ObjectShortName">div_max[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/div_count" type="array">
+         <obj_property name="ElementShortName">div_count[4:0]</obj_property>
+         <obj_property name="ObjectShortName">div_count[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/main_state" type="array">
+         <obj_property name="ElementShortName">main_state[1:0]</obj_property>
+         <obj_property name="ObjectShortName">main_state[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/result" type="array">
+         <obj_property name="ElementShortName">result[63:0]</obj_property>
+         <obj_property name="ObjectShortName">result[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/in_num1" type="array">
+         <obj_property name="ElementShortName">in_num1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">in_num1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/in_num2" type="array">
+         <obj_property name="ElementShortName">in_num2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">in_num2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/div_num1" type="array">
+         <obj_property name="ElementShortName">div_num1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">div_num1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/mips/dp/div/div/div_num2" type="array">
+         <obj_property name="ElementShortName">div_num2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">div_num2[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group1028" type="group">
+      <obj_property name="label">data_ram</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/clka" type="logic">
+         <obj_property name="ElementShortName">clka</obj_property>
+         <obj_property name="ObjectShortName">clka</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/ena" type="logic">
+         <obj_property name="ElementShortName">ena</obj_property>
+         <obj_property name="ObjectShortName">ena</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/wea" type="array">
+         <obj_property name="ElementShortName">wea[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wea[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/addra" type="array">
+         <obj_property name="ElementShortName">addra[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addra[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/dina" type="array">
+         <obj_property name="ElementShortName">dina[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dina[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/mips_min_tb/dut/data_ram/douta" type="array">
+         <obj_property name="ElementShortName">douta[31:0]</obj_property>
+         <obj_property name="ObjectShortName">douta[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
