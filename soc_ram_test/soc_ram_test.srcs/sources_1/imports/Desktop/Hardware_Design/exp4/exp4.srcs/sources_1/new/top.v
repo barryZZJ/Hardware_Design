@@ -22,7 +22,7 @@ module top(
 	//////////////////////////////////////////
 	// debug ports
 	output wire [31:0] debug_wb_pc      ,	// pc
-	output wire 	   debug_wb_rf_wen  ,	// regfile write enable
+	output wire [ 3:0] debug_wb_rf_wen  ,	// regfile write enable
 	output wire [ 4:0] debug_wb_rf_wnum ,	// regfile write number
 	output wire [31:0] debug_wb_rf_wdata	// regfile write data
 	
@@ -30,7 +30,7 @@ module top(
 
 mips mips(
 	.clk			(clk),
-	.reset			(resetn),
+	.rst			(resetn),
 	.pc				(inst_sram_addr	),
 	.instr			(inst_sram_rdata),
 

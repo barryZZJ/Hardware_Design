@@ -6,7 +6,7 @@ module datapath(
     input [31:0]instrD, readdata, // 数据存储器读出的数据
     input regwriteE,
     input regwriteM,
-    input regwriteW,
+    input regwriteW,                // 4 bit
     input memtoregW,
     input memtoregE,
     input memtoregM,
@@ -37,14 +37,14 @@ module datapath(
     output wire stallF, stallD, stallE, flushE,
 
     // debug
-    output wire debug_wb_rf_wen  , 
+    output wire [ 3:0] debug_wb_rf_wen  , 
     output wire [ 4:0] debug_wb_rf_wnum ,
     output wire [31:0] debug_wb_rf_wdata
 );
 
 //////////////////////////////////////
 // soc debug
-assign debug_wb_rf_wen = regwriteW;
+assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
 assign debug_wb_rf_wnum = writeregW;
 assign debug_wb_rf_wdata = resultW;
 
@@ -136,7 +136,7 @@ wire [31:0] aluout2E;
 // Fetch 
 
 //pc
-flopenr #(32) pc_module(
+pc_module #(32) pc_module(
 	.clk(clk),
 	.rst(rst),
     .en(~stallF),

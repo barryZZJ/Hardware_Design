@@ -22,14 +22,14 @@
 
 module mips(
 	input wire clk,
-	input wire reset,
+	input wire rst,
 	input wire [31:0] instr,
 	input wire [31:0] readdata,
 	output wire memwriteM,
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
 	output wire [ 3:0] mem_wea,
-	output wire debug_wb_rf_wen,
+	output wire [ 3:0] debug_wb_rf_wen,
 	output wire [ 4:0] debug_wb_rf_wnum,
 	output wire [31:0] debug_wb_rf_wdata
 );
