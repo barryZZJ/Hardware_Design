@@ -36,14 +36,16 @@ wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, 
 //  mthiD, mtloD;
 wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
-wire hi_writeD, lo_writeD;
+wire memenD, jalD, jrD, balD;
+
 
 // Execution phase
 wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
 //  mthiE, mtloE;
 wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
-wire hi_writeE, lo_writeE;
+wire memenE, jalE, jrE, balE, jumpE;
+
 
 // Mem phase
 wire regwriteM, memtoregM;
@@ -63,25 +65,27 @@ wire hi_writeW, lo_writeW;
 // hazard
 wire stallF, stallD, stallE, flushE;
 
+// wire branchFlushD;
+
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(1'b0),
     .d(instr),
     .q(instrD)
 );
 
 //! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-flopenrc #(21) DE_signals (
+flopenrc #(26) DE_signals (
     .clk(clk),
     .rst(rst),
 	.en(~stallE),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
+    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jumpD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
+    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jumpE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
 );
 
 // exe to Mem flop for signals
@@ -105,7 +109,7 @@ flopenr #(16) MW_signals (
 controller c(
 	.op(instrD[31:26]),
 	.funct(instrD[5:0]),
-
+	.rt(instrD[20:16]),
 	.memtoregD(memtoregD),
 	.memwriteD(memwriteD),
 	.alusrcD(alusrcD),
@@ -114,6 +118,12 @@ controller c(
 	.branchD(branchD),
 	.jumpD(jumpD),
 	.alucontrolD(alucontrolD),
+	// jump and branch
+	.memenD(memenD),
+    .jalD(jalD),
+    .jrD(jrD),
+    .balD(balD),
+
 	.mfhiD(mfhiD),
 	.mfloD(mfloD),
 	.hidstD(hidstD),
@@ -137,6 +147,7 @@ datapath dp(
 	.alusrcE(alusrcE),
 	.regdstE(regdstE),
 	.jumpD(jumpD),
+	.jrD(jrD),
 	.branchD(branchD),
 	.mfhiE(mfhiE),
 	.mfloE(mfloE),
@@ -155,7 +166,18 @@ datapath dp(
 	.stallF(stallF),
 	.stallD(stallD),
 	.stallE(stallE),
-	.flushE(flushE)
+	.flushE(flushE),
+	// jump and branch
+	.memenE(memenE),
+    .jalE(jalE),
+    .jrE(jrE),
+	.jumpE(jumpE),
+	.balE(balE),
+    .balD(balD)
+	// .branchFlushD(branchFlushD)
+
+	
+
 );
 	
 endmodule

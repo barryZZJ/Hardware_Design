@@ -52,8 +52,8 @@ data_ram data_ram(
 	.ena(memwrite),
 	.wea(mem_wea),
 	.addra(dataadr),
-	.dina(writedata),	 // ÒªÐ´Èë´æ´¢Æ÷ÖÐµÄÊý¾Ý
-	.douta(readdata)	 // ´Ó´æ´¢Æ÷ÖÐ¶Á³öµÄÊý¾Ý
+	.dina(writedata),	 // ÒªÐ´ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
+	.douta(readdata)	 // ï¿½Ó´æ´¢ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 );
 
 endmodule

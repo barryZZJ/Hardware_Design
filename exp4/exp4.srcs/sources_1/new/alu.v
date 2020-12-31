@@ -31,7 +31,6 @@ always @(*) begin
         // 将 16 位立即数 imm 写入寄存器 rt 的高 16 位，寄存器 rt 的低 16 位置 0
         `EXE_LUI_OP : res <= {b[15:0], 16'b0};
         `EXE_ORI_OP : res <= a | b;
-
         // 数据移动指令
         `EXE_MFHI_OP: res <= a + b;
         `EXE_MFLO_OP: res <= a + b;
@@ -81,8 +80,8 @@ always @(*) begin
         // > < 是无符号判断
         // 有符号置位
         `EXE_SLT_OP :  res <=  a[31] & !b[31] ? 1 : // a[31]: a<0
-                              !a[31] &  b[31] ? 0 :
-                               a < b;
+                            !a[31] &  b[31] ? 0 :
+                            a < b;
         // 无符号
         `EXE_SLTU_OP:  res <= (a < b) ? 1 : 0;
 
@@ -94,8 +93,8 @@ always @(*) begin
         `EXE_ADDI_OP:  res <= a + b;
         `EXE_ADDIU_OP: res <= a + b;
         `EXE_SLTI_OP:  res <=  a[31] & !b[31] ? 1 :
-                              !a[31] &  b[31] ? 0 :
-                               a < b;
+                            !a[31] &  b[31] ? 0 :
+                            a < b;
         `EXE_SLTIU_OP: res <= (a < b) ? 1 : 0;
 
 

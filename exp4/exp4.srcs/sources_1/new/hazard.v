@@ -12,7 +12,13 @@ module hazard(input [4:0] rsD,
               input regwriteW,
               input memtoregE,
               input memtoregM,
+
+
+              // 分支跳转部分
               input branchD,
+              input balD,
+              input jumpD,
+
               input mfhiE,
               input mfloE,
               input hi_writeM, hi_writeW,
@@ -69,7 +75,9 @@ assign stallD = lwstall || branchstall || divstallE;
 assign stallE = divstallE;
 
 assign flushE = lwstall || branchstall;
-
-
+// 可能有bug
+// assign #1 flushE = lwstall | jumpD | branchD;
+//
+// assign branchFlushD = (branchD && !balD);
 
 endmodule

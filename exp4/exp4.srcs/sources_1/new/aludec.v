@@ -19,17 +19,17 @@ module aludec(input [5:0] funct,
             `EXE_ADDI   : alucontrol <= `EXE_ADDI_OP ;
             `EXE_ADDIU  : alucontrol <= `EXE_ADDIU_OP;
 
-            // // 分支跳转指令
-            // `EXE_J      : alucontrol <= `EXE_J_OP     ;
-            // `EXE_JAL    : alucontrol <= `EXE_JAL_OP   ;
-            // `EXE_BEQ    : alucontrol <= `EXE_BEQ_OP   ;
-            // `EXE_BGEZ   : alucontrol <= `EXE_BGEZ_OP  ; 
-            // `EXE_BGEZAL : alucontrol <= `EXE_BGEZAL_OP;
-            // `EXE_BGTZ   : alucontrol <= `EXE_BGTZ_OP  ;
-            // `EXE_BLEZ   : alucontrol <= `EXE_BLEZ_OP  ;
-            // `EXE_BLTZ   : alucontrol <= `EXE_BLTZ_OP  ;
-            // `EXE_BLTZAL : alucontrol <= `EXE_BLTZAL_OP;
-            // `EXE_BNE    : alucontrol <= `EXE_BNE_OP   ;
+            // 分支跳转指令
+            /*`EXE_J      : alucontrol <= `EXE_J_OP     ;
+            `EXE_JAL    : alucontrol <= `EXE_JAL_OP   ;
+            `EXE_BEQ    : alucontrol <= `EXE_BEQ_OP   ;
+            `EXE_BGEZ   : alucontrol <= `EXE_BGEZ_OP  ; 
+            `EXE_BGEZAL : alucontrol <= `EXE_BGEZAL_OP;
+            `EXE_BGTZ   : alucontrol <= `EXE_BGTZ_OP  ;
+            `EXE_BLEZ   : alucontrol <= `EXE_BLEZ_OP  ;
+            `EXE_BLTZ   : alucontrol <= `EXE_BLTZ_OP  ;
+            `EXE_BLTZAL : alucontrol <= `EXE_BLTZAL_OP;
+            `EXE_BNE    : alucontrol <= `EXE_BNE_OP   ;*/
 
             // 访存指令
             `EXE_LB     : alucontrol <= `EXE_LB_OP ;

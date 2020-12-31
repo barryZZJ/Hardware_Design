@@ -2,7 +2,7 @@
 `include "defines.vh"
 module main_decoder(input [5:0] op,
                     input [5:0] funct,
-                    // input [4:0] rt, //暂时没用
+                    input [4:0] rt,
                     output reg regdst,
                     output reg regwrite,
                     output [1:0] hidst,
@@ -68,6 +68,7 @@ assign lo_write = mul | div | mtlo;
             // 移位指令
             // 数据移动指令
             // 算术运算指令（非立即数部分）
+            // 分支跳转 jr and jalr
             ////////////////////////////////////////
             `EXE_NOP: begin
                 regwrite <= 1'b1;
@@ -77,6 +78,21 @@ assign lo_write = mul | div | mtlo;
                     `EXE_MFLO: mflo <= 1'b1;
                     `EXE_MTHI: regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
                     `EXE_MTLO: regwrite <= 1'b0;
+
+                    `EXE_JR: begin
+                        regwrite <= 1'b0;
+                        // regdst   <= 1'b0;
+                        jump     <= 1'b1;
+                        jr       <= 1'b1;
+                    end
+                    `EXE_JALR: begin
+                        // regdst   <= 1'b0;
+                        jal      <= 1'b1;
+                        jr       <= 1'b1;
+                    end
+
+                    
+
                 endcase
             end
 
@@ -191,38 +207,72 @@ assign lo_write = mul | div | mtlo;
             // 分支跳转指令
             //
             ////////////////////////////////////////
-            // jr
-            `EXE_JR: begin
-                jump     <= 1'b1;
-                jr       <= 1'b1;
-            end
-            // jalr : 需要写寄存器
-            `EXE_JALR: begin
-                regwrite <= 1'b1;
-                regdst   <= 1'b1;
-                jr       <= 1'b1;
-            end
             // j
             `EXE_J: begin
                 jump     <= 1'b1;
             end
             // jal : 需要写寄存器
             `EXE_JAL: begin
-                jump     <= 1'b1;
+                regwrite <= 1'b1;
+                // regdst   <= 1'b0;
                 jal      <= 1'b1;
+                jump     <= 1'b1;
             end
+            
+            // 所有分支指令的第0-15bit存储的都是offset
+            // 如果发生转移，那么将offset左移2位，并符号扩展至32位
+            // 然后与延迟槽指令的地址相加，加法的结果就是转移目的地址
             // beq
+            // if rs = rt then branch
             `EXE_BEQ: begin
                 branch   <= 1'b1;
             end
             // bgtz
+            // if rs > 0 then branch
+            `EXE_BGTZ: begin
+                branch   <= 1'b1;
+            end
             // blez
+            // if rs <= 0 then branch
+            `EXE_BLEZ: begin
+                branch   <= 1'b1;
+            end
             // bne
-            // bltz
-            // bltzal
-            // bgez
-            // bgezal
-
+            // if rs != rt then branch
+            `EXE_BNE: begin
+                branch   <= 1'b1;
+            end
+            `EXE_REGIMM_INST: begin
+                case (rt)
+                    // bltz
+                    // if rs < 0 then branch
+                    `EXE_BLTZ: begin
+                        branch   <= 1'b1;
+                    end
+                    // bgez
+                    // if rs >= 0 then branch
+                    `EXE_BGEZ: begin
+                        branch   <= 1'b1;
+                    end
+                    // bltzal
+                    // if rs < 0 then branch
+                    `EXE_BLTZAL: begin
+                        regwrite <= 1'b1;
+                        branch   <= 1'b1;
+                        bal      <= 1'b1;
+                    end
+                    // bgezal
+                    // if rs >= 0 then branch
+                    `EXE_BGEZAL: begin
+                        regwrite <= 1'b1;
+                        branch   <= 1'b1;
+                        bal      <= 1'b1;
+                    end
+                endcase
+            end
+            default: begin
+                
+            end
         endcase
     end
     

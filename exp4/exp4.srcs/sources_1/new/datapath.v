@@ -14,7 +14,16 @@ module datapath(
     input alusrcE,
     input regdstE,
     input jumpD,
+    input jrD,
     input branchD,
+
+    input memenE,
+    input jalE,
+    input jrE,
+    input jumpE,
+    input balD,
+    input balE,
+
     input mfhiE,
     input mfloE,
     input [1:0] hidstE, hidstW,
@@ -64,13 +73,16 @@ wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_ad
 
 
 // Fetch phase
-wire [31:0] pc_4F;
+wire [31:0] pc_4F,pc_8F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcF, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pcF, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
-    //wire pcsrcD;
+wire [ 5:0] opD;
+
+wire [31:0]pc_jump;
+// wire pcsrcD;
 
 // Execute phase
 wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
@@ -79,6 +91,7 @@ wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 wire [ 3:0] selE;
 wire [ 1:0] offsetE;
+wire [31:0] pcplus8E;
 
 // Mem phase
 wire [31:0] writedataM;
@@ -105,6 +118,9 @@ wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 
+// branch and jump
+wire [4:0]writereg2E;
+wire [31:0] aluout2E;
 // ----------------------------------------
 // Fetch 
 
@@ -125,6 +141,12 @@ adder pc_4_adder (
     .b(32'h4),
     .y(pc_4F)
 );
+//PC+8加法器
+adder pc_8_adder (
+    .a(pcF),
+    .b(32'h8),
+    .y(pc_8F)
+);
 
 // ----------------------------------------
 // fetech to decode memory flops 
@@ -134,10 +156,22 @@ flopenrc #(32) FD_pc_4 (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(1'b0),
     .d(pc_4F),
     .q(pc_4D)
 );
+// pc_8
+flopenrc #(32) FD_pc_8 (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallD),
+    .clear(pcsrcD),
+    .d(pc_8F),
+    .q(pc_8D)
+);
+
+
+
 
 // ----------------------------------------
 // Decode 
@@ -150,10 +184,13 @@ sl2 sl2_2(
 
 assign jump_addr = {pc_4D[31:28], sl2_j_addr[27:0]};
 
+assign opD = instrD[31:26];
 assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
 assign saD = instrD[10: 6];
+
+
 
 //寄存器堆
 regfile regfile(
@@ -183,7 +220,9 @@ mux2 #(32) mux_equalsrc2(
     .y(equalsrc2)
 );
 
-assign equalD = (equalsrc1 == equalsrc2);
+// assign equalD = (equalsrc1 == equalsrc2);
+// equalD : compare模块判断是否满足跳转条件
+// branchD
 assign pcsrcD = branchD & equalD;
 
 //符号拓展
@@ -206,22 +245,33 @@ adder pc_branch_adder (
 	.y(pcbranchD)
 );
 
-//mux, PC指向选择, PC+4(0), pc_src(1)
+// mux, PC指向选择, PC+4(0), pc_src(1)
 // pc_branched: 用来跟jump地址再选一次
 mux2 #(32) mux_pcbranch(
-	.a(pcbranchD),//来自数据存储器
-	.b(pc_4F),//来自加法器计算结果
+	.a(pcbranchD),  //来自数据存储器
+	.b(pc_4F),      //来自加法器计算结果
 	.s(pcsrcD),
 	.y(pc_branched)
 );
-
+// equalsrc1是rd1的前推结果
+assign pc_jump = (jrD == 1'b1) ? equalsrc1 : {pc_4D[31:28],instrD[25:0],2'b00};
 //mux, 选择分支之后的pc与jump_addr
 mux2 #(32) mux_pcnext(
-	.a(jump_addr),
+	.a(pc_jump),
 	.b(pc_branched),
-	.s(jumpD),
+	.s(jumpD | jrD),        // 这里信号量配置不一样
 	.y(pc_realnext)
 );
+
+// branch指令判断
+eqcmp eqcmp(
+    .a(equalsrc1),
+    .b(equalsrc2),
+    .op(opD),
+    .rt(rtD),
+    .y(equalD)
+);
+
 
 // ----------------------------------------
 // decode to execution flops
@@ -276,6 +326,14 @@ flopenrc #(32) DE_imm (
     .q(extend_immE)
 );
 
+floprc #(32) DE_pc (
+    .clk(clk),
+    .rst(rst),
+    .clear(flushE),
+    .d(pc_8D),
+    .q(pcplus8E)
+);
+
 // ----------------------------------------
 // Exe 
 
@@ -303,6 +361,28 @@ mux2 #(32) mux_ALUBsrc2(
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
 );
 
+
+// jump and branch
+
+// 控制是否将返回地址写入31号寄存器
+/*mux2 #(5) wrmux2 (
+	.a(5'b11111),
+	.b(writeregE),
+	.s(jalE | balE),
+	.y(writereg2E)
+);*/
+assign writereg2E = (jumpE == 1'b0 && jrE == 1'b1 && rdE == 5'b00000) ? 5'b11111 :
+                    (jumpE == 1'b0 && jrE == 1'b1 && rdE != 5'b00000) ? rdE : 
+                    (balE == 1'b1 | jalE == 1'b1) ? 5'b11111 :
+                    writeregE; 
+
+// 控制被写数据是否为PC+8
+mux2 #(32) wrmux3 (
+	.a(pcplus8E),
+	.b(aluoutE),
+	.s(jalE | balE),
+	.y(aluout2E)
+);
 // 如果是mfhi/lo指令，则ALU A应该输入hi/lo寄存器的值，B输入的是0，同时要考虑转发。
 assign ALUsrcA2 = forwardHLE == 3'b000 ? ALUsrcA1 :
                   forwardHLE == 3'b001 ? hi_oW :
@@ -379,7 +459,7 @@ flopenr #(32) EM_aluout (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d(aluoutE),
+    .d(aluout2E),
     .q(aluoutM)
 );
 
@@ -397,7 +477,7 @@ flopenr #(5) EM_writereg (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d(writeregE),
+    .d(writereg2E),
     .q(writeregM)
 );
 
@@ -537,10 +617,16 @@ hazard hazard(
     .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
+
     .stallF(stallF),
     .stallD(stallD),
     .stallE(stallE),
-    .flushE(flushE)
+    .flushE(flushE),
+    // jump and branch
+    .jumpD(jumpD),
+    .balD(balD)
+    
+    
 );
 
 
