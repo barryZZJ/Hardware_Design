@@ -14,3 +14,4 @@ test.coe
 data_ram
 inst_ram
 *.xpr
+*.wcfg

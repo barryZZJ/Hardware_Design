@@ -251,12 +251,38 @@
 // `define NOPRegAddr		5'b00000
 
 
-// //CP0
-// `define CP0_REG_BADVADDR    5'b01000       //只读
-// `define CP0_REG_COUNT    5'b01001        //可读写
+//CP0
+`define CP0_REG_BADVADDR    5'b01000       //只读 8
+// `define CP0_REG_COUNT    5'b01001        //可读写 
 // `define CP0_REG_COMPARE    5'b01011      //可读写
-// `define CP0_REG_STATUS    5'b01100       //可读写
-// `define CP0_REG_CAUSE    5'b01101        //只读
-// `define CP0_REG_EPC    5'b01110          //可读写
+`define CP0_REG_STATUS    5'b01100       //可读写 12
+`define CP0_REG_CAUSE    5'b01101        //只读 13
+`define CP0_REG_EPC    5'b01110          //可读写 14
 // `define CP0_REG_PRID    5'b01111         //只读
 // `define CP0_REG_CONFIG    5'b10000       //只读
+`define CP0_CNT 15
+
+// status寄存器
+`define STATUS_IM  = 15:8
+`define STATUS_EXL = 1
+`define STATUS_IE  = 0
+
+// cause寄存器
+`define CAUSE_BD = 31
+`define CAUSE_IP_HW = 15:10
+`define CAUSE_IP_SW = 9:8
+`define CAUSE_EXECODE = 6:2
+
+
+
+
+
+//ExcCode
+`define ExcCode_Int  32'h00000001  // 中断
+`define ExcCode_AdEL 32'h00000004  // 地址错例外（读数据或取指令）
+`define ExcCode_AdES 32'h00000005  // 地址错例外（写数据）
+`define ExcCode_Sys  32'h00000008  // 系统调用例外
+`define ExcCode_Bp  32'h00000009   // 断点例外
+`define ExcCode_RI  32'h0000000a   // 保留指令例外
+`define ExcCode_Ov  32'h0000000c   // 算术溢出例外
+
