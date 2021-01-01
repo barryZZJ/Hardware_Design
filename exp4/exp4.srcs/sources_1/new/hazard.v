@@ -18,6 +18,7 @@ module hazard(input [4:0] rsD,
               input branchD,
               input balD,
               input jumpD,
+              input jrD,
 
               input mfhiE,
               input mfloE,
@@ -69,9 +70,14 @@ assign branchstall = branchD && regwriteE &&
                        (writeregE == rsD || writeregE == rtD) ||
                        branchD && memtoregM &&
                        (writeregM == rsD || writeregM == rtD);
-
-assign stallF = lwstall || branchstall || divstallE;
-assign stallD = lwstall || branchstall || divstallE;
+///////////
+wire jrstall;
+assign jrstall =  jrD && regwriteE && 
+                       (writeregE == rsD || writeregE == rtD) ||
+                       jrD && memtoregM &&
+                       (writeregM == rsD || writeregM == rtD);
+assign stallF = lwstall || branchstall || divstallE || jrstall;
+assign stallD = lwstall || branchstall || divstallE || jrstall;
 assign stallE = divstallE;
 
 assign flushE = lwstall || branchstall;

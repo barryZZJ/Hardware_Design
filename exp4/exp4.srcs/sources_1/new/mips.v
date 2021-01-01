@@ -21,15 +21,19 @@
 
 
 module mips(
-	input wire clk,rst,
-	input wire[31:0] instr,
-	input wire[31:0] readdata,
+	input wire clk,
+	input wire rst,
+	input wire [31:0] instr,
+	input wire [31:0] readdata,
 	output wire memwriteM,
-	output wire[31:0] pc,
-	output wire[31:0] aluoutM, writedata,
-	output wire [3:0] mem_wea
+	output wire [31:0] pc,
+	output wire [31:0] aluoutM, writedata,
+	output wire [ 3:0] mem_wea,
+	output wire [31:0] debug_wb_pc,
+	output wire [ 3:0] debug_wb_rf_wen,
+	output wire [ 4:0] debug_wb_rf_wnum,
+	output wire [31:0] debug_wb_rf_wdata
 );
-	
 // Decode phase
 wire [31:0] instrD;
 wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
@@ -38,7 +42,7 @@ wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
 wire memenD, jalD, jrD, balD;
 
-
+wire [31:0] pcD;
 // Execution phase
 wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
 //  mthiE, mtloE;
@@ -46,13 +50,15 @@ wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
 wire memenE, jalE, jrE, balE, jumpE;
 
-
+wire [31:0] pcE;
 // Mem phase
 wire regwriteM, memtoregM;
 //  mfhiM, mfloM, mthiM, mtloM; 
 wire [1:0] hidstM, lodstM;
 wire [7:0] alucontrolM;
 wire hi_writeM, lo_writeM;
+
+wire [31:0] pcM;
 //memwriteM;
 
 // WB phase
@@ -62,11 +68,14 @@ wire [1:0] hidstW, lodstW;
 wire [7:0] alucontrolW;
 wire hi_writeW, lo_writeW;
 
+wire [31:0] pcW;
 // hazard
 wire stallF, stallD, stallE, flushE;
 
 // wire branchFlushD;
 
+
+assign debug_wb_pc = pcW;
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
     .clk(clk),
@@ -77,6 +86,14 @@ flopenrc #(32) FD_instr (
     .q(instrD)
 );
 
+flopenrc #(32) FD_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallD),
+    .clear(1'b0),
+    .d(pc),
+    .q(pcD)
+);
 //! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
 flopenrc #(26) DE_signals (
@@ -88,6 +105,15 @@ flopenrc #(26) DE_signals (
     .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jumpE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
 );
 
+flopenrc #(32) DE_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallE),
+    .clear(1'b0),
+    .d(pcD),
+    .q(pcE)
+);
+
 // exe to Mem flop for signals
 flopenr #(17) EM_signals (
     .clk(clk),
@@ -97,6 +123,14 @@ flopenr #(17) EM_signals (
     .q({regwriteM, memtoregM, memwriteM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM})
 );
 
+flopenrc #(32) EM_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .clear(1'b0),
+    .d(pcE),
+    .q(pcM)
+);
 // mem to wb flop for signals
 flopenr #(16) MW_signals (
     .clk(clk),
@@ -105,7 +139,14 @@ flopenr #(16) MW_signals (
     .d({regwriteM, memtoregM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM}),
     .q({regwriteW, memtoregW, hidstW, lodstW, hi_writeW, lo_writeW, alucontrolW})
 );
-
+flopenrc #(32) MW_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+    .clear(1'b0),
+    .d(pcM),
+    .q(pcW)
+);
 controller c(
 	.op(instrD[31:26]),
 	.funct(instrD[5:0]),
@@ -173,9 +214,13 @@ datapath dp(
     .jrE(jrE),
 	.jumpE(jumpE),
 	.balE(balE),
-    .balD(balD)
+    .balD(balD),
 	// .branchFlushD(branchFlushD)
 
+	// debug
+	.debug_wb_rf_wen(debug_wb_rf_wen),
+	.debug_wb_rf_wnum(debug_wb_rf_wnum),
+	.debug_wb_rf_wdata(debug_wb_rf_wdata)
 	
 
 );
