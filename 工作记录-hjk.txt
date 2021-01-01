@@ -28,3 +28,6 @@
     解决了PC的初始化问题
     regfile write enable 位宽需要修改
     datapath 47 直接扩展信号至4位
+
+    测试点BUG ：延迟槽指令多一条 解决： 反转inst_ram 时钟
+    测试点BUG ：JR指令未正常跳转 test.s 510

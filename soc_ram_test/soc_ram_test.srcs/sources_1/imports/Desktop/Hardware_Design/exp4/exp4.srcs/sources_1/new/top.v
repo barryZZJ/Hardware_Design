@@ -40,11 +40,11 @@ mips mips(
 	.writedata		(data_sram_wdata),
 	.mem_wea		(data_sram_wen	),
 	// debug
-	.debug_wb_rf_wen(debug_wb_rf_wen)	,
-	.debug_wb_rf_wnum(debug_wb_rf_wnum)	,
-	.debug_wb_rf_wdata(debug_wb_rf_wdata)
+	.debug_wb_pc		(debug_wb_pc		),
+	.debug_wb_rf_wen	(debug_wb_rf_wen	),
+	.debug_wb_rf_wnum	(debug_wb_rf_wnum	),
+	.debug_wb_rf_wdata	(debug_wb_rf_wdata	)
 );
-assign debug_wb_pc = inst_sram_addr;
 assign inst_sram_en = 1'b1;
 assign inst_sram_wen = 4'b0000;
 assign inst_sram_wdata = 32'b0;

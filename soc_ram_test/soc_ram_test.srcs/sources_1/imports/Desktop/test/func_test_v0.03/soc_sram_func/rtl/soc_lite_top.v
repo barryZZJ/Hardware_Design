@@ -162,7 +162,7 @@ top cpu(
 //inst ram
 inst_ram inst_ram
 (
-    .clka  (cpu_clk            ),   
+    .clka  (~cpu_clk           ),   
     .ena   (cpu_inst_en        ),
     .wea   (cpu_inst_wen       ),   //3:0
     .addra (cpu_inst_addr[19:2]),   //17:0
