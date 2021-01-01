@@ -17,7 +17,7 @@ module datapath(
     input jrD,
     input branchD,
 
-    input memenE,
+    input memenE, // 暂时没用上
     input jalE,
     input jrE,
     input jumpE,
@@ -30,25 +30,27 @@ module datapath(
     input [1:0] lodstE, lodstW,
     input hi_writeM, hi_writeW,
     input lo_writeM, lo_writeW,
+    input riD,
+    input is_in_delayslotM,
+    input breakD,
+    input syscallD,
+    input mtc0M,
+    input mfc0E,
+    input eretD,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output [3:0] mem_wea,
     output pcsrcD,
-    output wire stallF, stallD, stallE, flushE,
 
     // debug
     output wire [ 3:0] debug_wb_rf_wen  , 
     output wire [ 4:0] debug_wb_rf_wnum ,
-    output wire [31:0] debug_wb_rf_wdata
+    output wire [31:0] debug_wb_rf_wdata,
+    output stallF, stallD, stallE, stallM,
+    output flushF, flushD, flushE, flushM, flushW
 );
 
-//////////////////////////////////////
-// soc debug
-assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
-assign debug_wb_rf_wnum = writeregW;
-assign debug_wb_rf_wdata = resultW;
-/////////////////////////////////////
-// for debug:
+
 wire [31:0] instrE, instrM, instrW;
 flopenrc #(32) DE_instr (
     .clk(clk),
@@ -58,17 +60,19 @@ flopenrc #(32) DE_instr (
     .d(instrD),
     .q(instrE)
 );
-flopenr #(32) EM_instr (
+flopenrc #(32) EM_instr (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(instrE),
     .q(instrM)
 );
-flopenr #(32) MF_instr (
+flopenrc #(32) MF_instr (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d(instrM),
     .q(instrW)
 );
@@ -76,18 +80,18 @@ flopenr #(32) MF_instr (
     
 
 //分别为：pc+4, 多路选择分支之后的pc, 下一条真正要执行的指令的pc
-wire [31:0] pc_branched, pc_realnext;
+wire [31:0] pc_branched, pc_normal, pc_realnext;
 
 //ALU数据来源A、B，寄存器堆写入数据，左移2位后的立即数，
-wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, sl2_imm, sl2_j_addr, jump_addr, resultW;
+wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, ALUsrcB3, sl2_imm, sl2_j_addr, jump_addr, resultW;
 
 
 // Fetch phase
-wire [31:0] pc_4F,pc_8F;
+wire [31:0] pcF, pc_4F,pc_8F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcF, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pcD, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
 wire [ 5:0] opD;
 
@@ -95,18 +99,19 @@ wire [31:0]pc_jump;
 // wire pcsrcD;
 
 // Execute phase
-wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
+wire [31:0] pcE, rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 wire [ 3:0] selE;
 wire [ 1:0] offsetE;
 wire [31:0] pcplus8E;
+wire overflowE, adelE, adesE;
 
 // Mem phase
-wire [31:0] writedataM;
+wire [31:0] pcM, writedataM;
     // aluoutM;
-wire [ 4:0] writeregM;
+wire [ 4:0] rdM, writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
 wire [ 3:0] selM;
 wire [ 1:0] offsetM;
@@ -122,15 +127,26 @@ wire [31:0] hi_iW, lo_iW; // hilo input
 wire [31:0] hi_oW, lo_oW; // hilo output
 
 // hazard
-wire [1:0] forwardAE, forwardBE;
+wire [1:0] forwardAE, forwardBE, forwardC0E;
 wire [2:0] forwardHLE;
 wire forwardAD, forwardBD;
 wire equalD;
 wire [31:0] equalsrc1, equalsrc2;
 
+//except
+wire [31:0] cp0_oE;
+wire [31:0] newpcM;
+
 // branch and jump
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
+
+//////////////////////////////////////
+// soc debug
+assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
+assign debug_wb_rf_wnum = writeregW;
+assign debug_wb_rf_wdata = resultW;
+/////////////////////////////////////
 // ----------------------------------------
 // Fetch 
 
@@ -139,6 +155,7 @@ pc_module #(32) pc_module(
 	.clk(clk),
 	.rst(rst),
     .en(~stallF),
+    .clear(1'b0), // eret异常处理：如果直接接newpcM并判断的话，不用加flushF
     .d(pc_realnext),
     .q(pc)
 );
@@ -166,7 +183,7 @@ flopenrc #(32) FD_pc_4 (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(1'b0),
+    .clear(flushD),
     .d(pc_4F),
     .q(pc_4D)
 );
@@ -175,9 +192,17 @@ flopenrc #(32) FD_pc_8 (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(pcsrcD | flushD),
     .d(pc_8F),
     .q(pc_8D)
+);
+flopenrc #(32) FD_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallD),
+    .clear(flushD),
+    .d(pcF),
+    .q(pcD)
 );
 
 
@@ -270,8 +295,10 @@ mux2 #(32) mux_pcnext(
 	.a(pc_jump),
 	.b(pc_branched),
 	.s(jumpD | jrD),        // 这里信号量配置不一样
-	.y(pc_realnext)
+	.y(pc_normal)  // 没有异常时的下一个pc
 );
+
+assign pc_realnext = flushExcept ? newpcM : pc_normal; // 发生异常的话就置为异常处理程序入口
 
 // branch指令判断
 eqcmp eqcmp(
@@ -336,12 +363,21 @@ flopenrc #(32) DE_imm (
     .q(extend_immE)
 );
 
-floprc #(32) DE_pc (
+flopenrc #(32) DE_pc_8 (
     .clk(clk),
     .rst(rst),
+    .en(~stallE),
     .clear(flushE),
     .d(pc_8D),
     .q(pcplus8E)
+);
+flopenrc #(32) DE_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallE),
+    .clear(flushE),
+    .d(pcD),
+    .q(pcE)
 );
 
 // ----------------------------------------
@@ -369,6 +405,14 @@ mux2 #(32) mux_ALUBsrc2(
     .b(ALUsrcB1),
     .s(alusrcE),
     .y(ALUsrcB2) // B输入第二个选择器之后的结果
+);
+
+mux3 #(32) mux_ALUBsrc3(
+    .a(ALUsrcB2),
+    .b(cp0_oE),
+    .c(aluoutM),
+    .s(forwardC0E),
+    .y(ALUsrcB3)
 );
 
 
@@ -406,7 +450,7 @@ assign ALUsrcA2 = forwardHLE == 3'b000 ? ALUsrcA1 :
 //ALU
 alu alu(
     .a(ALUsrcA2),
-    .b(ALUsrcB2),
+    .b(ALUsrcB3),
     .sa(saE),
     .op(alucontrolE),
     .writedata(writedataE),
@@ -414,7 +458,10 @@ alu alu(
     .res(aluoutE),
     .sel(selE),
     .finalwritedata(finalwritedataE),
-    .offset(offsetE)
+    .offset(offsetE),
+    .overflow(overflowE),
+    .adel(adelE),
+    .ades(adesE)
 );
 
 // 乘法器
@@ -430,8 +477,11 @@ mul mul(
 // 除法器
 wire [63:0] div_result;
 wire divstallE; //除法发出的stall信号
+assign div_clear = flushExcept; //发生异常时，清空除法器
+
 divWrapper div(
     .clk(clk), .rst(rst),
+    .clear(div_clear),
     .a(ALUsrcA2),
     .b(ALUsrcB2),
     .op(alucontrolE),
@@ -465,57 +515,81 @@ assign lo_iE = lodstE == 2'b01 ? mul_result[31:0] :
 // execution to Mem flops
 
 // aluout
-flopenr #(32) EM_aluout (
+flopenrc #(32) EM_aluout (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(aluout2E),
     .q(aluoutM)
 );
 
 // writedata
-flopenr #(32) EM_writedata (
+flopenrc #(32) EM_writedata (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(finalwritedataE),
     .q(writedataM)
 );
 
 // writereg
-flopenr #(5) EM_writereg (
+flopenrc #(5) EM_writereg (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(writereg2E),
     .q(writeregM)
 );
 
 // hilo
-flopenr #(64) EM_hilo (
+flopenrc #(64) EM_hilo (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d({hi_iE, lo_iE}),
     .q({hi_iM, lo_iM})
 );
 
 // sel
-flopenr #(4) EM_sel (
+flopenrc #(4) EM_sel (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(selE),
     .q(selM)
 );
 
 // offset
-flopenr #(2) EM_offset (
+flopenrc #(2) EM_offset (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
+    .clear(flushM),
     .d(offsetE),
     .q(offsetM)
+);
+
+flopenrc #(5) EM_rd (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallM),
+    .clear(flushM),
+    .d(rdE),
+    .q(rdM)
+);
+
+flopenrc #(32) EM_pc (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallM),
+    .clear(flushM),
+    .d(pcE),
+    .q(pcM)
 );
 
 // ----------------------------------------
@@ -527,45 +601,50 @@ assign mem_wea = selM;
 // Mem to wb flops
 
 // aluout
-flopenr #(32) MF_aluout (
+flopenrc #(32) MF_aluout (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d(aluoutM),
     .q(aluoutW)
 );
 
 // readdata from data memory
-flopenr #(32) MF_readdata (
+flopenrc #(32) MF_readdata (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d(readdata),
     .q(readdataW)
 );
 
 // writereg
-flopenr #(5) MW_writereg (
+flopenrc #(5) MW_writereg (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d(writeregM),
     .q(writeregW)
 );
 
 // hilo
-flopenr #(64) MW_hilo (
+flopenrc #(64) MW_hilo (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d({hi_iM, lo_iM}),
     .q({hi_iW, lo_iW})
 );
 
-flopenr #(2) MW_offset (
+flopenrc #(2) MW_offset (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
+    .clear(flushW),
     .d(offsetM),
     .q(offsetW)
 );
@@ -607,6 +686,8 @@ hazard hazard(
     .rtD(rtD),
     .rsE(rsE),
     .rtE(rtE),
+    .rdE(rdE),
+    .rdM(rdM),
     .writeregE(writeregE),
     .writeregM(writeregM),
     .writeregW(writeregW),
@@ -621,9 +702,13 @@ hazard hazard(
     .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
     .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
     .divstallE(divstallE),
+    .mfc0E(mfc0E),
+    .mtc0M(mtc0M),
+    .flushExcept(flushExcept),
     
     .forwardAE(forwardAE),
     .forwardBE(forwardBE),
+    .forwardC0E(forwardC0E),
     .forwardHLE(forwardHLE),
     .forwardAD(forwardAD),
     .forwardBD(forwardBD),
@@ -631,12 +716,44 @@ hazard hazard(
     .stallF(stallF),
     .stallD(stallD),
     .stallE(stallE),
+    .stallM(stallM),
+    .flushF(flushF),
+    .flushD(flushD),
     .flushE(flushE),
+    .flushM(flushM),
+    .flushW(flushW),
     // jump and branch
     .jumpD(jumpD),
     .balD(balD),
     .jrD(jrD)
-    
+);
+except exc(
+    .clk(clk), .rst(rst),
+    .mtc0M(mtc0M), .eretD(eretD),
+    .rdM(rdM),
+    .rdE(rdE),
+    .write_cp0_dataM(aluoutM),
+    .stallD(stallD),
+    .stallE(stallE),
+    .stallM(stallM),
+    .flushD(flushD),
+    .flushE(flushE),
+    .flushM(flushM),
+
+    .adelE(adelE),
+    .riD(riD),
+    .overflowE(overflowE),
+    .breakD(breakD),
+    .syscallD(syscallD),
+    .adesE(adesE),
+
+    .pcM(pcM),
+    .is_in_delayslotM(is_in_delayslotM),
+    .bad_addr_iM(aluoutM),
+
+    .read_cp0_dataE(cp0_oE),
+    .newpcM(newpcM),
+    .flushExcept(flushExcept)
     
 );
 
