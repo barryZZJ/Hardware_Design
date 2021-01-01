@@ -82,10 +82,12 @@ assign branchstall = branchD && regwriteE &&
                        branchD && memtoregM &&
                        (writeregM == rsD || writeregM == rtD);
 
-assign stallF = lwstall || branchstall || divstallE;
-assign stallD = lwstall || branchstall || divstallE;
-assign stallE = divstallE;
-assign stallM = divstallE;
+// 有异常时不能stall，否则newpcM可能因为pc寄存器stall而没法正确赋值
+//（except上升沿更新时flushExcept与stall同时更新，条件用不上，下降沿更新时flushEXcept早到，&&~flushExcept可以防止stall置1）。
+assign stallF = (lwstall || branchstall || divstallE) && ~flushExcept;
+assign stallD = (lwstall || branchstall || divstallE) && ~flushExcept;
+assign stallE = divstallE && ~flushExcept;
+assign stallM = divstallE && ~flushExcept;
 
 assign flushF = flushExcept;
 assign flushD = flushExcept;

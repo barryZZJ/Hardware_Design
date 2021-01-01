@@ -280,6 +280,7 @@ datapath dp(
 	.stallD(stallD),
 	.stallE(stallE),
 	.stallM(stallM),
+	.flushF(flushF),
 	.flushD(flushD),
     .flushE(flushE),
     .flushM(flushM),

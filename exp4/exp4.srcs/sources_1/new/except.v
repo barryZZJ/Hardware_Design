@@ -7,8 +7,8 @@ module except(input clk, rst,
               input [4:0] rdM, // 写cp0的索引
               input [4:0] rdE, // 读cp0的索引
               input [31:0] write_cp0_dataM, // 写cp0对应索引的数据 
-              input stallD, stallE, stallM,
-              input flushD, flushE, flushM,
+              input stallE, stallM,
+              input flushE, flushM,
 
               input adelE,
               input riD,
@@ -37,7 +37,7 @@ module except(input clk, rst,
 // mtc0: GPR[rt] == aluoutE, rd == rdE
 
 // 异常处理模块
-reg [`RegBus] except_typeD, except_typeE, except_typeM;
+reg [`RegBus] except_typeE, except_typeM;
 assign flushExcept = except_typeM != 32'b0;
 
 wire [`RegBus] epc_o, status_o, cause_o;
@@ -60,36 +60,14 @@ cp0_reg cp0reg(
     .cause_o(cause_o)
 );
 
-
+//TODO posedge/ negedge?
+// bug: 一条出错指令后面跟着lw指令时，pc寄存器会被stall（因为上升沿时flushExcept还是0），导致pc无法正常被赋值为newpcM
+// 解决：except换成下降沿更新，这样flushExcept会比stall信号早到，更新pc时stallF信号不为1
 always @(negedge clk) begin
     if (rst) begin
-        except_typeD <= 32'b0;
         except_typeE <= 32'b0;
         except_typeM <= 32'b0;
     end else begin
-        if (!stallD) begin
-            if (flushD)
-                except_typeD <= 32'b0;
-            else begin
-                if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-                    // 中断例外
-                    except_typeD <= `ExceptType_Int;
-                end else if (riD) begin
-                    // 保留指令例外
-                    except_typeD <= `ExceptType_RI;
-                end else if (breakD) begin
-                    // 断点例外
-                    except_typeD <= `ExceptType_Bp;
-                end else if (syscallD) begin
-                    // 系统调用
-                    except_typeD <= `ExceptType_Sys;
-                end else if (eretD) begin
-                    except_typeD <= `ExceptType_Eret;
-                end else begin
-                    except_typeD <= 32'b0;
-                end
-            end
-        end
         if (!stallE) begin
             if (flushE)
                 except_typeE <= 32'b0;
@@ -97,17 +75,19 @@ always @(negedge clk) begin
                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
                     // 中断例外
                     except_typeE <= `ExceptType_Int;
-                end else if (adelE) begin
-                    // 地址错例外（取指或取数据）
-                    except_typeE <= `ExceptType_AdEL;
-                end else if (overflowE) begin
-                    // 整形溢出
-                    except_typeE <= `ExceptType_Ov;
-                end else if (adesE) begin
-                    // 地址错例外（存数据）
-                    except_typeE <= `ExceptType_AdES;
+                end else if (riD) begin
+                    // 保留指令例外
+                    except_typeE <= `ExceptType_RI;
+                end else if (breakD) begin
+                    // 断点例外
+                    except_typeE <= `ExceptType_Bp;
+                end else if (syscallD) begin
+                    // 系统调用
+                    except_typeE <= `ExceptType_Sys;
+                end else if (eretD) begin
+                    except_typeE <= `ExceptType_Eret;
                 end else begin
-                    except_typeE <= except_typeD;
+                    except_typeE <= 32'b0;
                 end
             end
         end
@@ -118,6 +98,15 @@ always @(negedge clk) begin
                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
                     // 中断例外
                     except_typeM <= `ExceptType_Int;
+                end else if (adelE) begin
+                    // 地址错例外（取指或取数据）
+                    except_typeM <= `ExceptType_AdEL;
+                end else if (overflowE) begin
+                    // 整形溢出
+                    except_typeM <= `ExceptType_Ov;
+                end else if (adesE) begin
+                    // 地址错例外（存数据）
+                    except_typeM <= `ExceptType_AdES;
                 end else begin
                     except_typeM <= except_typeE;
                 end

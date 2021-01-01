@@ -100,7 +100,7 @@ wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 wire [ 3:0] selE;
-wire [ 1:0] offsetE;
+wire [ 1:0] addrE;
 wire [31:0] pcplus8E;
 wire overflowE, adelE, adesE;
 
@@ -110,12 +110,12 @@ wire [31:0] pcM, writedataM;
 wire [ 4:0] rdM, writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
 wire [ 3:0] selM;
-wire [ 1:0] offsetM;
+wire [ 1:0] addrM;
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
 wire [ 4:0] writeregW;
-wire [ 1:0] offsetW;
+wire [ 1:0] addrW;
 wire [31:0] finalreaddataW;
 
 // hilo寄存器
@@ -447,7 +447,7 @@ alu alu(
     .res(aluoutE),
     .sel(selE),
     .finalwritedata(finalwritedataE),
-    .offset(offsetE),
+    .addr(addrE),
     .overflow(overflowE),
     .adel(adelE),
     .ades(adesE)
@@ -553,14 +553,14 @@ flopenrc #(4) EM_sel (
     .q(selM)
 );
 
-// offset
-flopenrc #(2) EM_offset (
+// addr
+flopenrc #(2) EM_addr (
     .clk(clk),
     .rst(rst),
     .en(~stallM),
     .clear(flushM),
-    .d(offsetE),
-    .q(offsetM)
+    .d(addrE),
+    .q(addrM)
 );
 
 flopenrc #(5) EM_rd (
@@ -629,13 +629,13 @@ flopenrc #(64) MW_hilo (
     .q({hi_iW, lo_iW})
 );
 
-flopenrc #(2) MW_offset (
+flopenrc #(2) MW_addr (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
     .clear(flushW),
-    .d(offsetM),
-    .q(offsetW)
+    .d(addrM),
+    .q(addrW)
 );
 
 // ----------------------------------------
@@ -644,7 +644,7 @@ flopenrc #(2) MW_offset (
 // 根据load指令类型不同得到真正的readdata
 readdata_format rdf(
     .op(alucontrolW),
-    .offset(offsetW),
+    .addr(addrW),
     .readdata(readdataW),
     .finalreaddata(finalreaddataW)
 );
@@ -721,10 +721,8 @@ except exc(
     .rdM(rdM),
     .rdE(rdE),
     .write_cp0_dataM(aluoutM),
-    .stallD(stallD),
     .stallE(stallE),
     .stallM(stallM),
-    .flushD(flushD),
     .flushE(flushE),
     .flushM(flushM),
 
