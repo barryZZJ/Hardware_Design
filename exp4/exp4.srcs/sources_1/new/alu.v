@@ -11,6 +11,8 @@ module alu #(WIDTH = 32)
              output reg [31:0] finalwritedata,
              output [1:0] offset,
              output overflow, //算术运算溢出
+             output reg adel, // 取内存地址错误
+             output reg ades, // 存内存地址错误
              output zero);
 // ! 在这里添加
 wire [WIDTH-1:0] negb; //用于计算溢出
@@ -20,6 +22,10 @@ assign overflow = (op == `EXE_ADD_OP | op == `EXE_ADDI_OP) & (a[31] & b[31] & ~r
                   op == `EXE_SUB_OP & (a[31] & !b[31] & !res[31] | !a[31] & b[31] & res[31]);
 
 always @(*) begin
+    sel <= 4'b0000;
+    finalwritedata <= writedata;
+    adel <= 1'b0;
+    ades <= 1'b0;
     case (op)
         // 逻辑运算指令
         `EXE_AND_OP : res <= a & b;
@@ -130,42 +136,41 @@ always @(*) begin
         ///////////
         //访存指令//
         ////////////
-        `EXE_LB_OP : res <= a + {b[31:2], 2'b0};
-        `EXE_LBU_OP: res <= a + {b[31:2], 2'b0};
-        `EXE_LH_OP : res <= a + {b[31:2], 2'b0};
-        `EXE_LHU_OP: res <= a + {b[31:2], 2'b0};
-        `EXE_LW_OP : res <= a + {b[31:2], 2'b0};
-        `EXE_SW_OP : res <= a + {b[31:2], 2'b0};      
-        `EXE_SB_OP : res <= a + {b[31:2], 2'b0};
-        `EXE_SH_OP : res <= a + {b[31:2], 2'b0};
-
-
-        default: res <= 32'b0;
-    endcase
-end
-
-
-// base+[offset/4] （a + {b[31:2], 2'b0}）找到要读/写的那个字的地址，这个地址可以不是按字对齐，
-// offset mod 4的结果（b[1:0]）相当于指定修改这个字里的哪个字节/半字，用这个数得到对应的sel
-assign offset = b[1:0];
-
-always @(*) begin
-    case (op)
-        `EXE_LW_OP, `EXE_LB_OP, `EXE_LBU_OP, `EXE_LH_OP, `EXE_LHU_OP : sel <= 4'b0000;
-        `EXE_SW_OP : begin
-            finalwritedata <= writedata;
-            sel <= 4'b1111;
+        `EXE_LB_OP : begin 
+            res  <= a + {b[31:2], 2'b0};
+            sel  <= 4'b0000;
+            adel <= 1'b0;
+            ades <= 1'b0;
         end
-        `EXE_SH_OP : begin
-            finalwritedata <= {writedata[15:0], writedata[15:0]};
-            case (offset[1:0])
-                2'b00 :   sel <= 4'b1100;
-                2'b10 :   sel <= 4'b0011;
-                default : sel <= 4'b0000;
-            endcase
+        `EXE_LBU_OP: begin 
+            res  <= a + {b[31:2], 2'b0};
+            sel  <= 4'b0000;
+            adel <= 1'b0;
+            ades <= 1'b0;
         end
-        `EXE_SB_OP: begin
+        `EXE_LH_OP : begin 
+            res  <= a + {b[31:2], 2'b0};
+            sel  <= 4'b0000;
+            adel <= (offset[1:0] != 2'b00) & (offset[1:0] != 2'b10);
+            ades <= 1'b0;
+        end
+        `EXE_LHU_OP: begin 
+            res  <= a + {b[31:2], 2'b0};
+            sel  <= 4'b0000;
+            adel <= (offset[1:0] != 2'b00) & (offset[1:0] != 2'b10);
+            ades <= 1'b0;
+        end
+        `EXE_LW_OP : begin 
+            res  <= a + {b[31:2], 2'b0};
+            sel  <= 4'b0000;
+            adel <= offset[1:0] != 2'b00;
+            ades <= 1'b0;
+        end
+        `EXE_SB_OP : begin 
+            res <= a + {b[31:2], 2'b0};
             finalwritedata <= {writedata[7:0], writedata[7:0], writedata[7:0], writedata[7:0]};
+            adel <= 1'b0;
+            ades <= 1'b0;
             case (offset[1:0])
                 2'b00 :   sel <= 4'b1000;
                 2'b01 :   sel <= 4'b0100;
@@ -174,12 +179,62 @@ always @(*) begin
                 default : sel <= 4'b0000;
             endcase 
         end
-        default : begin
+        `EXE_SH_OP : begin 
+            res <= a + {b[31:2], 2'b0};
+            finalwritedata <= {writedata[15:0], writedata[15:0]};
+            adel <= 1'b0;
+            ades <= (offset[1:0] != 2'b00) | (offset[1:0] != 2'b10);
+            case (offset[1:0])
+                2'b00 :   sel <= 4'b1100;
+                2'b10 :   sel <= 4'b0011;
+                default : sel <= 4'b0000;
+            endcase
+        end
+        `EXE_SW_OP : begin 
+            res  <= a + {b[31:2], 2'b0};      
             finalwritedata <= writedata;
+            adel <= 1'b0;
+            ades <= offset[1:0] != 2'b00;
+            sel  <= 4'b1111;
+        end
+
+        // 内陷指令，什么都不做
+        `EXE_BREAK_OP:
+            res <= 32'b0;
+        `EXE_SYSCALL_OP:
+            res <= 32'b0;
+        
+        // eret，什么都不做
+        `EXE_ERET_OP:
+            res <= 32'b0;
+
+        // 存Cp0寄存器需要reg[rt]，接在b
+        `EXE_MTC0_OP:
+            res <= b;
+        
+        // 取Cp0寄存器,cp0_o(或前推的co0_o)接在b，输出后存回寄存器堆reg[rt]
+        `EXE_MFC0_OP:
+            res <= b;
+
+        `EXE_NOP_OP:
+            res <= 32'b0;
+
+
+        default: begin 
+            res <= 32'b0;
             sel <= 4'b0000;
+            finalwritedata <= writedata;
+            adel <= 1'b0;
+            ades <= 1'b0;
         end
     endcase
 end
+
+
+// base+[offset/4] （a + {b[31:2], 2'b0}）找到要读/写的那个字的地址，这个地址可以不是按字对齐，
+// offset mod 4的结果（b[1:0]）相当于指定修改这个字里的哪个字节/半字，用这个数得到对应的sel
+assign offset = b[1:0];
+
 
 assign zero = ((a-b) == 0);
     

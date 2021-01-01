@@ -2,7 +2,7 @@
 `define RstEnable 		1'b1
 // `define RstDisable		1'b0
 `define ZeroWord		32'h00000000
-// `define WriteEnable		1'b1
+`define WriteEnable		1'b1
 // `define WriteDisable	1'b0
 // `define ReadEnable		1'b1
 // `define ReadDisable		1'b0
@@ -12,12 +12,12 @@
 // `define InstInvalid		1'b1
 // `define Stop 			1'b1
 // `define NoStop 			1'b0
-// `define InDelaySlot 	1'b1
-// `define NotInDelaySlot 	1'b0
+`define InDelaySlot 	1'b1
+`define NotInDelaySlot 	1'b0
 // `define Branch 			1'b1
 // `define NotBranch 		1'b0
-// `define InterruptAssert 1'b1
-// `define InterruptNotAssert 1'b0
+`define InterruptAssert 1'b1
+`define InterruptNotAssert 1'b0
 // `define TrapAssert 		1'b1
 // `define TrapNotAssert 	1'b0
 // `define True_v			1'b1
@@ -242,7 +242,7 @@
 // //regfiles macro definition
 
 // `define RegAddrBus		4:0
-// `define RegBus 			31:0
+`define RegBus 			31:0
 // `define RegWidth		32
 // `define DoubleRegWidth	64
 // `define DoubleRegBus	63:0
@@ -253,13 +253,13 @@
 
 //CP0
 `define CP0_REG_BADVADDR    5'b01000       //只读 8
-// `define CP0_REG_COUNT    5'b01001        //可读写 
-// `define CP0_REG_COMPARE    5'b01011      //可读写
+`define CP0_REG_COUNT    5'b01001        //可读写 
+`define CP0_REG_COMPARE    5'b01011      //可读写
 `define CP0_REG_STATUS    5'b01100       //可读写 12
 `define CP0_REG_CAUSE    5'b01101        //只读 13
 `define CP0_REG_EPC    5'b01110          //可读写 14
-// `define CP0_REG_PRID    5'b01111         //只读
-// `define CP0_REG_CONFIG    5'b10000       //只读
+`define CP0_REG_PRID    5'b01111         //只读
+`define CP0_REG_CONFIG    5'b10000       //只读
 `define CP0_CNT 15
 
 // status寄存器
@@ -269,20 +269,32 @@
 
 // cause寄存器
 `define CAUSE_BD = 31
+`define CAUSE_IP = 15:8
 `define CAUSE_IP_HW = 15:10
 `define CAUSE_IP_SW = 9:8
-`define CAUSE_EXECODE = 6:2
+`define CAUSE_EXCCODE = 6:2
 
 
 
+`define ExceptType_Int  32'h00000001  // 中断
+`define ExceptType_AdEL 32'h00000004  // 地址错例外（读数据或取指令）
+`define ExceptType_AdES 32'h00000005  // 地址错例外（写数据）
+`define ExceptType_Sys  32'h00000008  // 系统调用例外
+`define ExceptType_Bp   32'h00000009   // 断点例外
+`define ExceptType_RI   32'h0000000a   // 保留指令例外
+`define ExceptType_Ov   32'h0000000c   // 算术溢出例外
+`define ExceptType_Eret 32'h0000000e   // eret 作为异常处理
 
 
 //ExcCode
-`define ExcCode_Int  32'h00000001  // 中断
-`define ExcCode_AdEL 32'h00000004  // 地址错例外（读数据或取指令）
-`define ExcCode_AdES 32'h00000005  // 地址错例外（写数据）
-`define ExcCode_Sys  32'h00000008  // 系统调用例外
-`define ExcCode_Bp  32'h00000009   // 断点例外
-`define ExcCode_RI  32'h0000000a   // 保留指令例外
-`define ExcCode_Ov  32'h0000000c   // 算术溢出例外
+`define ExcCode_Int  5'b00000  // 中断
+`define ExcCode_AdEL 5'b00100  // 地址错例外（读数据或取指令）
+`define ExcCode_AdES 5'b00101  // 地址错例外（写数据）
+`define ExcCode_Sys  5'b01000  // 系统调用例外
+`define ExcCode_Bp   5'b01001   // 断点例外
+`define ExcCode_RI   5'b01010   // 保留指令例外
+`define ExcCode_Ov   5'b01100   // 算术溢出例外
 
+//FIXME for debug
+// `define EXC_ENTRY_POINT 32'h00000020
+`define EXC_ENTRY_POINT 32'hBFC00380

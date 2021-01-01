@@ -3,9 +3,19 @@
 `include "defines.vh"
 module aludec(input [5:0] funct,
               input [5:0] op,
+              input mtc0,
+              input mfc0,
+              input eret,
               output reg [7:0] alucontrol);
     
     always @(*) begin
+        if (eret)
+            alucontrol <= `EXE_ERET_OP;
+        else if (mtc0)
+            alucontrol <= `EXE_MTC0_OP;
+        else if (mfc0)
+            alucontrol <= `EXE_MFC0_OP;
+        else
         case (op)
             // 逻辑运算指令
             `EXE_ANDI	: alucontrol <= `EXE_ANDI_OP;
@@ -40,6 +50,9 @@ module aludec(input [5:0] funct,
             `EXE_SB     : alucontrol <= `EXE_SB_OP ;
             `EXE_SH     : alucontrol <= `EXE_SH_OP ;
             `EXE_SW     : alucontrol <= `EXE_SW_OP ;
+
+            // 特权指令
+
 
             `EXE_NOP: begin
                 case (funct)

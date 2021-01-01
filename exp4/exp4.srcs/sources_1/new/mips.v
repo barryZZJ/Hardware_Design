@@ -34,13 +34,26 @@ module mips(
 	output wire [ 4:0] debug_wb_rf_wnum,
 	output wire [31:0] debug_wb_rf_wdata
 );
+
+// Fetch phase
+wire is_in_delayslotF;
+assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
+
 // Decode phase
 wire [31:0] instrD;
 wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
 //  mthiD, mtloD;
 wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
+wire hi_writeD, lo_writeD;
 wire memenD, jalD, jrD, balD;
+wire riD;
+wire breakD;
+wire syscallD;
+wire is_in_delayslotD;
+wire mtc0D;
+wire mfc0D;
+wire eretD;
 
 wire [31:0] pcD;
 // Execution phase
@@ -48,9 +61,14 @@ wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
 //  mthiE, mtloE;
 wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
+wire hi_writeE, lo_writeE;
 wire memenE, jalE, jrE, balE, jumpE;
 
 wire [31:0] pcE;
+wire is_in_delayslotE;
+wire mtc0E;
+wire mfc0E;
+
 // Mem phase
 wire regwriteM, memtoregM;
 //  mfhiM, mfloM, mthiM, mtloM; 
@@ -59,6 +77,8 @@ wire [7:0] alucontrolM;
 wire hi_writeM, lo_writeM;
 
 wire [31:0] pcM;
+wire is_in_delayslotM;
+wire mtc0M;
 //memwriteM;
 
 // WB phase
@@ -70,7 +90,8 @@ wire hi_writeW, lo_writeW;
 
 wire [31:0] pcW;
 // hazard
-wire stallF, stallD, stallE, flushE;
+wire stallF, stallD, stallE, stallM;
+wire flushF, flushD, flushE, flushM, flushW;
 
 // wire branchFlushD;
 
@@ -81,7 +102,7 @@ flopenrc #(32) FD_instr (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(1'b0),
+    .clear(flushD),
     .d(instr),
     .q(instrD)
 );
@@ -94,15 +115,47 @@ flopenrc #(32) FD_pc (
     .d(pc),
     .q(pcD)
 );
+flopenrc #(1) FD_signal (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallD),
+    .clear(flushD),
+    .d(is_in_delayslotF),
+    .q(is_in_delayslotD)
+);
+
 //! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
 // Decode to Exe flop for signals
-flopenrc #(26) DE_signals (
+flopenrc #(8) DE_signals_aluctrl (
     .clk(clk),
     .rst(rst),
 	.en(~stallE),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD, memenD, jumpD, jalD, jrD, balD, mfhiD, mfloD, hidstD, lodstD, hi_writeD, lo_writeD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE, memenE, jumpE, jalE, jrE, balE, mfhiE, mfloE, hidstE, lodstE, hi_writeE, lo_writeE})
+    .d(alucontrolD),
+    .q(alucontrolE)
+);
+flopenrc #(4) DE_signals_hilodst (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallE),
+    .clear(flushE),
+    .d({hidstD, lodstD}),
+    .q({hidstE, lodstE})
+);
+
+flopenrc #(17) DE_signals (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallE),
+    .clear(flushE),
+    .d({regwriteD, memtoregD, memwriteD,        alusrcD, 		  regdstD, 
+	       memenD, 	   jumpD,      jalD,            jrD,   		     balD, 
+			mfhiD, 	   mfloD, hi_writeD,      lo_writeD, is_in_delayslotD,
+			mtc0D,     mfc0D}),
+    .q({regwriteE, memtoregE, memwriteE,        alusrcE, 		  regdstE, 
+	       memenE, 	   jumpE,      jalE,            jrE, 		     balE, 
+			mfhiE, 	   mfloE, hi_writeE, 	  lo_writeE, is_in_delayslotE,
+			mtc0E,     mfc0E})
 );
 
 flopenrc #(32) DE_pc (
@@ -115,12 +168,30 @@ flopenrc #(32) DE_pc (
 );
 
 // exe to Mem flop for signals
-flopenr #(17) EM_signals (
+flopenrc #(8) EM_signals_aluctrl (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
-    .d({regwriteE, memtoregE, memwriteE, hidstE, lodstE, hi_writeE, lo_writeE, alucontrolE}),
-    .q({regwriteM, memtoregM, memwriteM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM})
+	.en(~stallM),
+    .clear(flushM),
+    .d(alucontrolE),
+    .q(alucontrolM)
+);
+flopenrc #(4) EM_signals_hilodst (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallM),
+    .clear(flushM),
+    .d({hidstE, lodstE}),
+    .q({hidstM, lodstM})
+);
+
+flopenrc #(7) EM_signals (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallM),
+	.clear(flushM),
+    .d({regwriteE, memtoregE, memwriteE, hi_writeE, lo_writeE, is_in_delayslotE, mtc0E}),
+    .q({regwriteM, memtoregM, memwriteM, hi_writeM, lo_writeM, is_in_delayslotM, mtc0M})
 );
 
 flopenrc #(32) EM_pc (
@@ -132,12 +203,31 @@ flopenrc #(32) EM_pc (
     .q(pcM)
 );
 // mem to wb flop for signals
-flopenr #(16) MW_signals (
+flopenrc #(8) MW_aluctrl (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteM, memtoregM, hidstM, lodstM, hi_writeM, lo_writeM, alucontrolM}),
-    .q({regwriteW, memtoregW, hidstW, lodstW, hi_writeW, lo_writeW, alucontrolW})
+	.clear(flushW),
+    .d(alucontrolM),
+    .q(alucontrolW)
+);
+
+flopenrc #(4) MW_hilodst (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+	.clear(flushW),
+    .d({hidstM, lodstM}),
+    .q({hidstW, lodstW})
+);
+
+flopenrc #(4) MW_signals (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+	.clear(flushW),
+    .d({regwriteM, memtoregM, hi_writeM, lo_writeM}),
+    .q({regwriteW, memtoregW, hi_writeW, lo_writeW})
 );
 flopenrc #(32) MW_pc (
     .clk(clk),
@@ -148,9 +238,12 @@ flopenrc #(32) MW_pc (
     .q(pcW)
 );
 controller c(
+	.instr(instrD),
 	.op(instrD[31:26]),
 	.funct(instrD[5:0]),
+	.rs(instrD[25:21]),
 	.rt(instrD[20:16]),
+
 	.memtoregD(memtoregD),
 	.memwriteD(memwriteD),
 	.alusrcD(alusrcD),
@@ -170,7 +263,14 @@ controller c(
 	.hidstD(hidstD),
 	.lodstD(lodstD),
 	.hi_writeD(hi_writeD), 
-	.lo_writeD(lo_writeD)
+	.lo_writeD(lo_writeD),
+	.riD(riD),
+	.breakD(breakD),
+	.syscallD(syscallD),
+	.mtc0D(mtc0D),
+	.mfc0D(mfc0D),
+	.eretD(eretD)
+
 );
 
 datapath dp(
@@ -190,6 +290,15 @@ datapath dp(
 	.jumpD(jumpD),
 	.jrD(jrD),
 	.branchD(branchD),
+	// jump and branch
+	.memenE(memenE),
+    .jalE(jalE),
+    .jrE(jrE),
+	.jumpE(jumpE),
+	.balE(balE),
+    .balD(balD),
+	// .branchFlushD(branchFlushD)
+
 	.mfhiE(mfhiE),
 	.mfloE(mfloE),
 	.hidstE(hidstE), .hidstW(hidstW),
@@ -198,7 +307,14 @@ datapath dp(
 	.hi_writeW(hi_writeW), 
 	.lo_writeM(lo_writeM),
 	.lo_writeW(lo_writeW),
-	
+	.riD(riD),
+	.is_in_delayslotM(is_in_delayslotM),
+	.breakD(breakD),
+	.syscallD(syscallD),
+	.mtc0M(mtc0M),
+	.mfc0E(mfc0E),
+	.eretD(eretD),
+
 	.pc(pc),
 	.pcsrcD(pcsrcD),
 	.aluoutM(aluoutM),
@@ -207,7 +323,11 @@ datapath dp(
 	.stallF(stallF),
 	.stallD(stallD),
 	.stallE(stallE),
-	.flushE(flushE),
+	.stallM(stallM),
+	.flushD(flushD),
+    .flushE(flushE),
+    .flushM(flushM),
+    .flushW(flushW),
 	// jump and branch
 	.memenE(memenE),
     .jalE(jalE),
@@ -222,7 +342,6 @@ datapath dp(
 	.debug_wb_rf_wnum(debug_wb_rf_wnum),
 	.debug_wb_rf_wdata(debug_wb_rf_wdata)
 	
-
 );
 	
 endmodule

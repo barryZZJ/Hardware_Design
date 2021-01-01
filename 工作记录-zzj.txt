@@ -45,4 +45,15 @@ bug：
 数据存储器可以按字节寻址，base + [offset/4] (base + offset[31:2]) 即可作为访问地址（aluout），不需要按字对齐，
 offset[1:0] 即为存/取的字内的字节偏移量，根据这个数修改对应的sel (store) 和 规范化后的数据(load)
 
-实现例外处理指令。
+编写例外处理指令。
+
+1/1
+编写例外处理指令
+
+测试mtc0, mfc0通过
+测试ri, break, syscall通过
+
+bug:
+1. 测试mtc0时badvaddr没有被修改
+原因：badvaddr是只读寄存器，不能修改
+
