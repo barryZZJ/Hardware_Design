@@ -15,3 +15,7 @@ data_ram
 inst_ram
 *.xpr
 *.wcfg
+*.jpg
+*.xlsx
+*zzj.txt
+*.url
