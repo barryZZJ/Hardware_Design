@@ -3,14 +3,13 @@
 
 module top(
 	input wire clk,rst,
-    output [31:0] instr, pc, resultW, // for testbench
-	output [4:0] rs, rt, rd,
+    output [31:0] instr, pc,
 	output wire [31:0] writedata, dataadr,
-	output wire memwrite,
-	output stallF, stallD, flushE
+	output wire memwrite
 );
 
 wire [31:0] readdata; 
+wire [3:0]  mem_wea;
 
 mips mips(
 	.clk(clk),
@@ -22,31 +21,39 @@ mips mips(
 	.pc(pc),
 	.aluoutM(dataadr),
 	.writedata(writedata),
-	.resultW(resultW),
-	.rs(rs),
-	.rt(rt),
-	.rd(rd),
-    .stallF(stallF),
-	.stallD(stallD),
-	.flushE(flushE)
+	.mem_wea(mem_wea)
 );
 
 inst_ram inst_ram(
 	.clka(~clk),
-	.ena(1'b1),      // input wire ena
-	.wea(4'b0000),      // input wire [3 : 0] wea
-	.addra({2'b0, pc[7:2]}),
-	.dina(32'b0),    // input wire [31 : 0] dina
+	.addra(pc),
 	.douta(instr)
 );
 
+// å¤§ç«¯ï¼Œä½åœ°å€åœ¨é«˜å­—èŠ‚
+// ena ä¸º 0ï¼šè¯»ï¼Œ
+// wea ä¸º 4'b0000
+
+// ena ä¸º 1ï¼šå†™ï¼Œ
+// wea ä¸º:
+// SW:
+// 4'b1111
+// SH:
+// addr[1:0] == 2'b00 ? 4'b1100
+// addr[1:0] == 2'b10 ? 4'b0011
+// SB:
+// addr[1:0] == 2'b00 ? 4'b1000
+// addr[1:0] == 2'b01 ? 4'b0100
+// addr[1:0] == 2'b10 ? 4'b0010
+// addr[1:0] == 2'b11 ? 4'b0001
+
 data_ram data_ram(
 	.clka(~clk),
-	.ena(1'b1),
-	.wea({4{memwrite}}),
+	.ena(memwrite),
+	.wea(mem_wea),
 	.addra(dataadr),
-	.dina(writedata),	 // ÒªĞ´Èë´æ´¢Æ÷ÖĞµÄÊı¾İ
-	.douta(readdata)	 // ´Ó´æ´¢Æ÷ÖĞ¶Á³öµÄÊı¾İ
+	.dina(writedata),	 // è¦å†™çš„åœ°å€
+	.douta(readdata)	 // è¯»å‡ºçš„åœ°å€
 );
 
 endmodule

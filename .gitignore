@@ -4,3 +4,14 @@
 *.runs
 *.sim
 *.ip_user_files
+*.jou
+*.log
+*.str
+/funcTest_independent
+*.py
+input.txt
+test.coe
+data_ram
+inst_ram
+*.xpr
+*.wcfg

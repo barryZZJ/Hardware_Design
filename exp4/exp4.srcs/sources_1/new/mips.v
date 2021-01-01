@@ -24,78 +24,181 @@ module mips(
 	input wire clk,rst,
 	input wire[31:0] instr,
 	input wire[31:0] readdata,
-
 	output wire memwriteM,
-	output wire[31:0] pc, resultW,
+	output wire[31:0] pc,
 	output wire[31:0] aluoutM, writedata,
-	output [4:0] rs, rt, rd,
-	output stallF, stallD, flushE
+	output wire [3:0] mem_wea
 );
-	
+
+// Fetch phase
+wire is_in_delayslotF;
+assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
+
 // Decode phase
 wire [31:0] instrD;
-wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD;
-wire [2:0] alucontrolD;
+wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
+//  mthiD, mtloD;
+wire [1:0] hidstD, lodstD;
+wire [7:0] alucontrolD;
+wire hi_writeD, lo_writeD;
+wire memenD, jalD, jrD, balD;
+wire riD;
+wire breakD;
+wire syscallD;
+wire is_in_delayslotD;
+wire mtc0D;
+wire mfc0D;
+wire eretD;
+
 
 // Execution phase
-wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE;
-wire [2:0] alucontrolE;
+wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
+//  mthiE, mtloE;
+wire [1:0] hidstE, lodstE;
+wire [7:0] alucontrolE;
+wire hi_writeE, lo_writeE;
+wire memenE, jalE, jrE, balE, jumpE;
+wire is_in_delayslotE;
+wire mtc0E;
+wire mfc0E;
 
 // Mem phase
-wire regwriteM, memtoregM; 
+wire regwriteM, memtoregM;
+//  mfhiM, mfloM, mthiM, mtloM; 
+wire [1:0] hidstM, lodstM;
+wire [7:0] alucontrolM;
+wire hi_writeM, lo_writeM;
+wire is_in_delayslotM;
+wire mtc0M;
 //memwriteM;
 
 // WB phase
 wire regwriteW, memtoregW;
+//  mfhiW, mfloW, mthiW, mtloW;
+wire [1:0] hidstW, lodstW;
+wire [7:0] alucontrolW;
+wire hi_writeW, lo_writeW;
 
 // hazard
-// wire stallF, stallD, flushE;
+wire stallF, stallD, stallE, stallM;
+wire flushF, flushD, flushE, flushM, flushW;
 
-
-assign rs = instrD[25:21];
-assign rt = instrD[20:16];
-assign rd = instrD[15:11];
+// wire branchFlushD;
 
 // fetch to decode flop for instr
 flopenrc #(32) FD_instr (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(pcsrcD),
+    .clear(flushD),
     .d(instr),
     .q(instrD)
 );
 
-// Decode to Exe flop for signals
-floprc #(8) DE_signals (
+flopenrc #(1) FD_signal (
     .clk(clk),
     .rst(rst),
+    .en(~stallD),
+    .clear(flushD),
+    .d(is_in_delayslotF),
+    .q(is_in_delayslotD)
+);
+
+//! 信号长度很容易出错，记得检查, alucontrol是8位, hidst, lodst都是2位
+// Decode to Exe flop for signals
+flopenrc #(8) DE_signals_aluctrl (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallE),
     .clear(flushE),
-    .d({regwriteD, memtoregD, memwriteD, alucontrolD, alusrcD, regdstD}),
-    .q({regwriteE, memtoregE, memwriteE, alucontrolE, alusrcE, regdstE})
+    .d(alucontrolD),
+    .q(alucontrolE)
+);
+flopenrc #(4) DE_signals_hilodst (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallE),
+    .clear(flushE),
+    .d({hidstD, lodstD}),
+    .q({hidstE, lodstE})
+);
+
+flopenrc #(17) DE_signals (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallE),
+    .clear(flushE),
+    .d({regwriteD, memtoregD, memwriteD,        alusrcD, 		  regdstD, 
+	       memenD, 	   jumpD,      jalD,            jrD,   		     balD, 
+			mfhiD, 	   mfloD, hi_writeD,      lo_writeD, is_in_delayslotD,
+			mtc0D,     mfc0D}),
+    .q({regwriteE, memtoregE, memwriteE,        alusrcE, 		  regdstE, 
+	       memenE, 	   jumpE,      jalE,            jrE, 		     balE, 
+			mfhiE, 	   mfloE, hi_writeE, 	  lo_writeE, is_in_delayslotE,
+			mtc0E,     mfc0E})
 );
 
 // exe to Mem flop for signals
-flopenr #(3) EM_signals (
+flopenrc #(8) EM_signals_aluctrl (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
-    .d({regwriteE, memtoregE, memwriteE}),
-    .q({regwriteM, memtoregM, memwriteM})
+	.en(~stallM),
+    .clear(flushM),
+    .d(alucontrolE),
+    .q(alucontrolM)
+);
+flopenrc #(4) EM_signals_hilodst (
+    .clk(clk),
+    .rst(rst),
+	.en(~stallM),
+    .clear(flushM),
+    .d({hidstE, lodstE}),
+    .q({hidstM, lodstM})
+);
+
+flopenrc #(7) EM_signals (
+    .clk(clk),
+    .rst(rst),
+    .en(~stallM),
+	.clear(flushM),
+    .d({regwriteE, memtoregE, memwriteE, hi_writeE, lo_writeE, is_in_delayslotE, mtc0E}),
+    .q({regwriteM, memtoregM, memwriteM, hi_writeM, lo_writeM, is_in_delayslotM, mtc0M})
 );
 
 // mem to wb flop for signals
-flopenr #(2) MW_signals (
+flopenrc #(8) MW_aluctrl (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .d({regwriteM, memtoregM}),
-    .q({regwriteW, memtoregW})
+	.clear(flushW),
+    .d(alucontrolM),
+    .q(alucontrolW)
+);
+
+flopenrc #(4) MW_hilodst (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+	.clear(flushW),
+    .d({hidstM, lodstM}),
+    .q({hidstW, lodstW})
+);
+
+flopenrc #(4) MW_signals (
+    .clk(clk),
+    .rst(rst),
+    .en(1'b1),
+	.clear(flushW),
+    .d({regwriteM, memtoregM, hi_writeM, lo_writeM}),
+    .q({regwriteW, memtoregW, hi_writeW, lo_writeW})
 );
 
 controller c(
+	.instr(instrD),
 	.op(instrD[31:26]),
 	.funct(instrD[5:0]),
+	.rs(instrD[25:21]),
+	.rt(instrD[20:16]),
 
 	.memtoregD(memtoregD),
 	.memwriteD(memwriteD),
@@ -104,7 +207,26 @@ controller c(
 	.regwriteD(regwriteD),
 	.branchD(branchD),
 	.jumpD(jumpD),
-	.alucontrolD(alucontrolD)
+	.alucontrolD(alucontrolD),
+	// jump and branch
+	.memenD(memenD),
+    .jalD(jalD),
+    .jrD(jrD),
+    .balD(balD),
+
+	.mfhiD(mfhiD),
+	.mfloD(mfloD),
+	.hidstD(hidstD),
+	.lodstD(lodstD),
+	.hi_writeD(hi_writeD), 
+	.lo_writeD(lo_writeD),
+	.riD(riD),
+	.breakD(breakD),
+	.syscallD(syscallD),
+	.mtc0D(mtc0D),
+	.mfc0D(mfc0D),
+	.eretD(eretD)
+
 );
 
 datapath dp(
@@ -118,20 +240,51 @@ datapath dp(
 	.memtoregW(memtoregW),
 	.memtoregE(memtoregE),
 	.memtoregM(memtoregM),
-	.alucontrolE(alucontrolE),
+	.alucontrolE(alucontrolE), .alucontrolW(alucontrolW),
 	.alusrcE(alusrcE),
 	.regdstE(regdstE),
 	.jumpD(jumpD),
+	.jrD(jrD),
 	.branchD(branchD),
-	.resultW(resultW),
-	
+	// jump and branch
+	.memenE(memenE),
+    .jalE(jalE),
+    .jrE(jrE),
+	.jumpE(jumpE),
+	.balE(balE),
+    .balD(balD),
+	// .branchFlushD(branchFlushD)
+
+	.mfhiE(mfhiE),
+	.mfloE(mfloE),
+	.hidstE(hidstE), .hidstW(hidstW),
+	.lodstE(lodstE), .lodstW(lodstW),
+	.hi_writeM(hi_writeM), 
+	.hi_writeW(hi_writeW), 
+	.lo_writeM(lo_writeM),
+	.lo_writeW(lo_writeW),
+	.riD(riD),
+	.is_in_delayslotM(is_in_delayslotM),
+	.breakD(breakD),
+	.syscallD(syscallD),
+	.mtc0M(mtc0M),
+	.mfc0E(mfc0E),
+	.eretD(eretD),
+
 	.pc(pc),
 	.pcsrcD(pcsrcD),
 	.aluoutM(aluoutM),
 	.mem_WriteData(writedata),
+	.mem_wea(mem_wea),
 	.stallF(stallF),
 	.stallD(stallD),
-	.flushE(flushE)
+	.stallE(stallE),
+	.stallM(stallM),
+	.flushD(flushD),
+    .flushE(flushE),
+    .flushM(flushM),
+    .flushW(flushW)
+
 );
 	
 endmodule

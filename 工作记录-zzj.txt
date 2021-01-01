@@ -1,0 +1,63 @@
+12/29:
+修改寄存器初始化
+修复datapath注释乱码，
+以及更新了两个ram，更新了coe文件
+解决了添加alucontrol信号后，中间寄存器位数不对的问题
+
+增加逻辑运算指令
+(修改signext)
+
+增加数据移动指令hilo
+！mfhi/lo, mthi/lo都是在wb阶段结束
+下降沿写?
+寄存器是先写后读
+数据前推：同lw，stall一周期+forward
+添加hidst, lodst信号，选择写入hilo的数据来源
+
+12/30:
+修改hilo设计，改为在wb写hilo，在ex读hilo，作为ALU操作数之一，并沿流水线传下去
+实现前推，解决冒险问题，添加forwardHLE信号
+
+
+遇到的bug记录：
+1.由于regwriteE, memtoregE信号为Z，导致lwstall为x，导致flushE为x，导致流水线一直stall，pc没法正常获取指令。
+产生原因：between-stage中间寄存器的WIDTH与实际信号没对上
+
+2.lui没有写回寄存器
+产生原因：maindecoder里解码LUI指令时没有正确赋值regwrite和regdst信号
+
+3.maindec.v中，funct变化时alucontrol没有变化
+产生原因：分支指令解码不应该放在maindec.v中，导致case(op)分支到EXE_BLTZ5'b00000去了。
+
+4.pc没加4
+产生原因：除法器各个reg信号没有初始化为0
+
+5.除法结果不对
+原因：除法器的div_sign判断有无符号除法没有保持状态，一个周期后立马归零了；
+原因：E阶段没有stall，导致alucontrol往下流了
+
+12/31
+完善lb, lh, sb, sh访存指令
+
+bug：
+1.load指令取出来的数据不对
+原因：寻址的具体过程没有理解
+数据存储器可以按字节寻址，base + [offset/4] (base + offset[31:2]) 即可作为访问地址（aluout），不需要按字对齐，
+offset[1:0] 即为存/取的字内的字节偏移量，根据这个数修改对应的sel (store) 和 规范化后的数据(load)
+
+编写例外处理指令。
+
+1/1
+编写例外处理指令
+
+测试mtc0, mfc0通过
+测试ri, break, syscall通过
+
+通过了二周目独立测试，发现了异常处理的小bug，sh的ades判断出了小问题。
+
+合并到master（分支指令有点小问题，在sram里解决了）
+
+bug:
+1. 测试mtc0时badvaddr没有被修改
+原因：badvaddr是只读寄存器，不能修改
+
