@@ -28,15 +28,22 @@ module top(
 	
 );
 
+addrtrans address_transfer(
+	.inst_addr(inst_addr),
+	.data_addr(data_addr),
+	.inst_sram_addr(inst_sram_addr),
+	.data_sram_addr(data_sram_addr)
+);
+
 mips mips(
 	.clk			(clk),
 	.rst			(resetn),
-	.pc				(inst_sram_addr	),
+	.pc				(inst_addr		),	// 未映射地址
 	.instr			(inst_sram_rdata),
 
 	.readdata		(data_sram_rdata),
 	.memwriteM		(data_sram_en	),
-	.aluoutM		(data_sram_addr	),
+	.aluoutM		(data_addr		),	// 未映射地址
 	.writedata		(data_sram_wdata),
 	.mem_wea		(data_sram_wen	),
 	// debug
@@ -48,6 +55,11 @@ mips mips(
 assign inst_sram_en = 1'b1;
 assign inst_sram_wen = 4'b0000;
 assign inst_sram_wdata = 32'b0;
+
+
+
+// 物理地址映射
+
 
 /*inst_ram inst_ram(
 	.clka(~clk),
