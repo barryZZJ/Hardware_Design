@@ -31,3 +31,7 @@
 
     测试点BUG ：延迟槽指令多一条 解决： 反转inst_ram 时钟
     测试点BUG ：JR指令未正常跳转 test.s 510
+
+    添加了rst bfc的pc模块和地址转换模块
+    备注 ： 对confreg的地址转换暂未确认
+    通过了测试 obj1 和 obj2

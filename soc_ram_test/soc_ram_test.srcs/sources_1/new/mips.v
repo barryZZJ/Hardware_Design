@@ -108,7 +108,7 @@ flopenrc #(26) DE_signals (
 flopenrc #(32) DE_pc (
     .clk(clk),
     .rst(rst),
-    .en(~stallD),
+    .en(~stallE),
     .clear(1'b0),
     .d(pcD),
     .q(pcE)
@@ -126,7 +126,7 @@ flopenr #(17) EM_signals (
 flopenrc #(32) EM_pc (
     .clk(clk),
     .rst(rst),
-    .en(~stallD),
+    .en(1'b1),
     .clear(1'b0),
     .d(pcE),
     .q(pcM)
@@ -142,7 +142,7 @@ flopenr #(16) MW_signals (
 flopenrc #(32) MW_pc (
     .clk(clk),
     .rst(rst),
-    .en(~stallD),
+    .en(1'b1),
     .clear(1'b0),
     .d(pcM),
     .q(pcW)

@@ -47,7 +47,6 @@ module datapath(
 assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
 assign debug_wb_rf_wnum = writeregW;
 assign debug_wb_rf_wdata = resultW;
-
 /////////////////////////////////////
 // for debug:
 wire [31:0] instrE, instrM, instrW;
@@ -635,7 +634,8 @@ hazard hazard(
     .flushE(flushE),
     // jump and branch
     .jumpD(jumpD),
-    .balD(balD)
+    .balD(balD),
+    .jrD(jrD)
     
     
 );

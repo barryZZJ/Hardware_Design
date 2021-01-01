@@ -29,9 +29,10 @@ module addrtrans(
     // 
     // wire [31:0] data_sram_addr_temp;
     // 移位为字寻址模式
-    assign inst_sram_addr = inst_addr << 2;
-    assign data_sram_addr_temp = data_addr << 2;
+    assign inst_sram_addr = inst_addr;
+    assign data_sram_addr = data_addr;
     // confreg 数据地址转换
     /*assign data_sram_addr = (data_sram_addr_temp[31] == 1'b1) ? 
                             {3'b000,data_sram_addr_temp[28:0]} : data_sram_addr_temp;*/
+
 endmodule

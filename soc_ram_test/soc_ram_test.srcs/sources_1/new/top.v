@@ -28,6 +28,9 @@ module top(
 	
 );
 
+wire [31:0] inst_addr;
+wire [31:0] data_addr;
+
 addrtrans address_transfer(
 	.inst_addr(inst_addr),
 	.data_addr(data_addr),
