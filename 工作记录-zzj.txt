@@ -53,6 +53,10 @@ offset[1:0] 即为存/取的字内的字节偏移量，根据这个数修改对�
 测试mtc0, mfc0通过
 测试ri, break, syscall通过
 
+通过了二周目独立测试，发现了异常处理的小bug，sh的ades判断出了小问题。
+
+合并到master（分支指令有点小问题，在sram里解决了）
+
 bug:
 1. 测试mtc0时badvaddr没有被修改
 原因：badvaddr是只读寄存器，不能修改
