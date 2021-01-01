@@ -30,12 +30,12 @@ inst_ram inst_ram(
 	.douta(instr)
 );
 
-// ��ˣ��͵�ַ�ڸ��ֽ�
-// ena Ϊ 0������
-// wea Ϊ 4'b0000
+// 大端，低地址在高字节
+// ena 为 0：读，
+// wea 为 4'b0000
 
-// ena Ϊ 1��д��
-// wea Ϊ:
+// ena 为 1：写，
+// wea 为:
 // SW:
 // 4'b1111
 // SH:
@@ -52,8 +52,8 @@ data_ram data_ram(
 	.ena(memwrite),
 	.wea(mem_wea),
 	.addra(dataadr),
-	.dina(writedata),	 // Ҫд��洢���е�����
-	.douta(readdata)	 // �Ӵ洢���ж���������
+	.dina(writedata),	 // 要写的地址
+	.douta(readdata)	 // 读出的地址
 );
 
 endmodule

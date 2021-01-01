@@ -1,7 +1,9 @@
 `timescale 1ns / 1ps
 `include "defines.vh"
-module main_decoder(input [5:0] op,
+module main_decoder(input [31:0] instr,
+                    input [5:0] op,
                     input [5:0] funct,
+                    input [4:0] rs,
                     input [4:0] rt,
                     output reg regdst,
                     output reg regwrite,
@@ -11,6 +13,11 @@ module main_decoder(input [5:0] op,
                     output lo_write,
                     output reg mfhi,
                     output reg mflo,
+                    output reg break,
+                    output reg syscall,
+                    output reg mtc0,
+                    output reg mfc0,
+                    output reg eret,
 
                     output reg alusrc,
                     output reg branch,
@@ -22,7 +29,8 @@ module main_decoder(input [5:0] op,
                     output reg jal,
                     output reg jr,
                     output reg bal,
-                    output reg jump
+                    output reg jump,
+                    output reg ri // 保留指令例外
                     );
 
 wire mul, div;
@@ -45,6 +53,12 @@ assign lodst = {mul, div, mtlo} == 3'b100 ? 2'b01 :
 assign hi_write = mul | div | mthi;
 assign lo_write = mul | div | mtlo;
 
+    always @(*) begin
+        if (instr == `EXE_ERET)
+            eret <= 1'b1;
+        else
+            eret <= 1'b0;
+    end
 
     always @(*) begin
         // 全初始化为0，下面的case中符合条件的改成1
@@ -61,6 +75,11 @@ assign lo_write = mul | div | mtlo;
         jump     <= 1'b0;
         mfhi     <= 1'b0;
         mflo     <= 1'b0;
+        break    <= 1'b0;
+        syscall  <= 1'b0;
+        ri       <= 1'b0;
+        mtc0     <= 1'b0;
+        mfc0     <= 1'b0;
         case (op)
             ////////////////////////////////////////
             // R-type
@@ -73,27 +92,39 @@ assign lo_write = mul | div | mtlo;
             `EXE_NOP: begin
                 regwrite <= 1'b1;
                 regdst   <= 1'b1;
-                case (funct)
-                    `EXE_MFHI: mfhi <= 1'b1;
-                    `EXE_MFLO: mflo <= 1'b1;
-                    `EXE_MTHI: regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
-                    `EXE_MTLO: regwrite <= 1'b0;
-
-                    `EXE_JR: begin
-                        regwrite <= 1'b0;
-                        // regdst   <= 1'b0;
-                        jump     <= 1'b1;
-                        jr       <= 1'b1;
-                    end
-                    `EXE_JALR: begin
-                        // regdst   <= 1'b0;
-                        jal      <= 1'b1;
-                        jr       <= 1'b1;
-                    end
-
-                    
-
-                endcase
+                if (funct == `EXE_MFHI) begin
+                    regwrite <= 1'b1;
+                    regdst   <= 1'b1;
+                    mfhi <= 1'b1;
+                end else if (funct == `EXE_MFLO) begin 
+                    regwrite <= 1'b1;
+                    regdst   <= 1'b1;
+                    mflo <= 1'b1;
+                end else if (funct == `EXE_MTHI) begin
+                    regwrite <= 1'b0; // 写hilo寄存器指令，不用写寄存器堆
+                    regdst   <= 1'b1;
+                end else if (funct == `EXE_MTLO) begin
+                    regwrite <= 1'b0;
+                    regdst   <= 1'b1;
+                end else if (funct == `EXE_JR) begin
+                    regwrite <= 1'b0;
+                    // regdst   <= 1'b0;
+                    jump     <= 1'b1;
+                    jr       <= 1'b1;
+                end else if (funct == `EXE_JALR) begin
+                    // regdst   <= 1'b0;
+                    jal      <= 1'b1;
+                    jr       <= 1'b1;
+                end else if (funct == `EXE_SYSCALL) begin
+                    // syscall 和 break 不是寄存器指令
+                    break    <= 1'b1;
+                    regwrite <= 1'b0;
+                    regdst   <= 1'b0;
+                end else if (funct == `EXE_BREAK) begin
+                    syscall  <= 1'b1;
+                    regwrite <= 1'b0;
+                    regdst   <= 1'b0;
+                end
             end
 
             ////////////////////////////////////////
@@ -270,8 +301,31 @@ assign lo_write = mul | div | mtlo;
                     end
                 endcase
             end
+
+            // 特权指令
+            6'b010000:
+                case (rs)
+                    5'b00100: begin
+                        mtc0     <= 1'b1;
+                        regwrite <= 1'b0;
+                        regdst   <= 1'b0;
+                    end
+                    5'b00000: begin
+                    // mfc0 解析成 (regwrite=1,regdst=0)，可以保证寄存器堆数据被前推，下一条读了rt的指令取出来的是被前推的数据
+                        mfc0     <= 1'b1;
+                        regwrite <= 1'b1;
+                        regdst   <= 1'b0;
+                    end
+                    default: begin
+                        mtc0 <= 1'b0;
+                        mfc0 <= 1'b0;
+                    end
+                endcase
+
             default: begin
-                
+                // 没有匹配的op则触发保留指令例外
+                //FIXME 只有op不匹配时才触发保留指令，有没有可能op匹配也是保留指令呢
+                ri <= 1'b1;
             end
         endcase
     end
