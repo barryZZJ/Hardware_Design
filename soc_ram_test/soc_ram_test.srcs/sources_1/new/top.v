@@ -11,14 +11,14 @@ module top(
 	output wire [ 3:0] inst_sram_wen  ,		// not use
 	output wire [31:0] inst_sram_addr ,
 	output wire [31:0] inst_sram_wdata,		// not use
-	output wire [31:0] inst_sram_rdata,
+	input  wire [31:0] inst_sram_rdata,
 	//////////////////////////////////////////
 	// data ram ports
 	output wire        data_sram_en   ,
 	output wire [ 3:0] data_sram_wen  ,
 	output wire [31:0] data_sram_addr ,
 	output wire [31:0] data_sram_wdata,
-	output wire [31:0] data_sram_rdata,
+	input  wire [31:0] data_sram_rdata,
 	//////////////////////////////////////////
 	// debug ports
 	output wire [31:0] debug_wb_pc      ,	// pc
@@ -32,10 +32,10 @@ wire [31:0] inst_addr;
 wire [31:0] data_addr;
 
 addrtrans address_transfer(
-	.inst_addr(inst_addr),
-	.data_addr(data_addr),
-	.inst_sram_addr(inst_sram_addr),
-	.data_sram_addr(data_sram_addr)
+	.inst_vaddr(inst_addr),
+	.inst_paddr(inst_sram_addr),
+	.data_vaddr(data_addr),
+	.data_paddr(data_sram_addr)
 );
 
 mips mips(
