@@ -183,7 +183,7 @@ always @(*) begin
             res <= a + {b[31:2], 2'b0};
             finalwritedata <= {writedata[15:0], writedata[15:0]};
             adel <= 1'b0;
-            ades <= (offset[1:0] != 2'b00) | (offset[1:0] != 2'b10);
+            ades <= (offset[1:0] != 2'b00) & (offset[1:0] != 2'b10);
             case (offset[1:0])
                 2'b00 :   sel <= 4'b1100;
                 2'b10 :   sel <= 4'b0011;

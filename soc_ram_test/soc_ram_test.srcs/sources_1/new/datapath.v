@@ -23,6 +23,7 @@ module datapath(
     input jumpE,
     input balD,
     input balE,
+    input jalD,
 
     input mfhiE,
     input mfloE,
@@ -87,11 +88,11 @@ wire [31:0] ALUsrcA1, ALUsrcA2, ALUsrcB1, ALUsrcB2, ALUsrcB3, sl2_imm, sl2_j_add
 
 
 // Fetch phase
-wire [31:0] pcF, pc_4F,pc_8F;
+wire [31:0] pcF, pc_4F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcD, pc_4D, pc_8D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pcD, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
 wire [ 5:0] opD;
 
@@ -105,7 +106,7 @@ wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
 wire [ 3:0] selE;
 wire [ 1:0] offsetE;
-wire [31:0] pcplus8E;
+wire [31:0] pc_8E;
 wire overflowE, adelE, adesE;
 
 // Mem phase
@@ -141,6 +142,7 @@ wire [31:0] newpcM;
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
 
+wire [31:0] pcplus8;
 //////////////////////////////////////
 // soc debug
 assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
@@ -168,12 +170,6 @@ adder pc_4_adder (
     .b(32'h4),
     .y(pc_4F)
 );
-//PC+8加法器
-adder pc_8_adder (
-    .a(pcF),
-    .b(32'h8),
-    .y(pc_8F)
-);
 
 // ----------------------------------------
 // fetech to decode memory flops 
@@ -187,15 +183,7 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
-// pc_8
-flopenrc #(32) FD_pc_8 (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallD),
-    .clear(pcsrcD | flushD),
-    .d(pc_8F),
-    .q(pc_8D)
-);
+
 flopenrc #(32) FD_pc (
     .clk(clk),
     .rst(rst),
@@ -368,8 +356,8 @@ flopenrc #(32) DE_pc_8 (
     .rst(rst),
     .en(~stallE),
     .clear(flushE),
-    .d(pc_8D),
-    .q(pcplus8E)
+    .d(pc_4D + 4),
+    .q(pc_8E)
 );
 flopenrc #(32) DE_pc (
     .clk(clk),
@@ -429,14 +417,15 @@ assign writereg2E = (jumpE == 1'b0 && jrE == 1'b1 && rdE == 5'b00000) ? 5'b11111
                     (jumpE == 1'b0 && jrE == 1'b1 && rdE != 5'b00000) ? rdE : 
                     (balE == 1'b1 | jalE == 1'b1) ? 5'b11111 :
                     writeregE; 
-
 // 控制被写数据是否为PC+8
 mux2 #(32) wrmux3 (
-	.a(pcplus8E),
+	.a(pc_8E),
 	.b(aluoutE),
-	.s(jalE | balE),
+	.s(jalE | balE | jrE),
 	.y(aluout2E)
 );
+
+
 // 如果是mfhi/lo指令，则ALU A应该输入hi/lo寄存器的值，B输入的是0，同时要考虑转发。
 assign ALUsrcA2 = forwardHLE == 3'b000 ? ALUsrcA1 :
                   forwardHLE == 3'b001 ? hi_oW :
@@ -725,7 +714,8 @@ hazard hazard(
     // jump and branch
     .jumpD(jumpD),
     .balD(balD),
-    .jrD(jrD)
+    .jrD(jrD),
+    .jalD(jalD)
 );
 except exc(
     .clk(clk), .rst(rst),

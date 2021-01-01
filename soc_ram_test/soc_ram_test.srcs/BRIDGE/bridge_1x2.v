@@ -103,7 +103,6 @@ module bridge_1x2(
             sel_conf_r <= sel_conf;
         end
     end
-
     assign cpu_data_rdata = {32{sel_sram_r}} & data_sram_rdata
                           | {32{sel_conf_r}} & conf_rdata;
 

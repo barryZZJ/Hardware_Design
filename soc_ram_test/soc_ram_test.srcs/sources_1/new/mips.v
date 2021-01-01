@@ -25,6 +25,8 @@ module mips(
 	input wire rst,
 	input wire [31:0] instr,
 	input wire [31:0] readdata,
+	output wire memwriteD,
+	output wire memwriteE,
 	output wire memwriteM,
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
@@ -41,7 +43,7 @@ assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
 
 // Decode phase
 wire [31:0] instrD;
-wire regwriteD, memtoregD, memwriteD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
+wire regwriteD, memtoregD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
 //  mthiD, mtloD;
 wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
@@ -57,7 +59,7 @@ wire eretD;
 
 wire [31:0] pcD;
 // Execution phase
-wire regwriteE, memtoregE, memwriteE, alusrcE, regdstE, mfhiE, mfloE;
+wire regwriteE, memtoregE, alusrcE, regdstE, mfhiE, mfloE;
 //  mthiE, mtloE;
 wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
@@ -161,7 +163,7 @@ flopenrc #(17) DE_signals (
 flopenrc #(32) DE_pc (
     .clk(clk),
     .rst(rst),
-    .en(~stallE),
+    .en(1'b1),
     .clear(1'b0),
     .d(pcD),
     .q(pcE)
@@ -328,6 +330,7 @@ datapath dp(
 	.jumpE(jumpE),
 	.balE(balE),
     .balD(balD),
+	.jalD(jalD),
 	// .branchFlushD(branchFlushD)
 
 	// debug

@@ -31,6 +31,8 @@ module top(
 wire [31:0] inst_addr;
 wire [31:0] data_addr;
 
+wire data_sram_en;
+assign data_sram_en = 1'b1;
 addrtrans address_transfer(
 	.inst_vaddr(inst_addr),
 	.inst_paddr(inst_sram_addr),
@@ -45,7 +47,7 @@ mips mips(
 	.instr			(inst_sram_rdata),
 
 	.readdata		(data_sram_rdata),
-	.memwriteM		(data_sram_en	),
+	// .memwriteD		(data_sram_en	),
 	.aluoutM		(data_addr		),	// 未映射地址
 	.writedata		(data_sram_wdata),
 	.mem_wea		(data_sram_wen	),
@@ -58,7 +60,6 @@ mips mips(
 assign inst_sram_en = 1'b1;
 assign inst_sram_wen = 4'b0000;
 assign inst_sram_wdata = 32'b0;
-
 
 
 // 物理地址映射
