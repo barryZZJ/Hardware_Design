@@ -228,12 +228,10 @@ assign saD = instrD[10: 6];
 
 
 //寄存器堆
-// TODO
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
-	.we3(regwriteW & !flushExcept),
-	// .we3(regwriteW),
+	.we3(regwriteW),
 	.ra1(instrD[25:21]),
 	.ra2(instrD[20:16]),
 	.wa3(writeregW),
@@ -480,6 +478,7 @@ mul mul(
 // 除法器
 wire [63:0] div_result;
 wire divstallE; //除法发出的stall信号
+// TODO
 assign div_clear = flushExcept; //发生异常时，清空除法器
 
 divWrapper div(
@@ -608,6 +607,7 @@ flopenrc #(3) EM_alusignals(
 // Mem 
 //TODO
 assign mem_WriteData = writedataM;
+// assign mem_wea = selM;  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
 assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
 
 // ----------------------------------------
@@ -683,13 +683,10 @@ mux2 #(32) mux_WD3(
 );
 
 //hilo寄存器
-//TODO
 hilo_reg hilo(
     .clk(clk), .rst(rst), 
-    .weh(hi_writeW & !flushExcept),
-    .wel(lo_writeW & !flushExcept),
-    // .weh(hi_writeW),
-    // .wel(lo_writeW),
+    .weh(hi_writeW),
+    .wel(lo_writeW),
     .hi(hi_iW), .lo(lo_iW),
     .hi_o(hi_oW), .lo_o(lo_oW)
 );
