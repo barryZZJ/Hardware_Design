@@ -85,10 +85,9 @@ assign branchstall = branchD && regwriteE &&
                        (writeregM == rsD || writeregM == rtD);
 ///////////
 wire jrstall;
-assign jrstall =  (jrD && !jalD) && regwriteE && 
-                       (writeregE == rsD || writeregE == rtD) ||
-                       (jrD && !jalD) && memtoregM &&
-                       (writeregM == rsD || writeregM == rtD);
+assign jrstall =  (jrD && regwriteE)  && (writeregE == rsD) 
+                || (jrD && memtoregM) && (writeregM == rsD);
+
 assign stallF = lwstall || branchstall || divstallE || jrstall;
 assign stallD = lwstall || branchstall || divstallE || jrstall;
 assign stallE = divstallE;

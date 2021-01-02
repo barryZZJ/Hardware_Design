@@ -106,6 +106,8 @@ assign lo_write = mul | div | mtlo;
                 end else if (funct == `EXE_MTLO) begin
                     regwrite <= 1'b0;
                     regdst   <= 1'b1;
+                //////////////////////////////////////////////
+                // jump    
                 end else if (funct == `EXE_JR) begin
                     regwrite <= 1'b0;
                     // regdst   <= 1'b0;
@@ -114,7 +116,7 @@ assign lo_write = mul | div | mtlo;
                 end else if (funct == `EXE_JALR) begin
                     jump     <= 1'b1;
                     // regdst   <= 1'b0;
-                    jal      <= 1'b1;
+                    // jal      <= 1'b1;
                     jr       <= 1'b1;
                 end else if (funct == `EXE_SYSCALL) begin
                     // syscall 和 break 不是寄存器指令
@@ -247,7 +249,7 @@ assign lo_write = mul | div | mtlo;
             `EXE_JAL: begin
                 regwrite <= 1'b1;
                 jal      <= 1'b1;
-                jump     <= 1'b1;
+                // jump     <= 1'b1;
             end
             
             // 所有分支指令的第0-15bit存储的都是offset
