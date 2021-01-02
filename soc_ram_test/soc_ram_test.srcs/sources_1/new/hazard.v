@@ -101,7 +101,8 @@ assign flushF = flushExcept;
 assign flushD = flushExcept;
 assign flushE = lwstall || branchstall || flushExcept;
 assign flushM = divstallE || flushExcept;
-assign flushW = 1'b0; // 例外在M阶段处理，W阶段是没问题的指令，不应该flush
+// TODO
+assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，不应该flush
 // 可能有bug
 // assign #1 flushE = lwstall | jumpD | branchD;
 //
