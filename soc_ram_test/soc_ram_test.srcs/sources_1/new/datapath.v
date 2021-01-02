@@ -765,7 +765,7 @@ except exc(
 
     .pcM(pcM),
     .is_in_delayslotM(is_in_delayslotM),
-    .bad_addr_iM(aluoutM),
+    .l_s_bad_addr_iM(aluoutM),
 
     .read_cp0_dataE(cp0_oE),
     .newpcM(newpcM),
