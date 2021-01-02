@@ -1,0 +1,39 @@
+2020/12/28:
+    重构decoder，ALU格式
+    alucontrol 位宽修改
+2020/12/29：
+    ALU 新增端口 input [4:0] sa (shamt)
+    datapath 新增寄存器floprc DE_sa
+    移位指令 格式问题
+
+2020/12/30：
+    maindecoder新增控制信号输出
+    新增分支跳转控制信号选择器 wrmux2 wrmux3
+    eqcmp的添加
+    * 修改数据通路 DE #(13) 处增加 4个分支跳转信号 （17）
+    *** hazard 模块新增端口未补全
+    datapath 170 
+	将equal直接替换为compare 303
+    hazard 末尾FlushE修改可能有bug
+    测试逻辑运算和移位指令
+    测试分支跳转指令
+2020/12/31
+    测试分支跳转指令 test2 branch部分
+    debug，修改FD部分PC的中间寄存器，取消clear功能，通过测试
+    测试跳转指令，debug后通过
+    重点是几个选择器的信号设置和接线
+    soc ram 测试
+2021/01/01
+    soc ram 测试
+    解决了PC的初始化问题
+    regfile write enable 位宽需要修改
+    datapath 47 直接扩展信号至4位
+
+    测试点BUG ：延迟槽指令多一条 解决： 反转inst_ram 时钟
+    测试点BUG ：JR指令未正常跳转 test.s 510
+
+    添加了rst bfc的pc模块和地址转换模块
+    备注 ： 对confreg的地址转换暂未确认
+    通过了测试 obj1 和 obj2（假的）
+2021/01/02
+    反转CPU clk 解决了访存延迟问题
