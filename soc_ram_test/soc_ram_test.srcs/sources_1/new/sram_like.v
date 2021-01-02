@@ -31,20 +31,27 @@ module sram_like(
     input [31:0] data_rdata   ,
     input        data_addr_ok ,
     input        data_data_ok ,
+    /////////////////////////////////////////
+    // output to cpu
 
+    
     /////////////////////////////////////////
     // output to SRAM - AXI bridge
-    output         inst_req     ,
-    output         inst_wr      ,
-    output  [1 :0] inst_size    ,
-    output  [31:0] inst_addr    ,
-    output  [31:0] inst_wdata   ,
-
-    output         data_req     ,
-    output         data_wr      ,
-    output  [1 :0] data_size    ,
-    output  [31:0] data_addr    ,
-    output  [31:0] data_wdata   ,
+    //////////////// inst ///////////////////
+    output         inst_req_bridge  ,   // 请求
+    output         inst_wr_bridge   ,   // 写信号
+    output  [1 :0] inst_size_bridge ,   // 字节数
+    output  [31:0] inst_addr_bridge ,   // 地址
+    output  [31:0] inst_wdata_bridge,
+    //////////////// data ///////////////////
+    output         data_req_bridge  ,   // 请求
+    output         data_wr_bridge   ,   // 写信号
+    output  [1 :0] data_size_bridge ,   // 字节数
+    output  [31:0] data_addr_bridge ,   // 待写地址
+    output  [31:0] data_wdata_bridge,   // 待写数据
+    /////////////////////////////////////////
+    // input from SRAM - AXI bridge
+    input   [31:0] 
     );
     /////////////////////////////////////////////////////////////////////////////////////
     // clk      1       input 时钟

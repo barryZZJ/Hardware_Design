@@ -49,6 +49,7 @@ module datapath(
     output wire [31:0] debug_wb_rf_wdata,
     output stallF, stallD, stallE, stallM,
     output flushF, flushD, flushE, flushM, flushW
+    // output flushExcept
 );
 
 
