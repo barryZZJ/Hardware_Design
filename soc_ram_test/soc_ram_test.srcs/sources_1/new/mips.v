@@ -39,7 +39,6 @@ module mips(
 
 // Fetch phase
 wire is_in_delayslotF;
-assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
 
 // Decode phase
 wire [31:0] instrD;
@@ -97,6 +96,7 @@ wire flushF, flushD, flushE, flushM, flushW;
 
 // wire branchFlushD;
 
+assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
 
 assign debug_wb_pc = pcW;
 // fetch to decode flop for instr
@@ -113,7 +113,7 @@ flopenrc #(32) FD_pc (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(1'b0),
+    .clear(flushD),
     .d(pc),
     .q(pcD)
 );
@@ -163,7 +163,7 @@ flopenrc #(17) DE_signals (
 flopenrc #(32) DE_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallE),
     .clear(1'b0),
     .d(pcD),
     .q(pcE)
@@ -199,7 +199,7 @@ flopenrc #(7) EM_signals (
 flopenrc #(32) EM_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallM),
     .clear(1'b0),
     .d(pcE),
     .q(pcM)
@@ -235,7 +235,7 @@ flopenrc #(32) MW_pc (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .clear(1'b0),
+    .clear(flushW),
     .d(pcM),
     .q(pcW)
 );

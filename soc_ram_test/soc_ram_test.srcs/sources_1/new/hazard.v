@@ -94,12 +94,12 @@ assign jrstall =  (jrD && !jalD) && regwriteE &&
 assign stallF = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallD = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallE = divstallE && ~flushExcept;
-assign stallM = divstallE && ~flushExcept;
-
+assign stallM = 1'b0 && ~flushExcept; 
+//TODO 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 assign flushF = flushExcept;
 assign flushD = flushExcept;
 assign flushE = lwstall || branchstall || flushExcept;
-assign flushM = flushExcept;
+assign flushM = divstallE || flushExcept;
 assign flushW = 1'b0; // 例外在M阶段处理，W阶段是没问题的指令，不应该flush
 // 可能有bug
 // assign #1 flushE = lwstall | jumpD | branchD;
