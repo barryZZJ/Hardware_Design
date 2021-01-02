@@ -87,10 +87,9 @@ assign branchstall = branchD && regwriteE &&
 //（except上升沿更新时flushExcept与stall同时更新，条件用不上，下降沿更新时flushEXcept早到，&&~flushExcept可以防止stall置1）。
 ///////////
 wire jrstall;
-assign jrstall =  (jrD && !jalD) && regwriteE && 
-                       (writeregE == rsD || writeregE == rtD) ||
-                       (jrD && !jalD) && memtoregM &&
-                       (writeregM == rsD || writeregM == rtD);
+assign jrstall =  (jrD && regwriteE)  && (writeregE == rsD) 
+                || (jrD && memtoregM) && (writeregM == rsD);
+
 assign stallF = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallD = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallE = divstallE && ~flushExcept;

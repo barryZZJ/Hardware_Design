@@ -337,6 +337,7 @@ datapath dp(
     .flushE(flushE),
     .flushM(flushM),
     .flushW(flushW),
+	// .flushExcept(flushExcept),
 	// jump and branch
     .jalE(jalE),
     .jrE(jrE),

@@ -49,6 +49,7 @@ module datapath(
     output wire [31:0] debug_wb_rf_wdata,
     output stallF, stallD, stallE, stallM,
     output flushF, flushD, flushE, flushM, flushW
+    // output flushExcept
 );
 
 
@@ -293,7 +294,7 @@ assign pc_jump = (jrD == 1'b1) ? equalsrc1 : {pc_4D[31:28],instrD[25:0],2'b00};
 mux2 #(32) mux_pcnext(
 	.a(pc_jump),
 	.b(pc_branched),
-	.s(jumpD | jrD),        // 这里信号量配置不一样
+	.s(jumpD | jrD | jalD),        // 这里信号量配置不一样
 	.y(pc_normal)  // 没有异常时的下一个pc
 );
 
