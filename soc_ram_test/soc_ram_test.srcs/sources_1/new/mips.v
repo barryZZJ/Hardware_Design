@@ -113,7 +113,7 @@ flopenrc #(32) FD_pc (
     .clk(clk),
     .rst(rst),
     .en(~stallD),
-    .clear(1'b0),
+    .clear(flushD),
     .d(pc),
     .q(pcD)
 );
@@ -163,8 +163,8 @@ flopenrc #(17) DE_signals (
 flopenrc #(32) DE_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
-    .clear(1'b0),
+    .en(~stallE),
+    .clear(flushE),
     .d(pcD),
     .q(pcE)
 );
@@ -199,8 +199,8 @@ flopenrc #(7) EM_signals (
 flopenrc #(32) EM_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
-    .clear(1'b0),
+    .en(~stallM),
+    .clear(flushM),
     .d(pcE),
     .q(pcM)
 );
@@ -235,7 +235,7 @@ flopenrc #(32) MW_pc (
     .clk(clk),
     .rst(rst),
     .en(1'b1),
-    .clear(1'b0),
+    .clear(flushW),
     .d(pcM),
     .q(pcW)
 );
@@ -319,6 +319,7 @@ datapath dp(
 	.stallD(stallD),
 	.stallE(stallE),
 	.stallM(stallM),
+	.flushF(flushF),
 	.flushD(flushD),
     .flushE(flushE),
     .flushM(flushM),
