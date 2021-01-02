@@ -198,7 +198,7 @@ data_ram data_ram
 (
     .clka  (cpu_clk             ),   
     .ena   (data_sram_en        ),
-    .wea   (data_sram_wen       ),   //3:0
+    .wea   (data_sram_wen       ),   //3:0   // 只写置1的那一个字节，全0则不会写入
     .addra (data_sram_addr[17:2]),   //15:0
     .dina  (data_sram_wdata     ),   //31:0
     .douta (data_sram_rdata     )    //31:0
