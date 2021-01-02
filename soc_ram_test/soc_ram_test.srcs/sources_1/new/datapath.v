@@ -153,6 +153,16 @@ assign debug_wb_rf_wdata = resultW;
 // Fetch 
 
 //pc
+//FIXME 独立测试用
+
+// flopenrc #(32) pc_module(
+// 	.clk(clk),
+// 	.rst(rst),
+//     .en(~stallF),
+//     .clear(1'b0), // eret异常处理：如果直接接newpcM并判断的话，不用加flushF
+//     .d(pc_realnext),
+//     .q(pc)
+// );
 pc_module #(32) pc_module(
 	.clk(clk),
 	.rst(rst),
@@ -706,6 +716,7 @@ hazard hazard(
     .stallD(stallD),
     .stallE(stallE),
     .stallM(stallM),
+    .stallW(stallW),
     .flushF(flushF),
     .flushD(flushD),
     .flushE(flushE),
@@ -723,10 +734,14 @@ except exc(
     .rdM(rdM),
     .rdE(rdE),
     .write_cp0_dataM(aluoutM),
+    .stallD(stallD),
     .stallE(stallE),
     .stallM(stallM),
+    .stallW(stallW),
+    .flushD(flushD),
     .flushE(flushE),
     .flushM(flushM),
+    .flushW(flushW),
 
     .adelE(adelE),
     .riD(riD),
