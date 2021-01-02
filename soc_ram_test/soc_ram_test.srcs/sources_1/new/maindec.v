@@ -114,7 +114,7 @@ assign lo_write = mul | div | mtlo;
                     jump     <= 1'b1;
                     jr       <= 1'b1;
                 end else if (funct == `EXE_JALR) begin
-                    jump     <= 1'b1;
+                    // jump     <= 1'b1;
                     // regdst   <= 1'b0;
                     // jal      <= 1'b1;
                     jr       <= 1'b1;

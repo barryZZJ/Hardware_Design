@@ -39,7 +39,6 @@ module mips(
 
 // Fetch phase
 wire is_in_delayslotF;
-assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
 
 // Decode phase
 wire [31:0] instrD;
@@ -97,6 +96,7 @@ wire flushF, flushD, flushE, flushM, flushW;
 
 // wire branchFlushD;
 
+assign is_in_delayslotF = jumpD | branchD | jalD | jrD | balD;
 
 assign debug_wb_pc = pcW;
 // fetch to decode flop for instr
