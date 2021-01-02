@@ -3,21 +3,21 @@
 
 module except(input clk, rst,
               input mtc0M, // 是否是mtc0指令(是否写cp0)
-              input eretD,
+              input eretM,
               input [4:0] rdM, // 写cp0的索引
               input [4:0] rdE, // 读cp0的索引
               input [31:0] write_cp0_dataM, // 写cp0对应索引的数据 
               input stallD, stallE, stallM, stallW,
               input flushD, flushE, flushM, flushW,
 
-              input adelE,
-              input riD,
-              input overflowE,
-              input breakD,
-              input syscallD,
-              input adesE,
+              input adelM,
+              input riM,
+              input overflowM,
+              input breakM,
+              input syscallM,
+              input adesM,
 
-              input [31:0] pcE, pcM,
+              input [31:0] pcM,
               input is_in_delayslotM,
               input [31:0] bad_addr_iM, // load或store指令的虚地址
 
@@ -29,7 +29,12 @@ module except(input clk, rst,
 // 异常处理模块
 // 异常发生时只是做标记，在M阶段统一处理。
 // ! 异常指令及后面的指令无效，即不能对寄存器、HILO等CPU状态造成影响。
-// ! （清空指令、关闭寄存器写使能。特别的，停止乘除法运算）
+// ! （清空指令、关闭寄存器写使能、存储器写使能。特别的，停止乘除法运算）
+// - flush
+// - regfile
+// - hilo
+// - data_ram 
+// - div
 
 // 暂定在M阶段写回cp0，写cp0的数据要前推
 
@@ -37,10 +42,26 @@ module except(input clk, rst,
 // mtc0: GPR[rt] == aluoutE, rd == rdE
 
 // 异常处理模块
-reg [`RegBus] except_typeD, except_typeE, except_typeM;
-assign flushExcept = except_typeM != 32'b0;
+// reg [`RegBus] except_typeD, except_typeE, except_typeM;
+wire [31:0] except_typeM;
 
 wire [`RegBus] epc_o, status_o, cause_o;
+
+wire int;
+assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+
+assign except_typeM = int      ? `ExceptType_Int  :
+                      adelM    ? `ExceptType_AdEL :
+                      riM      ? `ExceptType_RI   :
+                      overflowM? `ExceptType_Ov   :
+                      breakM   ? `ExceptType_Bp   :
+                      syscallM ? `ExceptType_Sys  :
+                      adesM    ? `ExceptType_AdES :
+                      eretM    ? `ExceptType_Eret :
+                      32'b0;
+
+assign flushExcept = except_typeM != 32'b0;
+
 
 cp0_reg cp0reg(
     .clk(clk), .rst(rst),
@@ -63,67 +84,87 @@ cp0_reg cp0reg(
 //TODO posedge/ negedge?
 // bug: 一条出错指令后面跟着lw指令时，pc寄存器会被stall（因为上升沿时flushExcept还是0），导致pc无法正常被赋值为newpcM
 // 解决：except换成下降沿更新，这样flushExcept会比stall信号早到，更新pc时stallF信号不为1
-// ! 改成下降沿后，内部递进会提前半个周期，所以传递进来的信号先给exceptTypeD。
-// ! 而且except修改的时机也比stall信号早了，所以应该选择下一个阶段的stall信号
-always @(negedge clk) begin
-    if (rst) begin
-        except_typeD <= 32'b0;
-        except_typeE <= 32'b0;
-        except_typeM <= 32'b0;
-    end else begin
-        if (!stallE) begin
-            if (flushE)
-                except_typeD <= 32'b0;
-            else begin
-                if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-                    // 中断例外
-                    except_typeD <= `ExceptType_Int;
-                end else if (riD) begin
-                    // 保留指令例外
-                    except_typeD <= `ExceptType_RI;
-                end else if (breakD) begin
-                    // 断点例外
-                    except_typeD <= `ExceptType_Bp;
-                end else if (syscallD) begin
-                    // 系统调用
-                    except_typeD <= `ExceptType_Sys;
-                end else if (eretD) begin
-                    except_typeD <= `ExceptType_Eret;
-                end else begin
-                    except_typeD <= 32'b0;
-                end
-            end
-        end
-        if (!stallM) begin
-            if (flushM)
-                except_typeE <= 32'b0;
-            else begin
-                if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-                    // 中断例外
-                    except_typeE <= `ExceptType_Int;
-                end else if (adelE) begin
-                    // 地址错例外（取指或取数据）
-                    except_typeE <= `ExceptType_AdEL;
-                end else if (overflowE) begin
-                    // 整形溢出
-                    except_typeE <= `ExceptType_Ov;
-                end else if (adesE) begin
-                    // 地址错例外（存数据）
-                    except_typeE <= `ExceptType_AdES;
-                end else begin
-                    except_typeE <= except_typeD;
-                end
-            end
-        end
-        if (!stallW) begin
-            if (flushW)
-                except_typeM <= 32'b0;
-            else begin
-                except_typeM <= except_typeE;
-            end
-        end
-    end
-end
+// 改成下降沿后，内部递进会提前半个周期，所以传递进来的信号先给exceptTypeD；
+    // 而且except修改的时机也比stall信号早了，所以应该选择下一个阶段的stall信号。
+// 同时flushW也要连上flushExcept
+
+
+// always @(int, riM, breakM, syscallM, eretM) begin
+//     if (int)
+//         except_typeM = `ExceptType_Int ;
+//     else if (riM)
+//         except_typeM = `ExceptType_RI  ;
+//     else if (breakM)
+//         except_typeM = `ExceptType_Bp  ;
+//     else if (syscallM)
+//         except_typeM = `ExceptType_Sys ;
+//     else if (eretM)
+//         except_typeM = `ExceptType_Eret;
+//     else
+//         except_typeM = 32'b0;
+// end
+
+
+
+// always @(negedge clk) begin
+//     if (rst) begin
+//         except_typeD <= 32'b0;
+//         except_typeE <= 32'b0;
+//         except_typeM <= 32'b0;
+//     end else begin
+//         if (!stallE) begin
+//             if (flushE)
+//                 except_typeD <= 32'b0;
+//             else begin
+//                 if (int) begin
+//                     // 中断例外
+//                     except_typeD <= ;
+//                 end else if (riD) begin
+//                     // 保留指令例外
+//                     except_typeD <= ;
+//                 end else if (breakD) begin
+//                     // 断点例外
+//                     except_typeD <=;
+//                 end else if (syscallD) begin
+//                     // 系统调用
+//                     except_typeD <= ;
+//                 end else if (eretD) begin
+//                     except_typeD <= ;
+//                 end else begin
+//                     except_typeD <= 32'b0;
+//                 end
+//             end
+//         end
+//         if (!stallM) begin
+//             if (flushM)
+//                 except_typeE <= 32'b0;
+//             else begin
+//                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
+//                     // 中断例外
+//                     except_typeE <= `ExceptType_Int;
+//                 end else if (adelE) begin
+//                     // 地址错例外（取指或取数据）
+//                     except_typeE <= `ExceptType_AdEL;
+//                 end else if (overflowE) begin
+//                     // 整形溢出
+//                     except_typeE <= `ExceptType_Ov;
+//                 end else if (adesE) begin
+//                     // 地址错例外（存数据）
+//                     except_typeE <= `ExceptType_AdES;
+//                 end else begin
+//                     except_typeE <= except_typeD;
+//                 end
+//             end
+//         end
+//         if (!stallW) begin
+//             if (flushW)
+//                 except_typeM <= 32'b0;
+//             else begin
+//                 except_typeM <= except_typeE;
+//             end
+//         end
+//     end
+// end
 // always @(posedge clk) begin
 //     if (rst) begin
 //         except_typeD <= 32'b0;

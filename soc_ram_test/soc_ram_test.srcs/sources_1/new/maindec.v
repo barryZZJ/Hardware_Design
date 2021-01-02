@@ -24,8 +24,6 @@ module main_decoder(input [31:0] instr,
 
                     output reg memwrite,
                     output reg memtoreg,
-                    output reg memen,
-
                     output reg jal,
                     output reg jr,
                     output reg bal,
@@ -68,7 +66,6 @@ assign lo_write = mul | div | mtlo;
         branch   <= 1'b0;
         memwrite <= 1'b0;
         memtoreg <= 1'b0;
-        memen    <= 1'b0;
         jal      <= 1'b0;
         jr       <= 1'b0;
         bal      <= 1'b0;
@@ -161,53 +158,45 @@ assign lo_write = mul | div | mtlo;
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
-                memen    <= 1'b1;
             end
             // lbu
             `EXE_LBU: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
-                memen    <= 1'b1;
             end
             // lh
             `EXE_LH: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
-                memen    <= 1'b1;
             end
             // lhu
             `EXE_LHU: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
-                memen    <= 1'b1;
             end
             // lw
             `EXE_LW: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
-                memen    <= 1'b1;
             end
             // sb
            `EXE_SB: begin
                 alusrc   <= 1'b1;
                 memwrite <= 1'b1;
-                memen    <= 1'b1;
             end
             // sh
            `EXE_SH: begin
                 alusrc   <= 1'b1;
                 memwrite <= 1'b1;
-                memen    <= 1'b1;
             end
             // sw
             `EXE_SW: begin
                 alusrc   <= 1'b1;
                 memwrite <= 1'b1;
-                memen    <= 1'b1;
             end
 
             ////////////////////////////////////////

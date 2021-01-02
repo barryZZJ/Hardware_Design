@@ -102,8 +102,10 @@ assign flushF = flushExcept;
 assign flushD = flushExcept;
 assign flushE = lwstall || branchstall || flushExcept;
 assign flushM = divstallE || flushExcept;
-// TODO
-assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，不应该flush
+// posedge
+assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
+// TODO negedge
+// assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
 // 可能有bug
 // assign #1 flushE = lwstall | jumpD | branchD;
 //

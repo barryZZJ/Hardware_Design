@@ -15,7 +15,6 @@ module controller(input [31:0] instr,
                   output regdstD,
                   output jumpD,
                   
-                  output memenD,
                   output jalD,
                   output jrD,
                   output balD,
@@ -66,7 +65,6 @@ main_decoder main_decoder(
     
     .jump(jumpD),
 
-    .memen(memenD),
     .jal(jalD),
     .jr(jrD),
     .bal(balD),

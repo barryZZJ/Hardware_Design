@@ -17,7 +17,6 @@ module datapath(
     input jrD,
     input branchD,
 
-    input memenE, // 暂时没用上
     input jalE,
     input jrE,
     input jumpE,
@@ -31,16 +30,17 @@ module datapath(
     input [1:0] lodstE, lodstW,
     input hi_writeM, hi_writeW,
     input lo_writeM, lo_writeW,
-    input riD,
+    input riM,
     input is_in_delayslotM,
-    input breakD,
-    input syscallD,
+    input breakM,
+    input syscallM,
     input mtc0M,
     input mfc0E,
-    input eretD,
+    input eretM,
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output [3:0] mem_wea,
+    output flushExcept,
     output pcsrcD,
 
     // debug
@@ -116,6 +116,7 @@ wire [ 4:0] rdM, writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
 wire [ 3:0] selM;
 wire [ 1:0] addrM;
+wire overflowM, adelM, adesM;
 
 // WB phase 
 wire [31:0] aluoutW, readdataW;
@@ -226,10 +227,12 @@ assign saD = instrD[10: 6];
 
 
 //寄存器堆
+// TODO
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
-	.we3(regwriteW),
+	.we3(regwriteW & !flushExcept),
+	// .we3(regwriteW),
 	.ra1(instrD[25:21]),
 	.ra2(instrD[20:16]),
 	.wa3(writeregW),
@@ -591,10 +594,20 @@ flopenrc #(32) EM_pc (
     .q(pcM)
 );
 
+flopenrc #(3) EM_alusignals(
+    .clk(clk),
+    .rst(rst),
+    .en(~stallM),
+    .clear(flushM),
+    .d({adelE, overflowE, adesE}),
+    .q({adelM, overflowM, adesM})
+);
+
 // ----------------------------------------
 // Mem 
+//TODO
 assign mem_WriteData = writedataM;
-assign mem_wea = selM;
+assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
 
 // ----------------------------------------
 // Mem to wb flops
@@ -669,10 +682,13 @@ mux2 #(32) mux_WD3(
 );
 
 //hilo寄存器
+//TODO
 hilo_reg hilo(
     .clk(clk), .rst(rst), 
-    .weh(hi_writeW),
-    .wel(lo_writeW),
+    .weh(hi_writeW & !flushExcept),
+    .wel(lo_writeW & !flushExcept),
+    // .weh(hi_writeW),
+    // .wel(lo_writeW),
     .hi(hi_iW), .lo(lo_iW),
     .hi_o(hi_oW), .lo_o(lo_oW)
 );
@@ -730,7 +746,7 @@ hazard hazard(
 );
 except exc(
     .clk(clk), .rst(rst),
-    .mtc0M(mtc0M), .eretD(eretD),
+    .mtc0M(mtc0M), .eretM(eretM),
     .rdM(rdM),
     .rdE(rdE),
     .write_cp0_dataM(aluoutM),
@@ -743,12 +759,12 @@ except exc(
     .flushM(flushM),
     .flushW(flushW),
 
-    .adelE(adelE),
-    .riD(riD),
-    .overflowE(overflowE),
-    .breakD(breakD),
-    .syscallD(syscallD),
-    .adesE(adesE),
+    .adelM(adelM),
+    .riM(riM),
+    .overflowM(overflowM),
+    .breakM(breakM),
+    .syscallM(syscallM),
+    .adesM(adesM),
 
     .pcM(pcM),
     .is_in_delayslotM(is_in_delayslotM),
