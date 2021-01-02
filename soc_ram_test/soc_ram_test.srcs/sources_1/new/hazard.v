@@ -40,7 +40,7 @@ module hazard(input [4:0] rsD,
               output [2:0] forwardHLE,
               output forwardAD,
               output forwardBD,
-              output stallF, stallD, stallE, stallM,
+              output stallF, stallD, stallE, stallM, stallW,
               output flushF, flushD, flushE, flushM, flushW
               );
 
@@ -95,7 +95,9 @@ assign stallF = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept
 assign stallD = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallE = divstallE && ~flushExcept;
 assign stallM = 1'b0 && ~flushExcept; 
-//TODO 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
+assign stallW = 1'b0;
+
+// 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 assign flushF = flushExcept;
 assign flushD = flushExcept;
 assign flushE = lwstall || branchstall || flushExcept;

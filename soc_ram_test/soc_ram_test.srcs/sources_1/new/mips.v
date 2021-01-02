@@ -164,7 +164,7 @@ flopenrc #(32) DE_pc (
     .clk(clk),
     .rst(rst),
     .en(~stallE),
-    .clear(1'b0),
+    .clear(flushE),
     .d(pcD),
     .q(pcE)
 );
@@ -200,7 +200,7 @@ flopenrc #(32) EM_pc (
     .clk(clk),
     .rst(rst),
     .en(~stallM),
-    .clear(1'b0),
+    .clear(flushM),
     .d(pcE),
     .q(pcM)
 );

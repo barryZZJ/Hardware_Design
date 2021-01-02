@@ -287,13 +287,13 @@
 
 
 //ExcCode
-`define ExcCode_Int  5'b00000  // 中断
-`define ExcCode_AdEL 5'b00100  // 地址错例外（读数据或取指令）
-`define ExcCode_AdES 5'b00101  // 地址错例外（写数据）
-`define ExcCode_Sys  5'b01000  // 系统调用例外
-`define ExcCode_Bp   5'b01001   // 断点例外
-`define ExcCode_RI   5'b01010   // 保留指令例外
-`define ExcCode_Ov   5'b01100   // 算术溢出例外
+`define ExcCode_Int  5'b00000  // 0  中断
+`define ExcCode_AdEL 5'b00100  // 4  地址错例外（读数据或取指令）
+`define ExcCode_AdES 5'b00101  // 5  地址错例外（写数据）
+`define ExcCode_Sys  5'b01000  // 8  系统调用例外
+`define ExcCode_Bp   5'b01001  // 9  断点例外
+`define ExcCode_RI   5'b01010  // 10 保留指令例外
+`define ExcCode_Ov   5'b01100  // 12 算术溢出例外
 
 //FIXME for debug
 // `define EXC_ENTRY_POINT 32'h00000020

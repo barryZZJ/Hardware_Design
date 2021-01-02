@@ -48,7 +48,7 @@ module cp0_reg(
 	output reg timer_int_o
     );
 
-//TODO ÉÏÉıÑØ»¹ÊÇÏÂ½µÑØ£¿
+//TODO ä¸Šå‡æ²¿è¿˜æ˜¯ä¸‹é™æ²¿ï¼Ÿ
 	always @(posedge clk) begin
 		if(rst == `RstEnable) begin
 			count_o <= `ZeroWord;

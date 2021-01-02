@@ -118,11 +118,11 @@ assign lo_write = mul | div | mtlo;
                     jr       <= 1'b1;
                 end else if (funct == `EXE_SYSCALL) begin
                     // syscall 和 break 不是寄存器指令
-                    break    <= 1'b1;
+                    syscall  <= 1'b1;
                     regwrite <= 1'b0;
                     regdst   <= 1'b0;
                 end else if (funct == `EXE_BREAK) begin
-                    syscall  <= 1'b1;
+                    break    <= 1'b1;
                     regwrite <= 1'b0;
                     regdst   <= 1'b0;
                 end
