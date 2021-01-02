@@ -19,3 +19,10 @@ inst_ram
 *.xlsx
 *zzj.txt
 *.url
+test_cpu_only.v
+old_top.v
+*.mif
+data_ram.*
+inst_ram.*
+main.*
+test.s
