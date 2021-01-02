@@ -43,21 +43,25 @@ module except(input clk, rst,
 
 // 异常处理模块
 // reg [`RegBus] except_typeD, except_typeE, except_typeM;
-wire [31:0] except_typeM;
 
 wire [`RegBus] epc_o, status_o, cause_o;
 
 wire int;
 assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
 
-assign except_typeM = int      ? `ExceptType_Int  :
-                      adelM    ? `ExceptType_AdEL :
-                      riM      ? `ExceptType_RI   :
-                      overflowM? `ExceptType_Ov   :
-                      breakM   ? `ExceptType_Bp   :
-                      syscallM ? `ExceptType_Sys  :
-                      adesM    ? `ExceptType_AdES :
-                      eretM    ? `ExceptType_Eret :
+wire [31:0] except_typeM;
+
+wire pcErrorM;
+assign pcErrorM = pcM[1:0] != 2'b00;
+
+assign except_typeM = int                ? `ExceptType_Int  :
+                      (adelM | pcErrorM) ? `ExceptType_AdEL :
+                      riM                ? `ExceptType_RI   :
+                      overflowM          ? `ExceptType_Ov   :
+                      breakM             ? `ExceptType_Bp   :
+                      syscallM           ? `ExceptType_Sys  :
+                      adesM              ? `ExceptType_AdES :
+                      eretM              ? `ExceptType_Eret :
                       32'b0;
 
 assign flushExcept = except_typeM != 32'b0;
