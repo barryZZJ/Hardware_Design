@@ -19,7 +19,7 @@ module except(input clk, rst,
 
               input [31:0] pcM,
               input is_in_delayslotM,
-              input [31:0] bad_addr_iM, // load或store指令的虚地址
+              input [31:0] l_s_bad_addr_iM, // load或store指令的虚地址
 
               output [31:0] read_cp0_dataE,
               output reg [31:0] newpcM,
@@ -66,6 +66,8 @@ assign except_typeM = int                ? `ExceptType_Int  :
 
 assign flushExcept = except_typeM != 32'b0;
 
+wire [31:0] bad_addr_iM;
+assign bad_addr_iM = pcErrorM ? pcM : l_s_bad_addr_iM;
 
 cp0_reg cp0reg(
     .clk(clk), .rst(rst),
