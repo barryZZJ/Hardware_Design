@@ -4,6 +4,7 @@
 module datapath(
     input clk,rst,
     input [31:0]instrD, readdata, // 数据存储器读出的数据
+    input [31:0] pcM,
     input regwriteE,
     input regwriteM,
     input regwriteW,                // 4 bit
@@ -97,7 +98,7 @@ wire [31:0] pcF, pc_4F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcD, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
 wire [ 5:0] opD;
 
@@ -105,7 +106,7 @@ wire [31:0]pc_jump;
 // wire pcsrcD;
 
 // Execute phase
-wire [31:0] pcE, rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
@@ -115,7 +116,7 @@ wire [31:0] pc_8E;
 wire overflowE, adelE, adesE;
 
 // Mem phase
-wire [31:0] pcM, writedataM;
+wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] rdM, writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
@@ -200,16 +201,6 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
-
-flopenrc #(32) FD_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallD),
-    .clear(flushD),
-    .d(pcF),
-    .q(pcD)
-);
-
 
 
 
@@ -377,15 +368,6 @@ flopenrc #(32) DE_pc_8 (
     .d(pc_4D + 4),
     .q(pc_8E)
 );
-flopenrc #(32) DE_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallE),
-    .clear(flushE),
-    .d(pcD),
-    .q(pcE)
-);
-
 // ----------------------------------------
 // Exe 
 
@@ -588,15 +570,6 @@ flopenrc #(5) EM_rd (
     .clear(flushM),
     .d(rdE),
     .q(rdM)
-);
-
-flopenrc #(32) EM_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallM),
-    .clear(flushM),
-    .d(pcE),
-    .q(pcM)
 );
 
 flopenrc #(3) EM_alusignals(

@@ -299,6 +299,7 @@ datapath dp(
 	.rst(rst),
 	.instrD(instrD),
 	.readdata(readdata),
+	.pcM(pcM),
 	.regwriteE(regwriteE),
 	.regwriteM(regwriteM),
 	.regwriteW(regwriteW),
