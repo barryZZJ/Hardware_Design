@@ -27,7 +27,8 @@ module mips(
 	input wire [31:0] readdata,
 	input inst_stall, // 等待指令存储器准备好
     input data_stall, // 等待数据存储器准备好
-	// output wire memenM, // == 1
+	output wire inst_enM,
+	output wire mem_enM,
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
 	output wire [ 3:0] mem_wea,
@@ -46,7 +47,7 @@ wire is_in_delayslotF;
 // Decode phase
 wire [31:0] instrD;
 wire regwriteD, memtoregD, branchD, alusrcD, regdstD, jumpD, pcsrcD, mfhiD, mfloD;
-wire memwriteD;
+wire memreadD, memwriteD;
 //  mthiD, mtloD;
 wire [1:0] hidstD, lodstD;
 wire [7:0] alucontrolD;
@@ -63,7 +64,7 @@ wire eretD;
 wire [31:0] pcD;
 // Execution phase
 wire regwriteE, memtoregE, alusrcE, regdstE, mfhiE, mfloE;
-wire memwriteE;
+wire memreadE, memwriteE;
 //  mthiE, mtloE;
 wire [1:0] hidstE, lodstE;
 wire [7:0] alucontrolE;
@@ -81,7 +82,7 @@ wire eretE;
 
 // Mem phase
 wire regwriteM, memtoregM;
-wire memwriteM;
+wire memreadM, memwriteM;
 //  mfhiM, mfloM, mthiM, mtloM; 
 wire [1:0] hidstM, lodstM;
 wire [7:0] alucontrolM;
@@ -94,9 +95,9 @@ wire [31:0] pcM;
 wire is_in_delayslotM;
 wire mtc0M;
 wire eretM;
-//memwriteM;
 
-assign memenM = 1'b1;
+assign inst_enM = ~flushExcept;
+assign mem_enM = (memreadM || memwriteM) & ~flushExcept;
 
 // WB phase
 wire regwriteW, memtoregW;
@@ -161,7 +162,7 @@ flopenrc #(4) DE_signals_hilodst (
     .q({hidstE, lodstE})
 );
 
-flopenrc #(20) DE_signals (
+flopenrc #(21) DE_signals (
     .clk(clk),
     .rst(rst),
 	.en(~stallE),
@@ -169,11 +170,13 @@ flopenrc #(20) DE_signals (
     .d({regwriteD, memtoregD, memwriteD,          alusrcD, 		  regdstD, 
 			jumpD,      jalD,       jrD,   	  	     balD, 			mfhiD,
 			mfloD, hi_writeD, lo_writeD, is_in_delayslotD,		    mtc0D,
-			mfc0D,       riD,    breakD, 	     syscallD,   		eretD}),
+			mfc0D,       riD,    breakD, 	     syscallD,   		eretD,
+			memreadD}),
     .q({regwriteE, memtoregE, memwriteE,          alusrcE, 		  regdstE, 
 			jumpE,      jalE,       jrE,   	  	     balE, 			mfhiE,
 			mfloE, hi_writeE, lo_writeE, is_in_delayslotE,		    mtc0E,
-			mfc0E,       riE,    breakE, 	     syscallE,   		eretE})
+			mfc0E,       riE,    breakE, 	     syscallE,   		eretE,
+			memreadE})
 );
 
 flopenrc #(32) DE_pc (
@@ -203,13 +206,13 @@ flopenrc #(4) EM_signals_hilodst (
     .q({hidstM, lodstM})
 );
 
-flopenrc #(11) EM_signals (
+flopenrc #(12) EM_signals (
     .clk(clk),
     .rst(rst),
     .en(~stallM),
 	.clear(flushM),
-    .d({regwriteE, memtoregE, memwriteE, hi_writeE, lo_writeE, is_in_delayslotE, mtc0E, riE, breakE, syscallE, eretE}),
-    .q({regwriteM, memtoregM, memwriteM, hi_writeM, lo_writeM, is_in_delayslotM, mtc0M, riM, breakM, syscallM, eretM})
+    .d({regwriteE, memtoregE, memwriteE, memreadE, hi_writeE, lo_writeE, is_in_delayslotE, mtc0E, riE, breakE, syscallE, eretE}),
+    .q({regwriteM, memtoregM, memwriteM, memreadM, hi_writeM, lo_writeM, is_in_delayslotM, mtc0M, riM, breakM, syscallM, eretM})
 );
 
 flopenrc #(32) EM_pc (
@@ -224,7 +227,7 @@ flopenrc #(32) EM_pc (
 flopenrc #(8) MW_aluctrl (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d(alucontrolM),
     .q(alucontrolW)
@@ -233,7 +236,7 @@ flopenrc #(8) MW_aluctrl (
 flopenrc #(4) MW_hilodst (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d({hidstM, lodstM}),
     .q({hidstW, lodstW})
@@ -242,7 +245,7 @@ flopenrc #(4) MW_hilodst (
 flopenrc #(4) MW_signals (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d({regwriteM, memtoregM, hi_writeM, lo_writeM}),
     .q({regwriteW, memtoregW, hi_writeW, lo_writeW})
@@ -250,7 +253,7 @@ flopenrc #(4) MW_signals (
 flopenrc #(32) MW_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(pcM),
     .q(pcW)
@@ -263,6 +266,7 @@ controller c(
 	.rt(instrD[20:16]),
 
 	.memtoregD(memtoregD),
+	.memreadD(memreadD),
 	.memwriteD(memwriteD),
 	.alusrcD(alusrcD),
 	.regdstD(regdstD),
@@ -338,12 +342,12 @@ datapath dp(
 	.stallD(stallD),
 	.stallE(stallE),
 	.stallM(stallM),
+	.stallW(stallW),
 	.flushF(flushF),
 	.flushD(flushD),
     .flushE(flushE),
     .flushM(flushM),
     .flushW(flushW),
-	// .flushExcept(flushExcept),
 	// jump and branch
     .jalE(jalE),
     .jrE(jrE),

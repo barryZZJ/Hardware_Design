@@ -48,7 +48,7 @@ module inst_sram_like(
     end
 
     // sram like
-    assign inst_req = ~addr_rcv & ~do_finish; // delete cpu_inst_en
+    assign inst_req = cpu_inst_en & ~addr_rcv & ~do_finish;
     assign inst_wr = 1'b0;
     assign inst_size = 2'b10;
     assign inst_addr = cpu_inst_addr;
@@ -56,5 +56,5 @@ module inst_sram_like(
 
     // sram
     assign cpu_inst_rdata = inst_rdata_save;
-    assign cpu_inst_stall = ~do_finish; // delete cpu_inst_en
+    assign cpu_inst_stall = cpu_inst_en & ~do_finish;
 endmodule

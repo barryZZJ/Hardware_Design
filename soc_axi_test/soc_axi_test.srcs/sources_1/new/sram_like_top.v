@@ -89,8 +89,8 @@ module sram_like_top(
 
     // stall
     wire cpu_longest_stall;     // from cpu
-    wire inst_stall;            // to cpu
-    wire data_stall;            // to cpu
+    wire cpu_inst_stall;            // to cpu
+    wire cpu_data_stall;            // to cpu
 
     //debug signals
     /*wire [31:0] debug_wb_pc;

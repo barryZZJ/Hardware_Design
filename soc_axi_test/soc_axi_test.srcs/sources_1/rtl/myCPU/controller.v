@@ -8,6 +8,7 @@ module controller(input [31:0] instr,
 
                   output regwriteD,
                   output memtoregD,
+                  output memreadD,
                   output memwriteD,
                   output branchD,
                   output [7:0]alucontrolD,
@@ -60,6 +61,7 @@ main_decoder main_decoder(
     .alusrc(alusrcD),
     .branch(branchD),
 
+    .memread(memreadD),
     .memwrite(memwriteD),
     .memtoreg(memtoregD),
     

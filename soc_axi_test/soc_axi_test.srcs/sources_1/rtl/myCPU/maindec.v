@@ -22,6 +22,7 @@ module main_decoder(input [31:0] instr,
                     output reg alusrc,
                     output reg branch,
 
+                    output reg memread,
                     output reg memwrite,
                     output reg memtoreg,
                     output reg jal,
@@ -64,6 +65,7 @@ assign lo_write = mul | div | mtlo;
         regwrite <= 1'b0;
         alusrc   <= 1'b0;
         branch   <= 1'b0;
+        memread  <= 1'b0;
         memwrite <= 1'b0;
         memtoreg <= 1'b0;
         jal      <= 1'b0;
@@ -160,44 +162,57 @@ assign lo_write = mul | div | mtlo;
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memread  <= 1'b1;
+                memwrite <= 1'b0;
             end
             // lbu
             `EXE_LBU: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memread  <= 1'b1;
+                memwrite <= 1'b0;
             end
             // lh
             `EXE_LH: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memread  <= 1'b1;
+                memwrite <= 1'b0;
             end
             // lhu
             `EXE_LHU: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memread  <= 1'b1;
+                memwrite <= 1'b0;
             end
             // lw
             `EXE_LW: begin
                 regwrite <= 1'b1;
                 alusrc   <= 1'b1;
                 memtoreg <= 1'b1;
+                memread  <= 1'b1;
+                memwrite <= 1'b0;
             end
             // sb
            `EXE_SB: begin
                 alusrc   <= 1'b1;
+                memread  <= 1'b0;
                 memwrite <= 1'b1;
             end
             // sh
            `EXE_SH: begin
                 alusrc   <= 1'b1;
+                memread  <= 1'b0;
                 memwrite <= 1'b1;
             end
             // sw
             `EXE_SW: begin
                 alusrc   <= 1'b1;
+                memread  <= 1'b0;
                 memwrite <= 1'b1;
             end
 
