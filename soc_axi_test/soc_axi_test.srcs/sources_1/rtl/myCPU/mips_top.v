@@ -50,10 +50,13 @@ mips mips(
 	.instr			(inst_sram_rdata),
 
 	.readdata		(data_sram_rdata),
+	.inst_stall     (inst_stall),
+	.data_stall		(data_stall),
 	// .memenM		    (data_sram_en	),
 	.aluoutM		(data_addr		),	// 未映射地址
 	.writedata		(data_sram_wdata),
 	.mem_wea		(data_sram_wen	),
+	.longest_stall  (longest_stall),
 	// debug
 	.debug_wb_pc		(debug_wb_pc		),
 	.debug_wb_rf_wen	(debug_wb_rf_wen	),
