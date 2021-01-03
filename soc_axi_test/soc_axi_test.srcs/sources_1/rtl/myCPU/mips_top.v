@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module top(
+module mips_top(
 	input wire clk,
 	input wire resetn,
 	input wire [5:0] int,					// not use
