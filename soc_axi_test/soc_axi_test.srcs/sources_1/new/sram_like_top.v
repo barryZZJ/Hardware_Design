@@ -140,7 +140,7 @@ module sram_like_top(
 
     inst_sram_like inst_sram_like(
         .clk(aclk),
-        .rst(aresetn),
+        .rst(~aresetn),
         // cpu
         .cpu_inst_en   (cpu_inst_en   ),
         .cpu_inst_wen  (cpu_inst_wen  ),
@@ -174,7 +174,7 @@ module sram_like_top(
 
     data_sram_like data_sram_like(
         .clk(aclk),
-        .rst(aresetn),
+        .rst(~aresetn),
         // cpu
         .cpu_data_en   (cpu_data_en   ),
         .cpu_data_wen  (cpu_data_wen  ),
