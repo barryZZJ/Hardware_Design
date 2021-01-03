@@ -44,7 +44,7 @@ module hazard(input [4:0] rsD,
               output forwardAD,
               output forwardBD,
               output stallF, stallD, stallE, stallM, stallW,
-              output flushF, flushD, flushE, flushM, flushW
+              output flushF, flushD, flushE, flushM, flushW,
               output longest_stall
               );
 
@@ -104,7 +104,7 @@ assign stallW = (inst_stall || data_stall) && ~flushExcept;
 
 // 只要有一个在stall，CPU就处于stall状态
 //TODO 可能还要改
-assign longest_stall = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstal) && ~flushExceptl;
+assign longest_stall = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 
 // 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 assign flushF = flushExcept;
