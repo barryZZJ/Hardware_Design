@@ -32,7 +32,7 @@ module mips(
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
 	output wire [ 3:0] mem_wea,
-    output longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
+    output wire longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
 	output wire [31:0] debug_wb_pc,
 	output wire [ 3:0] debug_wb_rf_wen,
 	output wire [ 4:0] debug_wb_rf_wnum,
@@ -108,7 +108,7 @@ wire hi_writeW, lo_writeW;
 
 wire [31:0] pcW;
 // hazard
-wire stallF, stallD, stallE, stallM;
+wire stallF, stallD, stallE, stallM, stallW;
 wire flushF, flushD, flushE, flushM, flushW;
 
 // wire branchFlushD;

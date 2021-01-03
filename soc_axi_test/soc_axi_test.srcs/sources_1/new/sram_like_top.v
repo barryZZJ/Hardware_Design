@@ -89,8 +89,8 @@ module sram_like_top(
 
     // stall
     wire cpu_longest_stall;     // from cpu
-    wire cpu_inst_stall;            // to cpu
-    wire cpu_data_stall;            // to cpu
+    wire cpu_inst_stall;        // to cpu
+    wire cpu_data_stall;        // to cpu
 
     //debug signals
     /*wire [31:0] debug_wb_pc;
@@ -99,7 +99,7 @@ module sram_like_top(
     wire [31:0] debug_wb_rf_wdata;*/
     //cpu
     mips_top cpu(
-        .clk              (~aclk         ),     // (in, 1) 注意时钟反转
+        .clk              (aclk         ),     // (in, 1) 注意时钟反转
         .resetn           (~aresetn      ),     // (in, 1) low active
         .int              (int           ),     // (in, 6) interrupt,high active
 

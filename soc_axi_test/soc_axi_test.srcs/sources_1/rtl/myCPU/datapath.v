@@ -147,6 +147,7 @@ wire [31:0] newpcM;
 // branch and jump
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
+wire [31:0] debug_trans_addr;
 
 //////////////////////////////////////
 // soc debug
@@ -168,6 +169,7 @@ assign debug_wb_rf_wdata = resultW;
 //     .d(pc_realnext),
 //     .q(pc)
 // );
+
 pc_module #(32) pc_module(
 	.clk(clk),
 	.rst(rst),
