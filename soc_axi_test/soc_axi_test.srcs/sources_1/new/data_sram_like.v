@@ -51,8 +51,8 @@ module data_sram_like(
     end
 
     // sram like
-    assign data_req = cpu_data_en & ~addr_rcv & ~do_finish;   // delete cpu_data_en
-    assign data_wr = cpu_data_en &|cpu_data_wen; // delete cpu_data_en
+    assign data_req = cpu_data_en & ~addr_rcv & ~do_finish;
+    assign data_wr = cpu_data_en & |cpu_data_wen;
     assign data_size = (cpu_data_wen==4'b0001 || cpu_data_wen==4'b0010 || cpu_data_wen==4'b0100 || cpu_data_wen==4'b1000) ? 2'b00:
                        (cpu_data_wen==4'b0011 || cpu_data_wen==4'b1100 ) ? 2'b01 : 2'b10;
     assign data_addr = cpu_data_addr;
@@ -60,6 +60,6 @@ module data_sram_like(
 
     // sram
     assign cpu_data_rdata = data_rdata_save;
-    assign cpu_data_stall = cpu_data_en & ~do_finish;   // delete cpu_data_en
+    assign cpu_data_stall = cpu_data_en & ~do_finish;
     
 endmodule

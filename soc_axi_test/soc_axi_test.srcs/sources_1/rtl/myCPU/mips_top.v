@@ -7,7 +7,7 @@ module mips_top(
 	input wire [5:0] int,					// not use
 	//////////////////////////////////////////
 	// inst ram ports
-	output wire 	   inst_sram_en   ,		// not use
+	output wire 	   inst_sram_en   ,		// used
 	output wire [ 3:0] inst_sram_wen  ,		// not use
 	output wire [31:0] inst_sram_addr ,
 	output wire [31:0] inst_sram_wdata,		// not use
@@ -15,7 +15,7 @@ module mips_top(
 	input inst_stall, // 等待指令存储器准备好
 	//////////////////////////////////////////
 	// data ram ports
-	output wire        data_sram_en   ,
+	output wire        data_sram_en   ,		// used
 	output wire [ 3:0] data_sram_wen  ,
 	output wire [31:0] data_sram_addr ,
 	output wire [31:0] data_sram_wdata,
@@ -35,7 +35,7 @@ wire [31:0] inst_addr;
 wire [31:0] data_addr;
 
 // wire data_sram_en;
-assign data_sram_en = 1'b1;
+// assign data_sram_en = 1'b1;
 addrtrans address_transfer(
 	.inst_vaddr(inst_addr),
 	.inst_paddr(inst_sram_addr),
@@ -52,7 +52,8 @@ mips mips(
 	.readdata		(data_sram_rdata),
 	.inst_stall     (inst_stall),
 	.data_stall		(data_stall),
-	// .memenM		    (data_sram_en	),
+	.inst_enM		(inst_sram_en	),
+	.mem_enM		(data_sram_en	),
 	.aluoutM		(data_addr		),	// 未映射地址
 	.writedata		(data_sram_wdata),
 	.mem_wea		(data_sram_wen	),
@@ -63,7 +64,7 @@ mips mips(
 	.debug_wb_rf_wnum	(debug_wb_rf_wnum	),
 	.debug_wb_rf_wdata	(debug_wb_rf_wdata	)
 );
-assign inst_sram_en = 1'b1;
+// assign inst_sram_en = 1'b1;
 assign inst_sram_wen = 4'b0000;
 assign inst_sram_wdata = 32'b0;
 

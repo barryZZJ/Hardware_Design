@@ -99,7 +99,7 @@ module sram_like_top(
     wire [31:0] debug_wb_rf_wdata;*/
     //cpu
     mips_top cpu(
-        .clk              (~aclk         ),     // (in, 1) 注意时钟反转
+        .clk              (aclk         ),     // (in, 1) 注意时钟反转
         .resetn           (~aresetn      ),     // (in, 1) low active
         .int              (int           ),     // (in, 6) interrupt,high active
 
