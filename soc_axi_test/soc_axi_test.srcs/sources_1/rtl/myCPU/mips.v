@@ -25,13 +25,13 @@ module mips(
 	input wire rst,
 	input wire [31:0] instr,
 	input wire [31:0] readdata,
-	input inst_stall, // 等待指令存储器准备好
-    input data_stall, // 等待数据存储器准备好
+	input wire inst_stall, // 等待指令存储器准备好
+    input wire data_stall, // 等待数据存储器准备好
 	// output wire memenM, // == 1
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
 	output wire [ 3:0] mem_wea,
-    output longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
+    output wire longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
 	output wire [31:0] debug_wb_pc,
 	output wire [ 3:0] debug_wb_rf_wen,
 	output wire [ 4:0] debug_wb_rf_wnum,
@@ -107,7 +107,7 @@ wire hi_writeW, lo_writeW;
 
 wire [31:0] pcW;
 // hazard
-wire stallF, stallD, stallE, stallM;
+wire stallF, stallD, stallE, stallM, stallW;
 wire flushF, flushD, flushE, flushM, flushW;
 
 // wire branchFlushD;
@@ -224,7 +224,7 @@ flopenrc #(32) EM_pc (
 flopenrc #(8) MW_aluctrl (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d(alucontrolM),
     .q(alucontrolW)
@@ -233,7 +233,7 @@ flopenrc #(8) MW_aluctrl (
 flopenrc #(4) MW_hilodst (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d({hidstM, lodstM}),
     .q({hidstW, lodstW})
@@ -242,7 +242,7 @@ flopenrc #(4) MW_hilodst (
 flopenrc #(4) MW_signals (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
 	.clear(flushW),
     .d({regwriteM, memtoregM, hi_writeM, lo_writeM}),
     .q({regwriteW, memtoregW, hi_writeW, lo_writeW})
@@ -250,7 +250,7 @@ flopenrc #(4) MW_signals (
 flopenrc #(32) MW_pc (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(pcM),
     .q(pcW)
@@ -338,6 +338,7 @@ datapath dp(
 	.stallD(stallD),
 	.stallE(stallE),
 	.stallM(stallM),
+	.stallW(stallW),
 	.flushF(flushF),
 	.flushD(flushD),
     .flushE(flushE),

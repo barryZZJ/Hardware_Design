@@ -51,7 +51,7 @@ module datapath(
     output wire [ 3:0] debug_wb_rf_wen  , 
     output wire [ 4:0] debug_wb_rf_wnum ,
     output wire [31:0] debug_wb_rf_wdata,
-    output stallF, stallD, stallE, stallM,
+    output stallF, stallD, stallE, stallM, stallW,
     output flushF, flushD, flushE, flushM, flushW
     // output flushExcept
 );
@@ -74,10 +74,10 @@ flopenrc #(32) EM_instr (
     .d(instrE),
     .q(instrM)
 );
-flopenrc #(32) MF_instr (
+flopenrc #(32) MW_instr (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(instrM),
     .q(instrW)
@@ -148,7 +148,6 @@ wire [31:0] newpcM;
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
 
-wire [31:0] pcplus8;
 //////////////////////////////////////
 // soc debug
 assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
@@ -616,20 +615,20 @@ assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷
 // Mem to wb flops
 
 // aluout
-flopenrc #(32) MF_aluout (
+flopenrc #(32) MW_aluout (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(aluoutM),
     .q(aluoutW)
 );
 
 // readdata from data memory
-flopenrc #(32) MF_readdata (
+flopenrc #(32) MW_readdata (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(readdata),
     .q(readdataW)
@@ -639,7 +638,7 @@ flopenrc #(32) MF_readdata (
 flopenrc #(5) MW_writereg (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(writeregM),
     .q(writeregW)
@@ -649,7 +648,7 @@ flopenrc #(5) MW_writereg (
 flopenrc #(64) MW_hilo (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d({hi_iM, lo_iM}),
     .q({hi_iW, lo_iW})
@@ -658,7 +657,7 @@ flopenrc #(64) MW_hilo (
 flopenrc #(2) MW_addr (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(addrM),
     .q(addrW)
