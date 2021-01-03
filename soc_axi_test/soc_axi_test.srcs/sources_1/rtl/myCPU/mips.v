@@ -299,6 +299,7 @@ datapath dp(
 	.rst(rst),
 	.instrD(instrD),
 	.readdata(readdata),
+	.pcM(pcM),
 	.regwriteE(regwriteE),
 	.regwriteM(regwriteM),
 	.regwriteW(regwriteW),
@@ -356,9 +357,6 @@ datapath dp(
     .balD(balD),
 	.jalD(jalD),
 	// .branchFlushD(branchFlushD)
-	.pcD(pcD),
-	.pcE(pcE),
-	.pcM(pcM),
 	// debug
 	.debug_wb_rf_wen(debug_wb_rf_wen),
 	.debug_wb_rf_wnum(debug_wb_rf_wnum),

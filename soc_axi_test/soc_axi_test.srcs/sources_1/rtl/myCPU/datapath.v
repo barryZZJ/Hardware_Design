@@ -4,6 +4,7 @@
 module datapath(
     input clk,rst,
     input [31:0]instrD, readdata, // 数据存储器读出的数据
+    input [31:0] pcM,
     input regwriteE,
     input regwriteM,
     input regwriteW,                // 4 bit
@@ -37,10 +38,6 @@ module datapath(
     input mtc0M,
     input mfc0E,
     input eretM,
-
-    input [31:0] pcD,
-    input [31:0] pcE,
-    input [31:0] pcM,
 
     input inst_stall, // 等待指令存储器准备好
     input data_stall, // 等待数据存储器准备好
@@ -204,8 +201,6 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
-
-
 
 
 
@@ -373,6 +368,7 @@ flopenrc #(32) DE_pc_8 (
     .d(pc_4D + 4),
     .q(pc_8E)
 );
+
 
 
 // ----------------------------------------
@@ -578,7 +574,6 @@ flopenrc #(5) EM_rd (
     .d(rdE),
     .q(rdM)
 );
-
 
 flopenrc #(3) EM_alusignals(
     .clk(clk),

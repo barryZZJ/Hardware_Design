@@ -79,8 +79,7 @@ assign forwardBD = ((rtD != 0) && (rtD == writeregM) && regwriteM);
 
 
 // stall
-//TODO 有了握手、i_stall之后就不用lwstall了
-wire lwstall;
+wire lwstall; // lw的下一条指令 在D阶段判断是否需要等待和刷新
 //stallF, stallD, flushE;
 wire branchstall;
 assign lwstall = ((rsD == rtE) || (rtD == rtE)) && memtoregE; // 判断 D 阶段 rs 或 rt 的寄存器号是不是E阶段 lw 指令要写入的寄存器号；
@@ -110,7 +109,7 @@ assign longest_stall = (inst_stall || data_stall || lwstall || branchstall || di
 // 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 assign flushF = flushExcept;
 assign flushD = flushExcept;
-assign flushE = lwstall || branchstall || flushExcept;
+assign flushE = (lwstall || branchstall || flushExcept) & ~inst_stall;
 assign flushM = divstallE || flushExcept;
 // posedge
 assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
