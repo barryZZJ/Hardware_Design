@@ -233,10 +233,11 @@ assign saD = instrD[10: 6];
 
 
 //寄存器堆
+// TODO 等待存储器ready的时候，寄存器只写一个周期，否则跟reference对不上
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
-	.we3(regwriteW  & ~inst_stall & ~data_stall),
+	.we3(regwriteW & ~inst_stall & ~data_stall),
 	.ra1(instrD[25:21]),
 	.ra2(instrD[20:16]),
 	.wa3(writeregW),
