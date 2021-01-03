@@ -5,7 +5,7 @@
 // 
 // Create Date: 2021/01/03 00:44:10
 // Design Name: 
-// Module Name: data_sram_like
+// Module Name: cpu_data_like
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -21,6 +21,8 @@
 
 
 module data_sram_like(
+    input wire clk,
+    input wire rst,
     // input from cpu
     input wire        cpu_data_en   ,
     input wire [3 :0] cpu_data_wen  ,
@@ -69,15 +71,15 @@ module data_sram_like(
     end
 
     // sram like
-    assign data_req = data_sram_en & ~addr_rcv & ~do_finish;
-    assign data_wr = data_sram_en & |data_sram_wen;
-    assign data_size = (data_sram_wen==4'b0001 || data_sram_wen==4'b0010 || data_sram_wen==4'b0100 || data_sram_wen==4'b1000) ? 2'b00:
-                       (data_sram_wen==4'b0011 || data_sram_wen==4'b1100 ) ? 2'b01 : 2'b10;
-    assign data_addr = data_sram_addr;
-    assign data_wdata = data_sram_wdata;
+    assign data_req = cpu_data_en & ~addr_rcv & ~do_finish;
+    assign data_wr = cpu_data_en & |cpu_data_wen;
+    assign data_size = (cpu_data_wen==4'b0001 || cpu_data_wen==4'b0010 || cpu_data_wen==4'b0100 || cpu_data_wen==4'b1000) ? 2'b00:
+                       (cpu_data_wen==4'b0011 || cpu_data_wen==4'b1100 ) ? 2'b01 : 2'b10;
+    assign data_addr = cpu_data_addr;
+    assign data_wdata = cpu_data_wdata;
 
     // sram
-    assign data_sram_rdata = data_rdata_save;
-    assign data_stall = data_sram_en & ~do_finish;
+    assign cpu_data_rdata = data_rdata_save;
+    assign data_stall = cpu_data_en & ~do_finish;
     
 endmodule

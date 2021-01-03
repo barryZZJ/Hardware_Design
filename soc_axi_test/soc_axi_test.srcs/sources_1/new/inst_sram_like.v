@@ -5,7 +5,7 @@
 // 
 // Create Date: 2021/01/03 14:27:06
 // Design Name: 
-// Module Name: inst_sram_like
+// Module Name: cpu_inst_like
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -21,6 +21,8 @@
 
 
 module inst_sram_like(
+    input wire clk,
+    input wire rst,
     // input from cpu
     input wire        cpu_inst_en   ,
     input wire [3 :0] cpu_inst_wen  ,       // no use
@@ -66,13 +68,13 @@ module inst_sram_like(
     end
 
     // sram like
-    assign inst_req = inst_sram_en & ~addr_rcv & ~do_finish;
+    assign inst_req = cpu_inst_en & ~addr_rcv & ~do_finish;
     assign inst_wr = 1'b0;
     assign inst_size = 2'b10;
-    assign inst_addr = inst_sram_addr;
+    assign inst_addr = cpu_inst_addr;
     assign inst_wdata = 32'b0;
 
     // sram
-    assign inst_sram_rdata = inst_rdata_save;
-    assign cpu_inst_stall = inst_sram_en & ~do_finish;
+    assign cpu_inst_rdata = inst_rdata_save;
+    assign cpu_inst_stall = cpu_inst_en & ~do_finish;
 endmodule
