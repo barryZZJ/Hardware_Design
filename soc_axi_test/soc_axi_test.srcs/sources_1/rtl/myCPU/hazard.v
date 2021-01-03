@@ -31,6 +31,9 @@ module hazard(input [4:0] rsD,
               input mfc0E,
               input mtc0M,
 
+              input inst_stall,
+              input data_stall,
+
               // 异常部分
               input flushExcept,
               
@@ -42,6 +45,7 @@ module hazard(input [4:0] rsD,
               output forwardBD,
               output stallF, stallD, stallE, stallM, stallW,
               output flushF, flushD, flushE, flushM, flushW
+              output longest_stall
               );
 
 // --------------------------------
@@ -90,11 +94,17 @@ wire jrstall;
 assign jrstall =  (jrD && regwriteE)  && (writeregE == rsD) 
                 || (jrD && memtoregM) && (writeregM == rsD);
 
-assign stallF = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
-assign stallD = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
-assign stallE = divstallE && ~flushExcept;
-assign stallM = 1'b0 && ~flushExcept; 
-assign stallW = 1'b0;
+// 取指和访存都暂停所有阶段
+// TODO 可能有雷
+assign stallF = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
+assign stallD = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
+assign stallE = (inst_stall || data_stall || divstallE) && ~flushExcept;
+assign stallM = (inst_stall || data_stall) && ~flushExcept; 
+assign stallW = (inst_stall || data_stall) && ~flushExcept; 
+
+// 只要有一个在stall，CPU就处于stall状态
+//TODO 可能还要改
+assign longest_stall = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstal) && ~flushExceptl;
 
 // 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 assign flushF = flushExcept;
@@ -103,11 +113,5 @@ assign flushE = lwstall || branchstall || flushExcept;
 assign flushM = divstallE || flushExcept;
 // posedge
 assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
-// TODO negedge
-// assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
-// 可能有bug
-// assign #1 flushE = lwstall | jumpD | branchD;
-//
-// assign branchFlushD = (branchD && !balD);
 
 endmodule

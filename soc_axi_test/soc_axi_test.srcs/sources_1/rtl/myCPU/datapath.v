@@ -37,9 +37,13 @@ module datapath(
     input mtc0M,
     input mfc0E,
     input eretM,
+
+    input inst_stall, // 等待指令存储器准备好
+    input data_stall, // 等待数据存储器准备好
     
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output [3:0] mem_wea,
+    output longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
     output flushExcept,
     output pcsrcD,
 
@@ -478,7 +482,6 @@ mul mul(
 // 除法器
 wire [63:0] div_result;
 wire divstallE; //除法发出的stall信号
-// TODO
 assign div_clear = flushExcept; //发生异常时，清空除法器
 
 divWrapper div(
@@ -605,7 +608,6 @@ flopenrc #(3) EM_alusignals(
 
 // ----------------------------------------
 // Mem 
-//TODO
 assign mem_WriteData = writedataM;
 // assign mem_wea = selM;  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
 assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
@@ -717,6 +719,8 @@ hazard hazard(
     .divstallE(divstallE),
     .mfc0E(mfc0E),
     .mtc0M(mtc0M),
+    .inst_stall(inst_stall),
+    .data_stall(data_stall),
     .flushExcept(flushExcept),
     
     .forwardAE(forwardAE),
@@ -736,6 +740,7 @@ hazard hazard(
     .flushE(flushE),
     .flushM(flushM),
     .flushW(flushW),
+    .longest_stall(longest_stall),
     // jump and branch
     .jumpD(jumpD),
     .balD(balD),
