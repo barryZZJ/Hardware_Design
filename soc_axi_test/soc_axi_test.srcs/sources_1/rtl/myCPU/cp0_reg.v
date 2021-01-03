@@ -48,7 +48,6 @@ module cp0_reg(
 	output reg timer_int_o
     );
 
-//TODO 上升沿还是下降沿？
 	always @(posedge clk) begin
 		if(rst == `RstEnable) begin
 			count_o <= `ZeroWord;
