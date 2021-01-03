@@ -41,30 +41,34 @@ module data_sram_like(
     input wire        data_addr_ok ,
     input wire        data_data_ok
     );
-    reg addr_rcv;      //地址握手成功
-    reg do_finish;     //读写事务结束
+    reg addr_rcv;      // 地址握手成功
+    reg do_finish;     // 读写事务结束
 
     always @(posedge clk) begin
         addr_rcv <= rst          ? 1'b0 :
         // 保证先data_req再addr_rcv；如果addr_ok同时data_ok，则优先data_ok
-                    data_req & data_addr_ok & ~data_data_ok ? 1'b1 :    
+                    data_req & data_addr_ok & ~data_data_ok ? 1'b1 : 
+        // (先处理上一条事务)   
                     data_data_ok ? 1'b0 : addr_rcv;
     end
 
     always @(posedge clk) begin
         do_finish <= rst          ? 1'b0 :
+        // 只判断data_ok
                      data_data_ok ? 1'b1 :
+        // cpu 仍在暂停，保证一次流水线暂停只取一次指令，只进行一次内存访问
                      ~cpu_longest_stall ? 1'b0 : do_finish;
     end
 
-    //save rdata
+    // save rdata
     reg [31:0] data_rdata_save;
     always @(posedge clk) begin
         data_rdata_save <= rst ? 32'b0:
+        // data_ok 则更新暂存值
                            data_data_ok ? data_rdata : data_rdata_save;
     end
 
-    //sram like
+    // sram like
     assign data_req = data_sram_en & ~addr_rcv & ~do_finish;
     assign data_wr = data_sram_en & |data_sram_wen;
     assign data_size = (data_sram_wen==4'b0001 || data_sram_wen==4'b0010 || data_sram_wen==4'b0100 || data_sram_wen==4'b1000) ? 2'b00:
@@ -72,7 +76,7 @@ module data_sram_like(
     assign data_addr = data_sram_addr;
     assign data_wdata = data_sram_wdata;
 
-    //sram
+    // sram
     assign data_sram_rdata = data_rdata_save;
     assign data_stall = data_sram_en & ~do_finish;
     
