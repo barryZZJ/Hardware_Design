@@ -86,6 +86,12 @@ module sram_like_top(
     wire [31:0] cpu_data_addr   ;
     wire [31:0] cpu_data_wdata  ;
     wire [31:0] cpu_data_rdata  ;
+
+    // stall
+    wire cpu_longest_stall;     // from cpu
+    wire inst_stall;            // to cpu
+    wire data_stall;            // to cpu
+
     //debug signals
     /*wire [31:0] debug_wb_pc;
     wire [3 :0] debug_wb_rf_wen;
@@ -97,18 +103,21 @@ module sram_like_top(
         .resetn           (~aresetn      ),     // (in, 1) low active
         .int              (int           ),     // (in, 6) interrupt,high active
 
+        .longest_stall    (cpu_longest_stall),  // (out, 1)
+
         .inst_sram_en     (cpu_inst_en   ),     // (out, 1)
         .inst_sram_wen    (cpu_inst_wen  ),     // (out, 4)
         .inst_sram_addr   (cpu_inst_addr ),     // (out,32)
         .inst_sram_wdata  (cpu_inst_wdata),     // (out,32)
         .inst_sram_rdata  (cpu_inst_rdata),     // (in, 32) 
+        .inst_stall       (cpu_inst_stall),     // (in, 1)
         
         .data_sram_en     (cpu_data_en   ),     // (out, 1)
         .data_sram_wen    (cpu_data_wen  ),     // (out, 4)
         .data_sram_addr   (cpu_data_addr ),     // (out,32)
         .data_sram_wdata  (cpu_data_wdata),     // (out,32)
         .data_sram_rdata  (cpu_data_rdata),     // (in, 32)
-
+        .data_stall       (cpu_data_stall),     // (in, 1)
         //debug
         .debug_wb_pc      (debug_wb_pc      ),  // (out,32)
         .debug_wb_rf_wen  (debug_wb_rf_wen  ),  // (out, 4)
@@ -130,12 +139,16 @@ module sram_like_top(
     wire        inst_data_ok ;
 
     inst_sram_like inst_sram_like(
+        .clk(aclk),
+        .rst(aresetn),
         // cpu
         .cpu_inst_en   (cpu_inst_en   ),
         .cpu_inst_wen  (cpu_inst_wen  ),
         .cpu_inst_addr (cpu_inst_addr ),
         .cpu_inst_wdata(cpu_inst_wdata),
         .cpu_inst_rdata(cpu_inst_rdata),
+        .cpu_inst_stall(cpu_inst_stall),
+        .cpu_longest_stall(cpu_longest_stall),
         // bridge
         .inst_req    (inst_req    ),
         .inst_wr     (inst_wr     ),
@@ -160,12 +173,16 @@ module sram_like_top(
     wire        data_data_ok ;
 
     data_sram_like data_sram_like(
+        .clk(aclk),
+        .rst(aresetn),
         // cpu
         .cpu_data_en   (cpu_data_en   ),
         .cpu_data_wen  (cpu_data_wen  ),
         .cpu_data_addr (cpu_data_addr ),
         .cpu_data_wdata(cpu_data_wdata),
         .cpu_data_rdata(cpu_data_rdata),
+        .cpu_data_stall(cpu_data_stall),
+        .cpu_longest_stall(cpu_longest_stall),
         // bridge ports
         .data_req    (data_req    ),
         .data_wr     (data_wr     ),
