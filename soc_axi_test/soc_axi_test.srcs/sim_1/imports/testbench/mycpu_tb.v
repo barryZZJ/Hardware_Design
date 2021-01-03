@@ -32,7 +32,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 `timescale 1ns / 1ps
     
-`define TRACE_REF_FILE "D:/Codes/Hardware_Design/soc_axi_test/golden_trace.txt"
+`define TRACE_REF_FILE "C:/Users/Hp/Desktop/Hardware_Design/cpu132_gettrace/golden_trace.txt"
 `define CONFREG_NUM_REG      soc_lite.u_confreg.num_data
 `define CONFREG_OPEN_TRACE   soc_lite.u_confreg.open_trace
 `define CONFREG_NUM_MONITOR  soc_lite.u_confreg.num_monitor
