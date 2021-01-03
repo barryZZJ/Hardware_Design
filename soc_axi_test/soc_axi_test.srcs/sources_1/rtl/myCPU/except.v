@@ -46,7 +46,7 @@ module except(input clk, rst,
 
 wire [`RegBus] epc_o, status_o, cause_o;
 
-wire int;
+wire int; // 是否发生中断
 assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
 
 wire [31:0] except_typeM;
