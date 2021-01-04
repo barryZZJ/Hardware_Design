@@ -106,15 +106,15 @@ assign stallM = (inst_stall || data_stall) && ~flushExcept;
 assign stallW = (inst_stall || data_stall) && ~flushExcept; 
 
 // 只要有一个在stall，CPU就处于stall状态
-//TODO 可能还要改，flushExcept可能还有点问题
-assign longest_stall = (inst_stall || data_stall || lwstall || branchstall || divstallE || jrstall);
+//TODO 可能还要改
+assign longest_stall = (inst_stall || data_stall || divstallE) && ~flushExcept;
 
 // 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 // TODO 要不要把每个flush信号都带上~inst_stall
 assign flushF = flushExcept; // 没有连在信号上
 assign flushD = flushExcept;
-assign flushE = (lwstall || branchstall || flushExcept) & ~inst_stall;
-assign flushM = divstallE || flushExcept;
+assign flushE = flushExcept || (lwstall & ~inst_stall) || (branchstall & ~inst_stall) ;
+assign flushM = flushExcept || (divstallE & ~inst_stall);
 // posedge
 assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
 
