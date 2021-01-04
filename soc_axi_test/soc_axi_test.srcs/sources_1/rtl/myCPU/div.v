@@ -18,8 +18,6 @@ module div(
 	//计算结果
 	reg [63:0] result;
 	//保留两个输入,避免在外界更新输入的时候导致异常
-	//FIXME 优化
-	reg [31:0] in_num1,in_num2;
 	//被除数
 	reg [31:0] div_num1;
 	//除数
@@ -37,8 +35,6 @@ module div(
 			ready_o<=0;
 			div_num1<=0;
 			div_num2<=0;
-			in_num1<=0;
-			in_num2<=0;
 		end
 		//除使能信号期间的处理
 		else if(start_i)begin
@@ -90,8 +86,8 @@ module div(
 						div_num1[2]?5'd2:
 						div_num1[1]?5'd1:5'd0;
 				result={32'h00000000,(div_num1<<(5'd31-div_max))};
-				in_num1=Opdata1_i;
-				in_num2=Opdata2_i;
+				div_num1=Opdata1_i;
+				div_num2=Opdata2_i;
 			end
 			//计算中,一共32周期
 			2'b01:begin
@@ -113,8 +109,8 @@ module div(
 			//符号处理
 			2'b10:begin
 				if(Signed_div_i)begin
-					result[31:0]=(in_num1[31]^in_num2[31]) ? (~result[31:0])+1 : result[31:0];
-					result[63:32]=in_num1[31] ? (~result[63:32])+1 : result[63:32];
+					result[31:0]=(div_num1[31]^div_num2[31]) ? (~result[31:0])+1 : result[31:0];
+					result[63:32]=div_num1[31] ? (~result[63:32])+1 : result[63:32];
 				end
 				main_state<=2'b11;
 				ready_o<=1;
@@ -131,8 +127,6 @@ module div(
 			ready_o<=0;
 			div_num1<=0;
 			div_num2<=0;
-			in_num1<=0;
-			in_num2<=0;
 		end
 	end
 endmodule
