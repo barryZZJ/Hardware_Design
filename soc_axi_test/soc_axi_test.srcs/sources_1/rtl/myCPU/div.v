@@ -18,6 +18,7 @@ module div(
 	//计算结果
 	reg [63:0] result;
 	//保留两个输入,避免在外界更新输入的时候导致异常
+	//FIXME 优化
 	reg [31:0] in_num1,in_num2;
 	//被除数
 	reg [31:0] div_num1;

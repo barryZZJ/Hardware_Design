@@ -230,6 +230,7 @@ assign saD = instrD[10: 6];
 regfile regfile(
 	.clk(~clk),
 	.rst(rst),
+    //TODO 
 	.we3(regwriteW & ~inst_stall & ~data_stall),
 	.ra1(instrD[25:21]),
 	.ra2(instrD[20:16]),
@@ -667,6 +668,7 @@ mux2 #(32) mux_WD3(
 //hilo寄存器
 hilo_reg hilo(
     .clk(clk), .rst(rst), 
+    //TODO
     .weh(hi_writeW),
     .wel(lo_writeW),
     .hi(hi_iW), .lo(lo_iW),
@@ -691,8 +693,6 @@ hazard hazard(
     .regwriteW(regwriteW),
     .memtoregE(memtoregE),
     .memtoregM(memtoregM),
-    .memreadD(memreadD),
-    .memwriteD(memwriteD),
     .branchD(branchD),
     .mfhiE(mfhiE),
 	.mfloE(mfloE),
