@@ -38,7 +38,7 @@ module divWrapper(input clk, rst,
                 div_start   <= 0;
                 divstall    <= 0;
                 div_refresh <= 0;
-            end else begin
+            end else 
                 case(op)
                     //有符号除法
                     `EXE_DIV_OP: begin
@@ -79,7 +79,6 @@ module divWrapper(input clk, rst,
                         divstall    <= 1'b0;
                     end 
                 endcase
-            end
         end
     end
     
