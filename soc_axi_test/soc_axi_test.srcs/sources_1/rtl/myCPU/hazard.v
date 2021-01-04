@@ -111,8 +111,8 @@ assign longest_stall = (inst_stall || data_stall || divstallE) && ~flushExcept;
 // TODO 要不要把每个flush信号都带上~inst_stall
 assign flushF = flushExcept; // 没有连在信号上
 assign flushD = flushExcept;
-assign flushE = (lwstall || branchstall || flushExcept) & ~inst_stall;
-assign flushM = (divstallE || flushExcept) & ~inst_stall;
+assign flushE = flushExcept || (lwstall || branchstall) & ~inst_stall;
+assign flushM = flushExcept || divstallE & ~inst_stall;
 // posedge
 assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
 
