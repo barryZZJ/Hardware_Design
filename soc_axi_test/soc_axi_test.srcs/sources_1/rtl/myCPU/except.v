@@ -45,27 +45,27 @@ module except(input clk, rst,
 
 wire [`RegBus] epc_o, status_o, cause_o;
 
-//写cp0的同时判断是不是修改了cause寄存器的值，判断是否产生了软件中断，相当于前推了。
-wire [31:0] new_cause;
-assign new_cause = rdM == `CP0_REG_CAUSE ? write_cp0_dataM : cause_o;
-
-wire int; // 是否发生中断
-assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & new_cause[15:8]));
-// assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+// 写cp0的同时判断是不是修改了cause寄存器的值，判断是否产生了软件中断，相当于前推了。
+// 同时epc也要修改
+wire int_old; // 是否发生中断
+wire int_new; // 是否是新写入cp0产生的软件中断。
+assign int_old = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+assign int_new = rdM == `CP0_REG_CAUSE && !status_o[1] & status_o[0] & (|(status_o[15:8] & write_cp0_dataM[15:8]));
 
 wire [31:0] except_typeM;
 
 wire pcErrorM;
 assign pcErrorM = pcM[1:0] != 2'b00;
 
-assign except_typeM = int                ? `ExceptType_Int  :
-                      (adelM | pcErrorM) ? `ExceptType_AdEL :
-                      riM                ? `ExceptType_RI   :
-                      overflowM          ? `ExceptType_Ov   :
-                      breakM             ? `ExceptType_Bp   :
-                      syscallM           ? `ExceptType_Sys  :
-                      adesM              ? `ExceptType_AdES :
-                      eretM              ? `ExceptType_Eret :
+assign except_typeM = int_old            ? `ExceptType_Int_Old  :
+                      int_new            ? `ExceptType_Int_New  :
+                      (adelM | pcErrorM) ? `ExceptType_AdEL     :
+                      riM                ? `ExceptType_RI       :
+                      overflowM          ? `ExceptType_Ov       :
+                      breakM             ? `ExceptType_Bp       :
+                      syscallM           ? `ExceptType_Sys      :
+                      adesM              ? `ExceptType_AdES     :
+                      eretM              ? `ExceptType_Eret     :
                       32'b0;
 
 assign flushExcept = except_typeM != 32'b0;
@@ -94,7 +94,7 @@ cp0_reg cp0reg(
 
 always @(*) begin
     case (except_typeM)
-        `ExceptType_Int: begin
+        `ExceptType_Int_Old, `ExceptType_Int_New: begin
             // 中断
             newpcM     <= `EXC_ENTRY_POINT;
         end
