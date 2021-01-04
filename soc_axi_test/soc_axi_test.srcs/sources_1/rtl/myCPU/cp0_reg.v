@@ -91,13 +91,25 @@ module cp0_reg(
 				endcase
 			end
 			case (excepttype_i)
-				`ExceptType_Int:begin 
+				`ExceptType_Int_Old:begin 
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
 						cause_o[31] <= 1'b1;
 					end else begin 
 						epc_o <= current_inst_addr_i;
+						cause_o[31] <= 1'b0;
+					end
+					status_o[1] <= 1'b1;
+					cause_o[6:2] <= `ExcCode_Int;
+				end
+				`ExceptType_Int_New:begin 
+					if(is_in_delayslot_i == `InDelaySlot) begin
+						/* code */
+						epc_o <= current_inst_addr_i;
+						cause_o[31] <= 1'b1;
+					end else begin 
+						epc_o <= current_inst_addr_i + 4;
 						cause_o[31] <= 1'b0;
 					end
 					status_o[1] <= 1'b1;

@@ -276,7 +276,8 @@
 
 
 
-`define ExceptType_Int  32'h00000001  // 中断
+`define ExceptType_Int_Old  32'h00000001  // 中断
+`define ExceptType_Int_New  32'h00000002  // 中断
 `define ExceptType_AdEL 32'h00000004  // 地址错例外（读数据或取指令）
 `define ExceptType_AdES 32'h00000005  // 地址错例外（写数据）
 `define ExceptType_Sys  32'h00000008  // 系统调用例外
