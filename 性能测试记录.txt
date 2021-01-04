@@ -1,0 +1,24 @@
+顺序：
+stream_copy、bitcount、
+dhrystone、stringsearch、
+select_sort、quick_sort、
+sha、bubble_sort、
+crc32、coremark
+
+
+stream copy: Total Count(SoC count) = 0xc0c26
+stream copy: Total Count(CPU count) = 0xaf1c1
+
+
+
+=== NO DELAY===
+
+
+stream copy: Total Count(SoC count) = 0x6167c
+stream copy: Total Count(CPU count) = 0x587c4
+
+bitcount: Total Count(SoC count) = 0xd5a89
+bitcount: Total Count(CPU count) = 0xc22a1
+
+dhrystone: Total Count(SoC count) = 0x177c28
+dhrystone: Total Count(CPU count) = 0x155877
