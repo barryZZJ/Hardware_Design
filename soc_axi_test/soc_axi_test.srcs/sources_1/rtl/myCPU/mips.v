@@ -306,6 +306,8 @@ datapath dp(
 	.memtoregW(memtoregW),
 	.memtoregE(memtoregE),
 	.memtoregM(memtoregM),
+	.memreadD(memreadD),
+	.memwriteD(memwriteD),
 	.alucontrolE(alucontrolE), .alucontrolW(alucontrolW),
 	.alusrcE(alusrcE),
 	.regdstE(regdstE),
