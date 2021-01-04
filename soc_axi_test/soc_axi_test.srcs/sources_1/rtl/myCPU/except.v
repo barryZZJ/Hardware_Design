@@ -45,8 +45,13 @@ module except(input clk, rst,
 
 wire [`RegBus] epc_o, status_o, cause_o;
 
+//写cp0的同时判断是不是修改了cause寄存器的值，判断是否产生了软件中断，相当于前推了。
+wire [31:0] new_cause;
+assign new_cause = rdM == `CP0_REG_CAUSE ? write_cp0_dataM : cause_o;
+
 wire int; // 是否发生中断
-assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & new_cause[15:8]));
+// assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
 
 wire [31:0] except_typeM;
 
