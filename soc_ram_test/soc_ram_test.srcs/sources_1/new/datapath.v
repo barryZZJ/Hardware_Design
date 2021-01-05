@@ -40,7 +40,10 @@ module datapath(
     input mtc0M,
     input mfc0E,
     input eretM,
-    
+    // input inst_stall, // 等待指令存储器准备好 //TODO
+    // input data_stall, // 等待数据存储器准备好
+
+    // output longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
     output wire [31:0] pc, aluoutM, mem_WriteData,
     output [3:0] mem_wea,
     output flushExcept,
@@ -150,6 +153,8 @@ wire [31:0] debug_trans_addr;
 
 //////////////////////////////////////
 // soc debug
+//TODO
+// assign debug_wb_rf_wen = {4{regwriteW & ~inst_stall & ~data_stall}}; // 直接扩展为 4 位
 assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
 assign debug_wb_rf_wnum = writeregW;
 assign debug_wb_rf_wdata = resultW;
@@ -226,6 +231,8 @@ regfile regfile(
 	.clk(~clk),
 	.rst(rst),
 	.we3(regwriteW),
+    //TODO 
+	// .we3(regwriteW & ~inst_stall & ~data_stall),
 	.ra1(instrD[25:21]),
 	.ra2(instrD[20:16]),
 	.wa3(writeregW),
@@ -694,6 +701,8 @@ hazard hazard(
     .divstallE(divstallE),
     .mfc0E(mfc0E),
     .mtc0M(mtc0M),
+    // .inst_stall(inst_stall), // TODO
+    // .data_stall(data_stall),
     .flushExcept(flushExcept),
     
     .forwardAE(forwardAE),
@@ -713,6 +722,7 @@ hazard hazard(
     .flushE(flushE),
     .flushM(flushM),
     .flushW(flushW),
+    // .longest_stall(longest_stall), // TODO
     // jump and branch
     .jumpD(jumpD),
     .balD(balD),

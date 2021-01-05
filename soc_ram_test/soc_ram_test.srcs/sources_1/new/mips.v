@@ -25,11 +25,14 @@ module mips(
 	input wire rst,
 	input wire [31:0] instr,
 	input wire [31:0] readdata,
+	// input inst_stall, // 等待指令存储器准备好 //TODO
+    // input data_stall, // 等待数据存储器准备好
 	output wire inst_enM,
 	output wire mem_enM,
 	output wire [31:0] pc,
 	output wire [31:0] aluoutM, writedata,
 	output wire [ 3:0] mem_wea,
+    // output wire longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问 //TODO
 	output wire [31:0] debug_wb_pc,
 	output wire [ 3:0] debug_wb_rf_wen,
 	output wire [ 4:0] debug_wb_rf_wnum,
@@ -328,6 +331,9 @@ datapath dp(
 	.mtc0M(mtc0M),
 	.mfc0E(mfc0E),
 	.eretM(eretM),
+	// .inst_stall(inst_stall), // TODO
+	// .data_stall(data_stall),
+	// .longest_stall(longest_stall),
 
 	.pc(pc),
 	.pcsrcD(pcsrcD),
