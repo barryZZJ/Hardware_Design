@@ -460,7 +460,23 @@ alu alu(
     .ades(adesE)
 );
 
-// 乘法器
+// // ip核乘法器，有bug，暂时不用
+// wire [63:0] mul_result;
+// wire mulstallE; //除法发出的stall信号
+// assign mul_clear = flushExcept; //发生异常时，清空除法器
+
+// mulWrapper mul(
+//     .clk(clk), .rst(rst),
+//     .clear(mul_clear),
+//     .a(ALUsrcA2),
+//     .b(ALUsrcB2),
+//     .op(alucontrolE),
+
+//     .mul_result(mul_result),
+//     .mulstall(mulstallE)
+// );
+
+// 星号乘法器
 wire [63:0] mul_result;
 mul mul(
     .a(ALUsrcA2),
@@ -699,6 +715,7 @@ hazard hazard(
     .hi_writeM(hi_writeM), .hi_writeW(hi_writeW),
     .lo_writeM(lo_writeM), .lo_writeW(lo_writeW),
     .divstallE(divstallE),
+    // .mulstallE(mulstallE),
     .mfc0E(mfc0E),
     .mtc0M(mtc0M),
     // .inst_stall(inst_stall), // TODO

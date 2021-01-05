@@ -28,6 +28,7 @@ module hazard(input [4:0] rsD,
               input hi_writeM, hi_writeW,
               input lo_writeM, lo_writeW,
               input divstallE,
+              // input mulstallE, // TODO
               input mfc0E,
               input mtc0M,
             //   input inst_stall, // TODO
@@ -108,13 +109,13 @@ assign jrstall =  (jrD && regwriteE)  && (writeregE == rsD)
 // assign flushF = flushExcept; // 没有连在信号上
 // assign flushD = flushExcept;
 // assign flushE = flushExcept || (lwstall || branchstall) & ~inst_stall;
-// assign flushM = flushExcept || divstallE & ~inst_stall;
+// assign flushM = flushExcept || (divstallE) & ~inst_stall;
 // // posedge
 // assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
 
 assign stallF = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
 assign stallD = (lwstall || branchstall || divstallE || jrstall) && ~flushExcept;
-assign stallE = divstallE && ~flushExcept;
+assign stallE = (divstallE) && ~flushExcept;
 assign stallM = 1'b0 && ~flushExcept; 
 assign stallW = 1'b0 && ~flushExcept;
 
@@ -122,7 +123,7 @@ assign stallW = 1'b0 && ~flushExcept;
 assign flushF = flushExcept; // 没有连在信号上
 assign flushD = flushExcept;
 assign flushE = flushExcept || lwstall || branchstall;
-assign flushM = flushExcept || divstallE;
+assign flushM = flushExcept || (divstallE);
 // posedge
 assign flushW = flushExcept; // 例外在M阶段处理，W阶段是没问题的指令，但寄存器也是下降沿更新，flushExcept影响不到前一条W阶段的指令
 
