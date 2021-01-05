@@ -1,4 +1,4 @@
-硬件综合设计.lnk
+*.lnk
 *.cache
 *.hw
 *.runs
@@ -30,3 +30,6 @@ test.s
 mycpu_tb.v
 golden_trace*
 /soc_axi_perf/rtl/xilinx_ip
+/perf_test_traces
+/soc_axi_perf/run_vivado/mycpu_prj1
+/soc_axi_perf/full
