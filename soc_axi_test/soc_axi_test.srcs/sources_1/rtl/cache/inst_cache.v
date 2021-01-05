@@ -1,14 +1,18 @@
 module inst_cache (
     input wire clk, rst,
-    //mips core
-    input         cpu_inst_req     ,
-    input         cpu_inst_wr      ,
-    input  [1 :0] cpu_inst_size    ,
-    input  [31:0] cpu_inst_addr    ,
-    input  [31:0] cpu_inst_wdata   ,
-    output [31:0] cpu_inst_rdata   ,
-    output        cpu_inst_addr_ok ,
-    output        cpu_inst_data_ok ,
+    // sram, from cpu
+    input wire         cpu_inst_en   , //* new 读，一直高电平。
+    input wire [3 :0]  cpu_inst_wen  , //* new, 4'b0, no use 一直维持
+    input wire [31:0]  cpu_inst_addr , //* 一直维持。
+    input wire [31:0]  cpu_inst_wdata, // 32'b0
+    input wire         cpu_longest_stall, //* new
+    output wire [31:0] cpu_inst_rdata,
+    output wire        cpu_inst_stall, //* new，如果cache命中就不用stall，如果没命中要一直等到mem返回数据。
+    // input         cpu_inst_req     ,
+    // input         cpu_inst_wr      ,
+    // input  [1 :0] cpu_inst_size    ,
+    // output        cpu_inst_addr_ok ,
+    // output        cpu_inst_data_ok ,
 
     //axi interface
     output         cache_inst_req     ,
@@ -49,6 +53,7 @@ module inst_cache (
     assign c_block = cache_block[index];
 
     //判断是否命中
+    // TODO hit 能否保持高电平?
     wire hit, miss;
     assign hit = c_valid & (c_tag == tag);  //cache line的valid位为1，且tag与地址中tag相等
     assign miss = ~hit;
@@ -62,7 +67,9 @@ module inst_cache (
         end
         else begin
             case(state)
-                IDLE:   state <= cpu_inst_req & miss ? RM : IDLE;
+                // *
+                IDLE:   state <= cpu_inst_en & miss ? RM : IDLE;
+                // IDLE:   state <= cpu_inst_req & miss ? RM : IDLE;
                 RM:     state <= cache_inst_data_ok ? IDLE : RM;
             endcase
         end
@@ -75,6 +82,7 @@ module inst_cache (
     wire read_finish;   //数据接收成功(data_ok)，即读请求结束
     always @(posedge clk) begin
         addr_rcv <= rst ? 1'b0 :
+        // 保证先inst_req再addr_rcv；如果addr_ok同时data_ok，则优先data_ok
                     cache_inst_req & cache_inst_addr_ok ? 1'b1 :
                     read_finish ? 1'b0 : addr_rcv;
     end
@@ -83,15 +91,33 @@ module inst_cache (
 
     //output to mips core
     assign cpu_inst_rdata   = hit ? c_block : cache_inst_rdata;
-    assign cpu_inst_addr_ok = cpu_inst_req & hit | cache_inst_req & cache_inst_addr_ok;
-    assign cpu_inst_data_ok = cpu_inst_req & hit | cache_inst_data_ok;
+    //* addr_ok 没用上
+    // assign cpu_inst_addr_ok = cpu_inst_en & hit | cache_inst_req & cache_inst_addr_ok;
+    // assign cpu_inst_addr_ok = cpu_inst_req & hit | cache_inst_req & cache_inst_addr_ok;
+    wire cpu_inst_data_ok;
+    assign cpu_inst_data_ok = cpu_inst_en & hit | cache_inst_data_ok;
+    // assign cpu_inst_data_ok = cpu_inst_req & hit | cache_inst_data_ok;
+    // * stall
+    reg do_finish;
+    always @(posedge clk) begin
+        // 本次读cache事务是否完成。用来告诉CPU数据准备好了。
+        // 如果数据准备好了(hit or cache_data_ok)，就告诉CPU数据准备好了(finish=1)，数据存到save里，等待CPU读。
+        // 准备好了，同时如果CPU忙，cache这边就要一直保持do_finish(为1)，等CPU有空之后来读。
+        // CPU有空之后(~longest_stall)，就会读，这时把do_finish归零，准备下一次访存。
+        // 如果数据还没准备好，但是CPU已经有空了(~longest_stall)，就让CPU接着等(cpu_data_stall)。
+        do_finish <= rst                ? 1'b0 :
+                     cpu_inst_data_ok   ? 1'b1 :
+        // cpu 仍在暂停，保证一次流水线暂停只取一次指令，只进行一次内存访问
+                     ~cpu_longest_stall ? 1'b0 : do_finish;
+    end
+    assign cpu_inst_stall = cpu_inst_en & ~do_finish; // 让CPU等
 
     //output to axi interface
     assign cache_inst_req   = read_req & ~addr_rcv;
-    assign cache_inst_wr    = cpu_inst_wr;
-    assign cache_inst_size  = cpu_inst_size;
+    assign cache_inst_wr    = 1'b0;
+    assign cache_inst_size  = 2'b10;
     assign cache_inst_addr  = cpu_inst_addr;
-    assign cache_inst_wdata = cpu_inst_wdata;
+    assign cache_inst_wdata = cpu_inst_wdata; // 32'b0
 
     //写入Cache
     //保存地址中的tag, index，防止addr发生改变
@@ -99,9 +125,11 @@ module inst_cache (
     reg [INDEX_WIDTH-1:0] index_save;
     always @(posedge clk) begin
         tag_save   <= rst ? 0 :
-                      cpu_inst_req ? tag : tag_save;
+                      cpu_inst_en ? tag : tag_save; //*
+                    //   cpu_inst_req ? tag : tag_save;
         index_save <= rst ? 0 :
-                      cpu_inst_req ? index : index_save;
+                      cpu_inst_en ? index : index_save; //*
+                    //   cpu_inst_req ? index : index_save;
     end
 
     integer t;
