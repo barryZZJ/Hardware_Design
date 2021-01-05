@@ -22,3 +22,24 @@ bitcount: Total Count(CPU count) = 0xc22a1
 
 dhrystone: Total Count(SoC count) = 0x177c28
 dhrystone: Total Count(CPU count) = 0x155877
+
+string search: Total Count(SoC count) = 0x3dd06b
+string search: Total Count(CPU count) = 0x3830b4
+
+select sort: Total Count(SoC count) = 0x5290d6
+select sort: Total Count(CPU count) = 0x4b0e44
+
+sha: Total Count(SoC count) = 0x5561a0
+sha: Total Count(CPU count) = 0x4d9d70
+
+bubble sort: Total Count(SoC count) = 0x5df188
+bubble sort: Total Count(CPU count) = 0x55662c
+
+crc32: Total Count(SoC count) = 0x825ec6
+crc32: Total Count(CPU count) = 0x768392
+
+coremark: Total Count(SoC count) = 0xc305d0
+coremark: Total Count(CPU count) = 0xb149f9
+
+quick sort: Total Count(SoC count) = 0x56d1e0
+quick sort: Total Count(CPU count) = 0x4eec4d
