@@ -1,39 +1,39 @@
 module data_cache (
     input wire clk, rst,
     //mips core
-    input         cpu_data_req     , // ÊÇ²»ÊÇÊı¾İÇëÇó(load »ò storeÖ¸Áî)¡£Ò»¸öÖÜÆÚºó¾ÍÇå³ıÁË
-    input         cpu_data_wr      , // mips->cache, µ±Ç°ÇëÇóÊÇ·ñÊÇĞ´ÇëÇó(ÊÇ²»ÊÇstoreÖ¸Áî)¡£Ò»Ö±±£³ÖµçÆ½×´Ì¬Ö±µ½ÇëÇó³É¹¦
-    input  [1 :0] cpu_data_size    , // ½áºÏµØÖ·×îµÍÁ½Î»£¬È·¶¨Êı¾İµÄÓĞĞ§×Ö½Ú£¨ÓÃÓÚsb¡¢shµÈÖ¸Áî£©
+    input         cpu_data_req     , // æ˜¯ä¸æ˜¯æ•°æ®è¯·æ±‚(load æˆ– storeæŒ‡ä»¤)ã€‚ä¸€ä¸ªå‘¨æœŸåå°±æ¸…é™¤äº†
+    input         cpu_data_wr      , // mips->cache, å½“å‰è¯·æ±‚æ˜¯å¦æ˜¯å†™è¯·æ±‚(æ˜¯ä¸æ˜¯storeæŒ‡ä»¤)ã€‚ä¸€ç›´ä¿æŒç”µå¹³çŠ¶æ€ç›´åˆ°è¯·æ±‚æˆåŠŸ
+    input  [1 :0] cpu_data_size    , // ç»“åˆåœ°å€æœ€ä½ä¸¤ä½ï¼Œç¡®å®šæ•°æ®çš„æœ‰æ•ˆå­—èŠ‚ï¼ˆç”¨äºsbã€shç­‰æŒ‡ä»¤ï¼‰
     input  [31:0] cpu_data_addr    ,
     input  [31:0] cpu_data_wdata   ,
     output [31:0] cpu_data_rdata   ,
-    output        cpu_data_addr_ok , // È·ÈÏÇëÇóµÄµØÖ·ÒÑÊÕµ½£¬Ò»¸öÖÜÆÚºóÇå³ı
-    output        cpu_data_data_ok , // È·ÈÏÇëÇóµÄÊı¾İÒÑÊÕµ½£¬Ò»¸öÖÜÆÚºóÇå³ı
+    output        cpu_data_addr_ok , // ç¡®è®¤è¯·æ±‚çš„åœ°å€å·²æ”¶åˆ°ï¼Œä¸€ä¸ªå‘¨æœŸåæ¸…é™¤
+    output        cpu_data_data_ok , // ç¡®è®¤è¯·æ±‚çš„æ•°æ®å·²æ”¶åˆ°ï¼Œä¸€ä¸ªå‘¨æœŸåæ¸…é™¤
 
     //axi interface
-    output         cache_data_req     , // cache->mem, ÊÇ²»ÊÇÊı¾İÇëÇó(RM»òWM×´Ì¬)¡£Ò»¸öÖÜÆÚºó¾ÍÇå³ıÁË
-    output         cache_data_wr      , // cache->mem, µ±Ç°ÇëÇóÊÇ·ñÊÇĞ´ÇëÇó(ÊÇ²»ÊÇ´¦ÓÚWM×´Ì¬)¡£Ò»Ö±±£³ÖµçÆ½×´Ì¬Ö±µ½ÇëÇó³É¹¦
+    output         cache_data_req     , // cache->mem, æ˜¯ä¸æ˜¯æ•°æ®è¯·æ±‚(RMæˆ–WMçŠ¶æ€)ã€‚ä¸€ä¸ªå‘¨æœŸåå°±æ¸…é™¤äº†
+    output         cache_data_wr      , // cache->mem, å½“å‰è¯·æ±‚æ˜¯å¦æ˜¯å†™è¯·æ±‚(æ˜¯ä¸æ˜¯å¤„äºWMçŠ¶æ€)ã€‚ä¸€ç›´ä¿æŒç”µå¹³çŠ¶æ€ç›´åˆ°è¯·æ±‚æˆåŠŸ
     output  [1 :0] cache_data_size    ,
     output  [31:0] cache_data_addr    ,
     output  [31:0] cache_data_wdata   ,
     input   [31:0] cache_data_rdata   ,
-    input          cache_data_addr_ok , // È·ÈÏÇëÇóµÄµØÖ·ÒÑÊÕµ½£¬Ò»¸öÖÜÆÚºóÇå³ı
-    input          cache_data_data_ok   // È·ÈÏÇëÇóµÄÊı¾İÒÑÊÕµ½£¬Ò»¸öÖÜÆÚºóÇå³ı
+    input          cache_data_addr_ok , // ç¡®è®¤è¯·æ±‚çš„åœ°å€å·²æ”¶åˆ°ï¼Œä¸€ä¸ªå‘¨æœŸåæ¸…é™¤
+    input          cache_data_data_ok   // ç¡®è®¤è¯·æ±‚çš„æ•°æ®å·²æ”¶åˆ°ï¼Œä¸€ä¸ªå‘¨æœŸåæ¸…é™¤
 );
-    //CacheÅäÖÃ
+    //Cacheé…ç½®
     parameter  INDEX_WIDTH  = 10, OFFSET_WIDTH = 2;
     localparam TAG_WIDTH    = 32 - INDEX_WIDTH - OFFSET_WIDTH;
     localparam CACHE_DEEPTH = 1 << INDEX_WIDTH;
     
-    //Cache´æ´¢µ¥Ôª
-    //* Á½Â·£¬ËùÒÔcacheÀ©´óÒ»±¶
+    //Cacheå­˜å‚¨å•å…ƒ
+    //* ä¸¤è·¯ï¼Œæ‰€ä»¥cacheæ‰©å¤§ä¸€å€
     reg                 cache_valid [CACHE_DEEPTH - 1 : 0][1:0];
-    reg                 cache_dirty [CACHE_DEEPTH - 1 : 0][1:0]; // ÊÇ·ñĞŞ¸Ä¹ı
+    reg                 cache_dirty [CACHE_DEEPTH - 1 : 0][1:0]; // æ˜¯å¦ä¿®æ”¹è¿‡
     reg                 cache_ru    [CACHE_DEEPTH - 1 : 0][1:0]; //* recently used
     reg [TAG_WIDTH-1:0] cache_tag   [CACHE_DEEPTH - 1 : 0][1:0];
     reg [31:0]          cache_block [CACHE_DEEPTH - 1 : 0][1:0];
 
-    //·ÃÎÊµØÖ··Ö½â
+    //è®¿é—®åœ°å€åˆ†è§£
     wire [OFFSET_WIDTH-1:0] offset;
     wire [INDEX_WIDTH-1:0] index;
     wire [TAG_WIDTH-1:0] tag;
@@ -42,9 +42,9 @@ module data_cache (
     assign index = cpu_data_addr[INDEX_WIDTH + OFFSET_WIDTH - 1 : OFFSET_WIDTH];
     assign tag = cpu_data_addr[31 : INDEX_WIDTH + OFFSET_WIDTH];
 
-    //·ÃÎÊCache line
+    //è®¿é—®Cache line
     wire                 c_valid[1:0];
-    wire                 c_dirty[1:0]; // ÊÇ·ñĞŞ¸Ä¹ı
+    wire                 c_dirty[1:0]; // æ˜¯å¦ä¿®æ”¹è¿‡
     wire                 c_ru   [1:0]; //* recently used
     wire [TAG_WIDTH-1:0] c_tag  [1:0];
     wire [31:0]          c_block[1:0];
@@ -60,24 +60,24 @@ module data_cache (
     assign c_block[0] = cache_block[index][0];
     assign c_block[1] = cache_block[index][1];
 
-    //ÅĞ¶ÏÊÇ·ñÃüÖĞ
+    //åˆ¤æ–­æ˜¯å¦å‘½ä¸­
     wire hit, miss;
-    assign hit = c_valid[0] & (c_tag[0] == tag) | c_valid[1] & (c_tag[1] == tag);  //* cache lineÓĞÒ»Â·ÖĞµÄvalidÎ»Îª1£¬ÇÒtagÓëµØÖ·ÖĞtagÏàµÈ
+    assign hit = c_valid[0] & (c_tag[0] == tag) | c_valid[1] & (c_tag[1] == tag);  //* cache lineæœ‰ä¸€è·¯ä¸­çš„validä½ä¸º1ï¼Œä¸”tagä¸åœ°å€ä¸­tagç›¸ç­‰
     assign miss = ~hit;
 
-    //* ºóÃæµÄcache´¦ÀíÓ¦·ÃÎÊÄÄÒ»Â·
+    //* åé¢çš„cacheå¤„ç†åº”è®¿é—®å“ªä¸€è·¯
     wire c_way;
-    //* 1. hit£¬Ñ¡hitµÄÄÇÒ»Â·
-    //* 2. miss£¬Ñ¡²»ÊÇ×î½üÊ¹ÓÃµÄÄÇÒ»Â·(c_ru[0]==1£¬0Â·×î½üÊ¹ÓÃ -> c_way=1Â·)
+    //* 1. hitï¼Œé€‰hitçš„é‚£ä¸€è·¯
+    //* 2. missï¼Œé€‰ä¸æ˜¯æœ€è¿‘ä½¿ç”¨çš„é‚£ä¸€è·¯(c_ru[0]==1ï¼Œ0è·¯æœ€è¿‘ä½¿ç”¨ -> c_way=1è·¯)
     assign c_way = hit ? (c_valid[0] & (c_tag[0] == tag) ? 1'b0 : 1'b1) : 
                    c_ru[0] ? 1'b1 : 1'b0; 
 
-    // cpuÇëÇóÊÇ²»ÊÇ¶Á»òĞ´ÇëÇó(ÊÇ²»ÊÇload»òstoreÖ¸Áî)
+    // cpuè¯·æ±‚æ˜¯ä¸æ˜¯è¯»æˆ–å†™è¯·æ±‚(æ˜¯ä¸æ˜¯loadæˆ–storeæŒ‡ä»¤)
     wire load, store;
     assign store = cpu_data_wr;
-    assign load = cpu_data_req & ~store; // ÊÇÊı¾İÇëÇó£¬ÇÒ²»ÊÇstore£¬ÄÇÃ´¾ÍÊÇload
+    assign load = cpu_data_req & ~store; // æ˜¯æ•°æ®è¯·æ±‚ï¼Œä¸”ä¸æ˜¯storeï¼Œé‚£ä¹ˆå°±æ˜¯load
 
-    //* cacheµ±Ç°Î»ÖÃÊÇ·ñdirty
+    //* cacheå½“å‰ä½ç½®æ˜¯å¦dirty
     wire dirty, clean;
     assign dirty = c_dirty[c_way];
     assign clean = ~dirty;
@@ -85,7 +85,7 @@ module data_cache (
     //FSM
     parameter IDLE = 2'b00, RM = 2'b01, WM = 2'b11;
     reg [1:0] state;
-    // storeÖ¸Áî£¬ÊÇ·ñÊÇ´¦ÔÚRM×´Ì¬£¨·¢ÉúÁËmiss)¡£µ±RM½áÊøÊ±(state´ÓRM->IDLE)µÄÉÏÉıÑØ£¬in_RM¶Á³öÀ´ÈÔÎª1.
+    // storeæŒ‡ä»¤ï¼Œæ˜¯å¦æ˜¯å¤„åœ¨RMçŠ¶æ€ï¼ˆå‘ç”Ÿäº†miss)ã€‚å½“RMç»“æŸæ—¶(stateä»RM->IDLE)çš„ä¸Šå‡æ²¿ï¼Œin_RMè¯»å‡ºæ¥ä»ä¸º1.
     reg in_RM;
 
     always @(posedge clk) begin
@@ -95,7 +95,7 @@ module data_cache (
         end
         else begin
             case(state)
-            // °´ÕÕ×´Ì¬»ú±àĞ´
+            // æŒ‰ç…§çŠ¶æ€æœºç¼–å†™
                 IDLE: begin
                     state <= IDLE;
                     if (cpu_data_req) begin
@@ -126,11 +126,11 @@ module data_cache (
         end
     end
 
-    //¶ÁÄÚ´æ
-    //±äÁ¿ isRM, addr_rcv, read_finishÓÃÓÚ¹¹ÔìÀàsramĞÅºÅ¡£
-    wire isRM;      //Ò»´ÎÍêÕûµÄ¶ÁÊÂÎñ£¬´Ó·¢³ö¶ÁÇëÇóµ½½áÊø // ÊÇ²»ÊÇ´¦ÓÚRM×´Ì¬
-    reg addr_rcv;       //µØÖ·½ÓÊÕ³É¹¦(addr_ok)ºóµ½½áÊø      // ´¦ÓÚRM×´Ì¬£¬ÇÒµØÖ·ÒÑµÃµ½memµÄÈ·ÈÏ
-    wire read_finish;   //Êı¾İ½ÓÊÕ³É¹¦(data_ok)£¬¼´¶ÁÇëÇó½áÊø // ´¦ÓÚRM×´Ì¬£¬ÇÒÒÑµÃµ½mem¶ÁÈ¡µÄÊı¾İ
+    //è¯»å†…å­˜
+    //å˜é‡ isRM, addr_rcv, read_finishç”¨äºæ„é€ ç±»sramä¿¡å·ã€‚
+    wire isRM;      //ä¸€æ¬¡å®Œæ•´çš„è¯»äº‹åŠ¡ï¼Œä»å‘å‡ºè¯»è¯·æ±‚åˆ°ç»“æŸ // æ˜¯ä¸æ˜¯å¤„äºRMçŠ¶æ€
+    reg addr_rcv;       //åœ°å€æ¥æ”¶æˆåŠŸ(addr_ok)ååˆ°ç»“æŸ      // å¤„äºRMçŠ¶æ€ï¼Œä¸”åœ°å€å·²å¾—åˆ°memçš„ç¡®è®¤
+    wire read_finish;   //æ•°æ®æ¥æ”¶æˆåŠŸ(data_ok)ï¼Œå³è¯»è¯·æ±‚ç»“æŸ // å¤„äºRMçŠ¶æ€ï¼Œä¸”å·²å¾—åˆ°memè¯»å–çš„æ•°æ®
     always @(posedge clk) begin
         addr_rcv <= rst ? 1'b0 :
                     cache_data_req & isRM & cache_data_addr_ok ? 1'b1 :
@@ -140,10 +140,10 @@ module data_cache (
     assign isRM = state==RM;
     assign read_finish = isRM & cache_data_data_ok;
 
-    //Ğ´ÄÚ´æ
-    wire isWM;     // ÊÇ²»ÊÇ´¦ÓÚWM×´Ì¬
-    reg waddr_rcv;      // ´¦ÓÚWM×´Ì¬£¬ÇÒµØÖ·ÒÑµÃµ½memµÄÈ·ÈÏ
-    wire write_finish;  // ´¦ÓÚWM×´Ì¬£¬ÇÒÒÑĞ´ÈëmemµÄÊı¾İ
+    //å†™å†…å­˜
+    wire isWM;     // æ˜¯ä¸æ˜¯å¤„äºWMçŠ¶æ€
+    reg waddr_rcv;      // å¤„äºWMçŠ¶æ€ï¼Œä¸”åœ°å€å·²å¾—åˆ°memçš„ç¡®è®¤
+    wire write_finish;  // å¤„äºWMçŠ¶æ€ï¼Œä¸”å·²å†™å…¥memçš„æ•°æ®
     always @(posedge clk) begin
         waddr_rcv <= rst ? 1'b0 :
                      cache_data_req& isWM & cache_data_addr_ok ? 1'b1 :
@@ -154,63 +154,63 @@ module data_cache (
     assign write_finish = isWM & cache_data_data_ok;
 
     //output to mips core
-    //* Êä³ö¶ÔÓ¦Â·µÄcache block
+    //* è¾“å‡ºå¯¹åº”è·¯çš„cache block
     assign cpu_data_rdata   = hit ? c_block[c_way] : cache_data_rdata;
 
-    // È·ÈÏµØÖ·
-    // Èç¹ûÊÇĞ´Ö¸Áîstore£¬ÃüÖĞ£¬ÄÇÃ´Ö±½ÓÈ·ÈÏµØÖ·;
-    //                  È±Ê§£¬ÇëÇómemÇÒ»¹Î´ÊÕµ½µØÖ·(cache_data_req)£¬
-    //                       ¸É¾»£¬ÄÇÃ´µÈ¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêµØÖ·(cache_data_addr_ok)Ê±È·ÈÏ£»
-    //                       Ôà£¬ÄÇÃ´µÈĞ´Íêmemºó£¬µÈµ½¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêµØÖ·(cache_data_addr_ok)Ê±È·ÈÏ£»
+    // ç¡®è®¤åœ°å€
+    // å¦‚æœæ˜¯å†™æŒ‡ä»¤storeï¼Œå‘½ä¸­ï¼Œé‚£ä¹ˆç›´æ¥ç¡®è®¤åœ°å€;
+    //                  ç¼ºå¤±ï¼Œè¯·æ±‚memä¸”è¿˜æœªæ”¶åˆ°åœ°å€(cache_data_req)ï¼Œ
+    //                       å¹²å‡€ï¼Œé‚£ä¹ˆç­‰è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œåœ°å€(cache_data_addr_ok)æ—¶ç¡®è®¤ï¼›
+    //                       è„ï¼Œé‚£ä¹ˆç­‰å†™å®Œmemåï¼Œç­‰åˆ°è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œåœ°å€(cache_data_addr_ok)æ—¶ç¡®è®¤ï¼›
     
-    // Èç¹ûÊÇ¶ÁÖ¸Áîload £¬ÃüÖĞ£¬ÄÇÃ´¾ÍÖ±½ÓÈ·ÈÏµØÖ·£»
-    //                  È±Ê§£¬ÇëÇómemÇÒ»¹Î´ÊÕµ½µØÖ·(cache_data_req)£¬
-    //                       ¸É¾»£¬ÄÇÃ´µÈ¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêµØÖ·(cache_data_addr_ok)Ê±È·ÈÏ£»
-    //                       Ôà£¬ÄÇÃ´µÈĞ´Íêmemºó£¬µÈµ½¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêµØÖ·(cache_data_addr_ok)Ê±È·ÈÏ
-    // ×ÛºÏÒ»ÏÂ:
+    // å¦‚æœæ˜¯è¯»æŒ‡ä»¤load ï¼Œå‘½ä¸­ï¼Œé‚£ä¹ˆå°±ç›´æ¥ç¡®è®¤åœ°å€ï¼›
+    //                  ç¼ºå¤±ï¼Œè¯·æ±‚memä¸”è¿˜æœªæ”¶åˆ°åœ°å€(cache_data_req)ï¼Œ
+    //                       å¹²å‡€ï¼Œé‚£ä¹ˆç­‰è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œåœ°å€(cache_data_addr_ok)æ—¶ç¡®è®¤ï¼›
+    //                       è„ï¼Œé‚£ä¹ˆç­‰å†™å®Œmemåï¼Œç­‰åˆ°è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œåœ°å€(cache_data_addr_ok)æ—¶ç¡®è®¤
+    // ç»¼åˆä¸€ä¸‹:
     // if (cpu_data_req & hit){
     //     return 1'b1;
     // }else if (cache_data_req & isRM){
     //     return cache_data_addr_ok;
     // }
-    // ¼´ -> cpu_data_req & hit | cache_data_req & isRM & cache_data_addr_ok;
+    // å³ -> cpu_data_req & hit | cache_data_req & isRM & cache_data_addr_ok;
     assign cpu_data_addr_ok = cpu_data_req & hit | cache_data_req & isRM & cache_data_addr_ok;
 
-    // È·ÈÏÊı¾İ
-    // Èç¹ûÊÇĞ´Ö¸Áîstore£¬ÃüÖĞ£¬ÄÇÃ´¸üĞÂcacheµÄÍ¬Ê±È·ÈÏÊı¾İ£»
-    //                  È±Ê§£¬¸É¾»£¬ÄÇÃ´µÈ¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêÊı¾İ(cache_data_data_ok)ºó£¬¸üĞÂcacheµÄÍ¬Ê±È·ÈÏ£»
-    //                       Ôà£¬ÄÇÃ´µÈĞ´Íêmemºó£¬µÈµ½¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêÊı¾İ(cache_data_data_ok)ºó£¬¸üĞÂcacheµÄÍ¬Ê±È·ÈÏ£»
-    // Èç¹ûÊÇ¶ÁÖ¸Áîload£¬ÃüÖĞ£¬ÄÇÃ´¸üĞÂcacheµÄÍ¬Ê±È·ÈÏÊı¾İ£»
-    //                 È±Ê§£¬¸É¾»£¬ÄÇÃ´µÈ¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêÊı¾İ(cache_data_data_ok)ºó£¬¸üĞÂcacheµÄÍ¬Ê±È·ÈÏ£»
-    //                      Ôà£¬ÄÇÃ´µÈĞ´Íêmemºó£¬µÈµ½¶ÁmemÊ±(isRM)£¬memÈ·ÈÏÍêÊı¾İ(cache_data_data_ok)ºó£¬¸üĞÂcacheµÄÍ¬Ê±È·ÈÏ£»
+    // ç¡®è®¤æ•°æ®
+    // å¦‚æœæ˜¯å†™æŒ‡ä»¤storeï¼Œå‘½ä¸­ï¼Œé‚£ä¹ˆæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤æ•°æ®ï¼›
+    //                  ç¼ºå¤±ï¼Œå¹²å‡€ï¼Œé‚£ä¹ˆç­‰è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œæ•°æ®(cache_data_data_ok)åï¼Œæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤ï¼›
+    //                       è„ï¼Œé‚£ä¹ˆç­‰å†™å®Œmemåï¼Œç­‰åˆ°è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œæ•°æ®(cache_data_data_ok)åï¼Œæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤ï¼›
+    // å¦‚æœæ˜¯è¯»æŒ‡ä»¤loadï¼Œå‘½ä¸­ï¼Œé‚£ä¹ˆæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤æ•°æ®ï¼›
+    //                 ç¼ºå¤±ï¼Œå¹²å‡€ï¼Œé‚£ä¹ˆç­‰è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œæ•°æ®(cache_data_data_ok)åï¼Œæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤ï¼›
+    //                      è„ï¼Œé‚£ä¹ˆç­‰å†™å®Œmemåï¼Œç­‰åˆ°è¯»memæ—¶(isRM)ï¼Œmemç¡®è®¤å®Œæ•°æ®(cache_data_data_ok)åï¼Œæ›´æ–°cacheçš„åŒæ—¶ç¡®è®¤ï¼›
 
     // if (cpu_data_req & hit){
     //     return 1'b1;
     // }else if (isRM){
     //     return cache_data_data_ok;
     // }
-    // ¼´ -> cpu_data_req & hit | isRM & cache_data_data_ok;
+    // å³ -> cpu_data_req & hit | isRM & cache_data_data_ok;
     assign cpu_data_data_ok = cpu_data_req & hit | isRM & cache_data_data_ok;
 
     //output to axi interface
     // cache->mem
-    // ÊÇ²»ÊÇÊı¾İÇëÇó(RM»òWM×´Ì¬)£¬ÇÒ»¹Ã»ÊÕµ½µØÖ·¡£Ò»¸öÖÜÆÚºó¾ÍÇå³ıÁË
+    // æ˜¯ä¸æ˜¯æ•°æ®è¯·æ±‚(RMæˆ–WMçŠ¶æ€)ï¼Œä¸”è¿˜æ²¡æ”¶åˆ°åœ°å€ã€‚ä¸€ä¸ªå‘¨æœŸåå°±æ¸…é™¤äº†
     assign cache_data_req   = isRM & ~addr_rcv | isWM & ~waddr_rcv;
-    // µ±Ç°ÇëÇóÊÇ·ñÊÇĞ´ÇëÇó¡£Ö»Òª´¦ÔÚWM×´Ì¬¾ÍÊÇĞ´ÇëÇó£¬Óëload»¹ÊÇstoreÖ¸ÁîÎŞ¹Ø¡£
+    // å½“å‰è¯·æ±‚æ˜¯å¦æ˜¯å†™è¯·æ±‚ã€‚åªè¦å¤„åœ¨WMçŠ¶æ€å°±æ˜¯å†™è¯·æ±‚ï¼Œä¸loadè¿˜æ˜¯storeæŒ‡ä»¤æ— å…³ã€‚
     assign cache_data_wr    = isWM;
-    // È·¶¨Êı¾İµÄÓĞĞ§×Ö½Ú¡£
-    // Èç¹ûÊÇloadÖ¸Áî, ÓĞĞ§×Ö½ÚÊÇ4B£¨µ±Ç°cpu_data_size£©;
-    // Èç¹ûÊÇstoreÖ¸Áî£¬¸ù¾İsb, sh£¨µ±Ç°cpu_data_size£©È·¶¨²»Í¬µÄÓĞĞ§×Ö½Ú
+    // ç¡®å®šæ•°æ®çš„æœ‰æ•ˆå­—èŠ‚ã€‚
+    // å¦‚æœæ˜¯loadæŒ‡ä»¤, æœ‰æ•ˆå­—èŠ‚æ˜¯4Bï¼ˆå½“å‰cpu_data_sizeï¼‰;
+    // å¦‚æœæ˜¯storeæŒ‡ä»¤ï¼Œæ ¹æ®sb, shï¼ˆå½“å‰cpu_data_sizeï¼‰ç¡®å®šä¸åŒçš„æœ‰æ•ˆå­—èŠ‚
     assign cache_data_size  = cpu_data_size;
-    //* Èç¹ûÒªĞ´ÄÚ´æ£¬Ğ´»ØmemµÄµØÖ·ÎªÔ­cache line¶ÔÓ¦µÄµØÖ·£¨¾ÉµØÖ·£©
-    // Èç¹ûÊÇ¶ÁÄÚ´æ£¬¶ÔÓ¦memµÄµØÖ·Îªcpu_data_addr£¨ĞÂµØÖ·£©
+    //* å¦‚æœè¦å†™å†…å­˜ï¼Œå†™å›memçš„åœ°å€ä¸ºåŸcache lineå¯¹åº”çš„åœ°å€ï¼ˆæ—§åœ°å€ï¼‰
+    // å¦‚æœæ˜¯è¯»å†…å­˜ï¼Œå¯¹åº”memçš„åœ°å€ä¸ºcpu_data_addrï¼ˆæ–°åœ°å€ï¼‰
     assign cache_data_addr  = cache_data_wr ? {c_tag[c_way], index, offset}:
                                               cpu_data_addr;
-    //* cacheÒªĞ´»ØmemoryµÄÊı¾İÊÇÔ­cache lineµÄÊı¾İ
+    //* cacheè¦å†™å›memoryçš„æ•°æ®æ˜¯åŸcache lineçš„æ•°æ®
     assign cache_data_wdata = c_block[c_way];
 
-    //Ğ´ÈëCache
-    //±£´æµØÖ·ÖĞµÄtag, index£¬·ÀÖ¹addr·¢Éú¸Ä±ä
+    //å†™å…¥Cache
+    //ä¿å­˜åœ°å€ä¸­çš„tag, indexï¼Œé˜²æ­¢addrå‘ç”Ÿæ”¹å˜
     reg [TAG_WIDTH-1:0] tag_save;
     reg [INDEX_WIDTH-1:0] index_save;
     always @(posedge clk) begin
@@ -223,14 +223,14 @@ module data_cache (
     wire [31:0] write_cache_data;
     wire [3:0] write_mask;
 
-    //¸ù¾İµØÖ·µÍÁ½Î»ºÍsize£¬Éú³ÉĞ´ÑÚÂë£¨Õë¶Ôsb£¬shµÈ²»ÊÇĞ´ÍêÕûÒ»¸ö×ÖµÄÖ¸Áî£©£¬4Î»¶ÔÓ¦1¸ö×Ö£¨4×Ö½Ú£©ÖĞÃ¿¸ö×ÖµÄĞ´Ê¹ÄÜ
+    //æ ¹æ®åœ°å€ä½ä¸¤ä½å’Œsizeï¼Œç”Ÿæˆå†™æ©ç ï¼ˆé’ˆå¯¹sbï¼Œshç­‰ä¸æ˜¯å†™å®Œæ•´ä¸€ä¸ªå­—çš„æŒ‡ä»¤ï¼‰ï¼Œ4ä½å¯¹åº”1ä¸ªå­—ï¼ˆ4å­—èŠ‚ï¼‰ä¸­æ¯ä¸ªå­—çš„å†™ä½¿èƒ½
     assign write_mask = cpu_data_size==2'b00 ?
                             (cpu_data_addr[1] ? (cpu_data_addr[0] ? 4'b1000 : 4'b0100):
                                                 (cpu_data_addr[0] ? 4'b0010 : 4'b0001)) :
                             (cpu_data_size==2'b01 ? (cpu_data_addr[1] ? 4'b1100 : 4'b0011) : 4'b1111);
 
-    //ÑÚÂëµÄÊ¹ÓÃ£ºÎ»Îª1µÄ´ú±íĞèÒª¸üĞÂµÄ¡£
-    //Î»ÍØÕ¹£º{8{1'b1}} -> 8'b11111111
+    //æ©ç çš„ä½¿ç”¨ï¼šä½ä¸º1çš„ä»£è¡¨éœ€è¦æ›´æ–°çš„ã€‚
+    //ä½æ‹“å±•ï¼š{8{1'b1}} -> 8'b11111111
     //new_data = old_data & ~mask | write_data & mask
     assign write_cache_data = cache_block[index][c_way] & ~{{8{write_mask[3]}}, {8{write_mask[2]}}, {8{write_mask[1]}}, {8{write_mask[0]}}} | 
                               cpu_data_wdata & {{8{write_mask[3]}}, {8{write_mask[2]}}, {8{write_mask[1]}}, {8{write_mask[0]}}};
@@ -240,7 +240,7 @@ module data_cache (
     integer t, y;
     always @(posedge clk) begin
         if(rst) begin
-            for(t=0; t<CACHE_DEEPTH; t=t+1) begin   //¸Õ¿ªÊ¼½«Cache³õÊ¼»¯ÎªÎŞĞ§£¬dirty ³õÊ¼»¯Îª 0£¬//* ru ³õÊ¼»¯Îª0
+            for(t=0; t<CACHE_DEEPTH; t=t+1) begin   //åˆšå¼€å§‹å°†Cacheåˆå§‹åŒ–ä¸ºæ— æ•ˆï¼Œdirty åˆå§‹åŒ–ä¸º 0ï¼Œ//* ru åˆå§‹åŒ–ä¸º0
                 for (y = 0; y<2; y=y+1) begin
                     cache_valid[t][y] <= 0;
                     cache_dirty[t][y] <= 0;
@@ -249,24 +249,24 @@ module data_cache (
             end
         end
         else begin
-            if(read_finish) begin // ´¦ÓÚRM×´Ì¬£¬ÇÒÒÑµÃµ½mem¶ÁÈ¡µÄÊı¾İ
-                cache_valid[index_save][c_way] <= 1'b1;             //½«Cache lineÖÃÎªÓĞĞ§
-                cache_dirty[index_save][c_way] <= 1'b0; // ¶ÁÈ¡ÄÚ´æµÄÊı¾İºó£¬Ò»¶¨ÊÇclean
+            if(read_finish) begin // å¤„äºRMçŠ¶æ€ï¼Œä¸”å·²å¾—åˆ°memè¯»å–çš„æ•°æ®
+                cache_valid[index_save][c_way] <= 1'b1;             //å°†Cache lineç½®ä¸ºæœ‰æ•ˆ
+                cache_dirty[index_save][c_way] <= 1'b0; // è¯»å–å†…å­˜çš„æ•°æ®åï¼Œä¸€å®šæ˜¯clean
                 cache_tag  [index_save][c_way] <= tag_save;
-                cache_block[index_save][c_way] <= cache_data_rdata; //Ğ´ÈëCache line
+                cache_block[index_save][c_way] <= cache_data_rdata; //å†™å…¥Cache line
             end
             else if (store & isIDLE & (hit | in_RM)) begin 
-                // storeÖ¸Áî£¬hit½øÈëIDLE×´Ì¬ »ò ´Ó¶ÁÄÚ´æ»Øµ½IDLEºó£¬½«¼Ä´æÆ÷ÖµµÄ(²¿·Ö)×Ö½ÚĞ´Èëcache¶ÔÓ¦ĞĞ
-                // ÅĞ¶ÏÌõ¼şÖĞ¼Ó(hit | in_RM)ÊÇÒòÎª£¬Èç¹ûÖ»ÅĞ¶Ï(store & isIDLE)£¬·¢ÉúmissÊ±£¬»áÔÚ½øÈëWM¡¢RMÖ®Ç°ÌáÇ°½øÈë¸ÃÌõ¼ş£¨±¾ÒâÊÇ´ÓRM»Øµ½IDLEµÄÊ±ºò£¬ÒÑ¾­¶ÁÁËmemµÄÊı¾İµ½cacheºó£¬ÔÙ½øÈë¸ÃÌõ¼ş£¬½á¹ûÊÇ¸Õ½øÈëstore·ÖÖ§£¬¾Í½øÈëÁË¸ÃÌõ¼ş£©£¬
-                // Èç¹ûÌáÇ°½øÈëÌõ¼şµÄ»°£¬´ËÊ±Ğ´ÈëcacheµÄwrite_cache_dataÎª {¾Écache[:x], ¼Ä´æÆ÷[x-1:0]}£¬WMÊ±»á°ÑÕâ¸ö´íÎóÊı¾İĞ´»Ømem£¬µ¼ÖÂ³ö´í¡£Îª½â¾ö¸ÃÎÊÌâ£¬¶îÍâ¼ÓÁËÒ»¸öĞÅºÅin_RM£¬¼ÇÂ¼Ö®Ç°ÊÇ²»ÊÇÒ»Ö±´¦ÔÚRM×´Ì¬¡£
-                cache_dirty[index][c_way] <= 1'b1; // ¸ÄÁËÊı¾İ£¬±ädirty
-                cache_block[index][c_way] <= write_cache_data;      //Ğ´ÈëCache line£¬Ê¹ÓÃindex¶ø²»ÊÇindex_save
+                // storeæŒ‡ä»¤ï¼Œhitè¿›å…¥IDLEçŠ¶æ€ æˆ– ä»è¯»å†…å­˜å›åˆ°IDLEåï¼Œå°†å¯„å­˜å™¨å€¼çš„(éƒ¨åˆ†)å­—èŠ‚å†™å…¥cacheå¯¹åº”è¡Œ
+                // åˆ¤æ–­æ¡ä»¶ä¸­åŠ (hit | in_RM)æ˜¯å› ä¸ºï¼Œå¦‚æœåªåˆ¤æ–­(store & isIDLE)ï¼Œå‘ç”Ÿmissæ—¶ï¼Œä¼šåœ¨è¿›å…¥WMã€RMä¹‹å‰æå‰è¿›å…¥è¯¥æ¡ä»¶ï¼ˆæœ¬æ„æ˜¯ä»RMå›åˆ°IDLEçš„æ—¶å€™ï¼Œå·²ç»è¯»äº†memçš„æ•°æ®åˆ°cacheåï¼Œå†è¿›å…¥è¯¥æ¡ä»¶ï¼Œç»“æœæ˜¯åˆšè¿›å…¥storeåˆ†æ”¯ï¼Œå°±è¿›å…¥äº†è¯¥æ¡ä»¶ï¼‰ï¼Œ
+                // å¦‚æœæå‰è¿›å…¥æ¡ä»¶çš„è¯ï¼Œæ­¤æ—¶å†™å…¥cacheçš„write_cache_dataä¸º {æ—§cache[:x], å¯„å­˜å™¨[x-1:0]}ï¼ŒWMæ—¶ä¼šæŠŠè¿™ä¸ªé”™è¯¯æ•°æ®å†™å›memï¼Œå¯¼è‡´å‡ºé”™ã€‚ä¸ºè§£å†³è¯¥é—®é¢˜ï¼Œé¢å¤–åŠ äº†ä¸€ä¸ªä¿¡å·in_RMï¼Œè®°å½•ä¹‹å‰æ˜¯ä¸æ˜¯ä¸€ç›´å¤„åœ¨RMçŠ¶æ€ã€‚
+                cache_dirty[index][c_way] <= 1'b1; // æ”¹äº†æ•°æ®ï¼Œå˜dirty
+                cache_block[index][c_way] <= write_cache_data;      //å†™å…¥Cache lineï¼Œä½¿ç”¨indexè€Œä¸æ˜¯index_save
             end
 
             if ((load | store) & isIDLE & (hit | in_RM)) begin
-                //* load »ò storeÖ¸Áî£¬hit½øÈëIDLE×´Ì¬ »ò ´Ó¶ÁÄÚ´æ»Øµ½IDLEºó£¬½«×î½üÊ¹ÓÃÇé¿ö¸üĞÂ
-                cache_ru[index][c_way]   <= 1'b1; //* c_way Â·×î½üÊ¹ÓÃÁË
-                cache_ru[index][1-c_way] <= 1'b0; //* 1-c_way Â·×î½üÎ´Ê¹ÓÃ
+                //* load æˆ– storeæŒ‡ä»¤ï¼Œhitè¿›å…¥IDLEçŠ¶æ€ æˆ– ä»è¯»å†…å­˜å›åˆ°IDLEåï¼Œå°†æœ€è¿‘ä½¿ç”¨æƒ…å†µæ›´æ–°
+                cache_ru[index][c_way]   <= 1'b1; //* c_way è·¯æœ€è¿‘ä½¿ç”¨äº†
+                cache_ru[index][1-c_way] <= 1'b0; //* 1-c_way è·¯æœ€è¿‘æœªä½¿ç”¨
             end
         end
     end
