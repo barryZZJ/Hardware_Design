@@ -316,7 +316,7 @@ wire [4 :0] ram_random_mask;
 
 //cpu axi
 //debug_*
-sram_like_top u_cpu(
+mycpu_top u_cpu(
     .int       (6'd0          ),   //high active
 
     .aclk      (cpu_clk       ),
