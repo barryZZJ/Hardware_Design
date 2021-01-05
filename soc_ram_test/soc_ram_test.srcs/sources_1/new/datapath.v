@@ -4,12 +4,15 @@
 module datapath(
     input clk,rst,
     input [31:0]instrD, readdata, // 数据存储器读出的数据
+    input [31:0] pcM,
     input regwriteE,
     input regwriteM,
     input regwriteW,                // 4 bit
     input memtoregW,
     input memtoregE,
     input memtoregM,
+    input memreadD,
+    input memwriteD,
     input [7:0]alucontrolE, alucontrolW,
     input alusrcE,
     input regdstE,
@@ -47,7 +50,7 @@ module datapath(
     output wire [ 3:0] debug_wb_rf_wen  , 
     output wire [ 4:0] debug_wb_rf_wnum ,
     output wire [31:0] debug_wb_rf_wdata,
-    output stallF, stallD, stallE, stallM,
+    output stallF, stallD, stallE, stallM, stallW,
     output flushF, flushD, flushE, flushM, flushW
     // output flushExcept
 );
@@ -70,10 +73,10 @@ flopenrc #(32) EM_instr (
     .d(instrE),
     .q(instrM)
 );
-flopenrc #(32) MF_instr (
+flopenrc #(32) MW_instr (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(instrM),
     .q(instrW)
@@ -93,7 +96,7 @@ wire [31:0] pcF, pc_4F;
 
 // Decode phase
 // pc_4: pc+4, pcbranch: pc+4 + imm<<2
-wire [31:0] pcD, pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
+wire [31:0] pc_4D, pcbranchD, rd1D, rd2D, extend_immD;
 wire [ 4:0] rsD, rtD, rdD, saD;
 wire [ 5:0] opD;
 
@@ -101,7 +104,7 @@ wire [31:0]pc_jump;
 // wire pcsrcD;
 
 // Execute phase
-wire [31:0] pcE, rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
+wire [31:0] rd1E, rd2E, extend_immE, aluoutE, writedataE, finalwritedataE;
 wire [ 4:0] rsE, rtE, rdE, writeregE; // 写入寄存器堆的地址
 wire [31:0] hi_iE, lo_iE; // hilo input
 wire [ 4:0] saE;
@@ -111,7 +114,7 @@ wire [31:0] pc_8E;
 wire overflowE, adelE, adesE;
 
 // Mem phase
-wire [31:0] pcM, writedataM;
+wire [31:0] writedataM;
     // aluoutM;
 wire [ 4:0] rdM, writeregM;
 wire [31:0] hi_iM, lo_iM; // hilo input
@@ -143,8 +146,8 @@ wire [31:0] newpcM;
 // branch and jump
 wire [4:0]writereg2E;
 wire [31:0] aluout2E;
+wire [31:0] debug_trans_addr;
 
-wire [31:0] pcplus8;
 //////////////////////////////////////
 // soc debug
 assign debug_wb_rf_wen = {4{regwriteW}}; // 直接扩展为 4 位
@@ -165,6 +168,7 @@ assign debug_wb_rf_wdata = resultW;
 //     .d(pc_realnext),
 //     .q(pc)
 // );
+
 pc_module #(32) pc_module(
 	.clk(clk),
 	.rst(rst),
@@ -195,16 +199,6 @@ flopenrc #(32) FD_pc_4 (
     .d(pc_4F),
     .q(pc_4D)
 );
-
-flopenrc #(32) FD_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallD),
-    .clear(flushD),
-    .d(pcF),
-    .q(pcD)
-);
-
 
 
 
@@ -371,14 +365,8 @@ flopenrc #(32) DE_pc_8 (
     .d(pc_4D + 4),
     .q(pc_8E)
 );
-flopenrc #(32) DE_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallE),
-    .clear(flushE),
-    .d(pcD),
-    .q(pcE)
-);
+
+
 
 // ----------------------------------------
 // Exe 
@@ -478,7 +466,6 @@ mul mul(
 // 除法器
 wire [63:0] div_result;
 wire divstallE; //除法发出的stall信号
-// TODO
 assign div_clear = flushExcept; //发生异常时，清空除法器
 
 divWrapper div(
@@ -585,15 +572,6 @@ flopenrc #(5) EM_rd (
     .q(rdM)
 );
 
-flopenrc #(32) EM_pc (
-    .clk(clk),
-    .rst(rst),
-    .en(~stallM),
-    .clear(flushM),
-    .d(pcE),
-    .q(pcM)
-);
-
 flopenrc #(3) EM_alusignals(
     .clk(clk),
     .rst(rst),
@@ -605,7 +583,6 @@ flopenrc #(3) EM_alusignals(
 
 // ----------------------------------------
 // Mem 
-//TODO
 assign mem_WriteData = writedataM;
 // assign mem_wea = selM;  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
 assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷掉；因此把存储器的写使能连在异常上，发生异常时直接关闭即可。
@@ -614,20 +591,20 @@ assign mem_wea = selM & {4{~flushExcept}};  // flushM来得晚，没有办法刷
 // Mem to wb flops
 
 // aluout
-flopenrc #(32) MF_aluout (
+flopenrc #(32) MW_aluout (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(aluoutM),
     .q(aluoutW)
 );
 
 // readdata from data memory
-flopenrc #(32) MF_readdata (
+flopenrc #(32) MW_readdata (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(readdata),
     .q(readdataW)
@@ -637,7 +614,7 @@ flopenrc #(32) MF_readdata (
 flopenrc #(5) MW_writereg (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(writeregM),
     .q(writeregW)
@@ -647,7 +624,7 @@ flopenrc #(5) MW_writereg (
 flopenrc #(64) MW_hilo (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d({hi_iM, lo_iM}),
     .q({hi_iW, lo_iW})
@@ -656,7 +633,7 @@ flopenrc #(64) MW_hilo (
 flopenrc #(2) MW_addr (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~stallW),
     .clear(flushW),
     .d(addrM),
     .q(addrW)

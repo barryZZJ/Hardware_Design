@@ -42,26 +42,30 @@ module except(input clk, rst,
 // mtc0: GPR[rt] == aluoutE, rd == rdE
 
 // 异常处理模块
-// reg [`RegBus] except_typeD, except_typeE, except_typeM;
 
 wire [`RegBus] epc_o, status_o, cause_o;
 
-wire int;
-assign int = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+// 写cp0的同时判断是不是修改了cause寄存器的值，判断是否产生了软件中断，相当于前推了。
+// 同时epc也要修改
+wire int_old; // 是否发生中断
+wire int_new; // 是否是新写入cp0产生的软件中断。
+assign int_old = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
+assign int_new = rdM == `CP0_REG_CAUSE && !status_o[1] & status_o[0] & (|(status_o[15:8] & write_cp0_dataM[15:8]));
 
 wire [31:0] except_typeM;
 
 wire pcErrorM;
 assign pcErrorM = pcM[1:0] != 2'b00;
 
-assign except_typeM = int                ? `ExceptType_Int  :
-                      (adelM | pcErrorM) ? `ExceptType_AdEL :
-                      riM                ? `ExceptType_RI   :
-                      overflowM          ? `ExceptType_Ov   :
-                      breakM             ? `ExceptType_Bp   :
-                      syscallM           ? `ExceptType_Sys  :
-                      adesM              ? `ExceptType_AdES :
-                      eretM              ? `ExceptType_Eret :
+assign except_typeM = int_old            ? `ExceptType_Int_Old  :
+                      int_new            ? `ExceptType_Int_New  :
+                      (adelM | pcErrorM) ? `ExceptType_AdEL     :
+                      riM                ? `ExceptType_RI       :
+                      overflowM          ? `ExceptType_Ov       :
+                      breakM             ? `ExceptType_Bp       :
+                      syscallM           ? `ExceptType_Sys      :
+                      adesM              ? `ExceptType_AdES     :
+                      eretM              ? `ExceptType_Eret     :
                       32'b0;
 
 assign flushExcept = except_typeM != 32'b0;
@@ -87,158 +91,10 @@ cp0_reg cp0reg(
     .cause_o(cause_o)
 );
 
-//TODO posedge/ negedge?
-// bug: 一条出错指令后面跟着lw指令时，pc寄存器会被stall（因为上升沿时flushExcept还是0），导致pc无法正常被赋值为newpcM
-// 解决：except换成下降沿更新，这样flushExcept会比stall信号早到，更新pc时stallF信号不为1
-// 改成下降沿后，内部递进会提前半个周期，所以传递进来的信号先给exceptTypeD；
-    // 而且except修改的时机也比stall信号早了，所以应该选择下一个阶段的stall信号。
-// 同时flushW也要连上flushExcept
-
-
-// always @(int, riM, breakM, syscallM, eretM) begin
-//     if (int)
-//         except_typeM = `ExceptType_Int ;
-//     else if (riM)
-//         except_typeM = `ExceptType_RI  ;
-//     else if (breakM)
-//         except_typeM = `ExceptType_Bp  ;
-//     else if (syscallM)
-//         except_typeM = `ExceptType_Sys ;
-//     else if (eretM)
-//         except_typeM = `ExceptType_Eret;
-//     else
-//         except_typeM = 32'b0;
-// end
-
-
-
-// always @(negedge clk) begin
-//     if (rst) begin
-//         except_typeD <= 32'b0;
-//         except_typeE <= 32'b0;
-//         except_typeM <= 32'b0;
-//     end else begin
-//         if (!stallE) begin
-//             if (flushE)
-//                 except_typeD <= 32'b0;
-//             else begin
-//                 if (int) begin
-//                     // 中断例外
-//                     except_typeD <= ;
-//                 end else if (riD) begin
-//                     // 保留指令例外
-//                     except_typeD <= ;
-//                 end else if (breakD) begin
-//                     // 断点例外
-//                     except_typeD <=;
-//                 end else if (syscallD) begin
-//                     // 系统调用
-//                     except_typeD <= ;
-//                 end else if (eretD) begin
-//                     except_typeD <= ;
-//                 end else begin
-//                     except_typeD <= 32'b0;
-//                 end
-//             end
-//         end
-//         if (!stallM) begin
-//             if (flushM)
-//                 except_typeE <= 32'b0;
-//             else begin
-//                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-//                     // 中断例外
-//                     except_typeE <= `ExceptType_Int;
-//                 end else if (adelE) begin
-//                     // 地址错例外（取指或取数据）
-//                     except_typeE <= `ExceptType_AdEL;
-//                 end else if (overflowE) begin
-//                     // 整形溢出
-//                     except_typeE <= `ExceptType_Ov;
-//                 end else if (adesE) begin
-//                     // 地址错例外（存数据）
-//                     except_typeE <= `ExceptType_AdES;
-//                 end else begin
-//                     except_typeE <= except_typeD;
-//                 end
-//             end
-//         end
-//         if (!stallW) begin
-//             if (flushW)
-//                 except_typeM <= 32'b0;
-//             else begin
-//                 except_typeM <= except_typeE;
-//             end
-//         end
-//     end
-// end
-// always @(posedge clk) begin
-//     if (rst) begin
-//         except_typeD <= 32'b0;
-//         except_typeE <= 32'b0;
-//         except_typeM <= 32'b0;
-//     end else begin
-//         if (!stallE) begin
-//             if (flushE)
-//                 except_typeE <= 32'b0;
-//             else begin
-//                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-//                     // 中断例外
-//                     except_typeE <= `ExceptType_Int;
-//                 end else if (riD) begin
-//                     // 保留指令例外
-//                     except_typeE <= `ExceptType_RI;
-//                 end else if (breakD) begin
-//                     // 断点例外
-//                     except_typeE <= `ExceptType_Bp;
-//                 end else if (syscallD) begin
-//                     // 系统调用
-//                     except_typeE <= `ExceptType_Sys;
-//                 end else if (eretD) begin
-//                     except_typeE <= `ExceptType_Eret;
-//                 end else begin
-//                     except_typeE <= 32'b0;
-//                 end
-//             end
-//         end
-//         if (!stallM) begin
-//             if (flushM)
-//                 except_typeM <= 32'b0;
-//             else begin
-//                 if (!status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]))) begin
-//                     // 中断例外
-//                     except_typeM <= `ExceptType_Int;
-//                 end else if (adelE) begin
-//                     // 地址错例外（取指或取数据）
-//                     except_typeM <= `ExceptType_AdEL;
-//                 end else if (overflowE) begin
-//                     // 整形溢出
-//                     except_typeM <= `ExceptType_Ov;
-//                 end else if (adesE) begin
-//                     // 地址错例外（存数据）
-//                     except_typeM <= `ExceptType_AdES;
-//                 end else begin
-//                     except_typeM <= except_typeE;
-//                 end
-//             end
-//         end
-//     end
-// end
-
-// wire hasinterrupt; // 是否发生中断
-// assign hasinterrupt = !status_o[1] & status_o[0] & (|(status_o[15:8] & cause_o[15:8]));
-
-// wire hasexception; // 是否发生异常
-// assign hasexception = except_typeM == `ExceptType_Int & hasinterrupt | 
-//                       except_typeM == `ExceptType_AdEL |
-//                       except_typeM == `ExceptType_AdES |
-//                       except_typeM == `ExceptType_Sys  |
-//                       except_typeM == `ExceptType_Bp   |
-//                       except_typeM == `ExceptType_RI   |
-//                       except_typeM == `ExceptType_Ov;
 
 always @(*) begin
     case (except_typeM)
-        `ExceptType_Int: begin
+        `ExceptType_Int_Old, `ExceptType_Int_New: begin
             // 中断
             newpcM     <= `EXC_ENTRY_POINT;
         end

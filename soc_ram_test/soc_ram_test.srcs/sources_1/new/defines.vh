@@ -253,8 +253,8 @@
 
 //CP0
 `define CP0_REG_BADVADDR    5'b01000       //只读 8
-`define CP0_REG_COUNT    5'b01001        //可读写 
-`define CP0_REG_COMPARE    5'b01011      //可读写
+`define CP0_REG_COUNT    5'b01001        //可读写  9
+`define CP0_REG_COMPARE    5'b01011      //可读写 11
 `define CP0_REG_STATUS    5'b01100       //可读写 12
 `define CP0_REG_CAUSE    5'b01101        //只读 13
 `define CP0_REG_EPC    5'b01110          //可读写 14
@@ -276,7 +276,8 @@
 
 
 
-`define ExceptType_Int  32'h00000001  // 中断
+`define ExceptType_Int_Old  32'h00000001  // 中断
+`define ExceptType_Int_New  32'h00000002  // 中断
 `define ExceptType_AdEL 32'h00000004  // 地址错例外（读数据或取指令）
 `define ExceptType_AdES 32'h00000005  // 地址错例外（写数据）
 `define ExceptType_Sys  32'h00000008  // 系统调用例外
