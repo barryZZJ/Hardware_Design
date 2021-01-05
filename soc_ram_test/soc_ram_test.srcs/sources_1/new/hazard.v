@@ -28,7 +28,6 @@ module hazard(input [4:0] rsD,
               input hi_writeM, hi_writeW,
               input lo_writeM, lo_writeW,
               input divstallE,
-              // input mulstallE, // TODO
               input mfc0E,
               input mtc0M,
             //   input inst_stall, // TODO
