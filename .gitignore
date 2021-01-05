@@ -11,10 +11,6 @@
 *.py
 input.txt
 test.coe
-data_ram
-inst_ram
-*.xpr
-*.wcfg
 *.jpg
 *.xlsx
 *zzj.txt
@@ -22,7 +18,5 @@ inst_ram
 test_cpu_only.v
 old_top.v
 *.mif
-data_ram.*
-inst_ram.*
 main.*
-test.s
+.Xil
