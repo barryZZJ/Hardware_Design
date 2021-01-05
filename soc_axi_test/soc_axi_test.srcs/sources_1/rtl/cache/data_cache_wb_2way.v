@@ -1,4 +1,4 @@
-module data_cache (
+module data_cache_wb_2way (
     input wire clk, rst,
     //mips core
     input         cpu_data_req     , // 是不是数据请求(load 或 store指令)。一个周期后就清除了

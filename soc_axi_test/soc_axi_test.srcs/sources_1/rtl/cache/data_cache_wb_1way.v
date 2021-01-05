@@ -1,4 +1,4 @@
-module data_cache_wb_1way (
+module data_cache (
     input wire clk, rst,
     //mips core
     input wire        cpu_data_en    , //* 读或写 new，一直高电平。
