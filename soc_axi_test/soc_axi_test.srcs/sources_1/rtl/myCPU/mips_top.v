@@ -23,6 +23,8 @@ module mips_top(
     input data_stall, // 等待数据存储器准备好
 	//////////////////////////////////////////
     output longest_stall, // 表示cpu流水线暂停的整个时期。保证一次流水线暂停只取一次指令，只进行一次内存访问
+
+	output no_dcache,
 	// debug ports
 	output wire [31:0] debug_wb_pc      ,	// pc
 	output wire [ 3:0] debug_wb_rf_wen  ,	// regfile write enable
@@ -40,7 +42,8 @@ addrtrans address_transfer(
 	.inst_vaddr(inst_addr),
 	.inst_paddr(inst_sram_addr),
 	.data_vaddr(data_addr),
-	.data_paddr(data_sram_addr)
+	.data_paddr(data_sram_addr),
+	.no_dcache(no_dcache)
 );
 
 mips mips(

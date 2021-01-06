@@ -72,6 +72,8 @@ module mycpu_top(
     wire cpu_inst_stall;        // to cpu
     wire cpu_data_stall;        // to cpu
 
+    wire no_dcache;
+
     //debug signals
     /*wire [31:0] debug_wb_pc;
     wire [3 :0] debug_wb_rf_wen;
@@ -79,11 +81,12 @@ module mycpu_top(
     wire [31:0] debug_wb_rf_wdata;*/
     //cpu
     mips_top cpu(
-        .clk              (aclk         ),      // (in, 1) 注意时钟反转
+        .clk              (aclk          ),     // (in, 1) 
         .resetn           (~aresetn      ),     // (in, 1) low active
         .int              (int           ),     // (in, 6) interrupt,high active
 
         .longest_stall    (cpu_longest_stall),  // (out, 1)
+        .no_dcache        (no_dcache     ),
 
         .inst_sram_en     (cpu_inst_en   ),     // (out, 1)
         .inst_sram_wen    (cpu_inst_wen  ),     // (out, 4)
@@ -106,32 +109,29 @@ module mycpu_top(
     );
 
     // cache
-    // inst sram-like 
-    // inst_sram_like to bridge
+    // inst
     wire        cache_inst_req     ;
     wire        cache_inst_wr      ;
     wire [1 :0] cache_inst_size    ;
     wire [31:0] cache_inst_addr    ;
     wire [31:0] cache_inst_wdata   ;
 
-    // bridge to inst_sram_like
     wire [31:0] cache_inst_rdata   ;
     wire        cache_inst_addr_ok ;
     wire        cache_inst_data_ok ;
-    // data sram-like 
-    // data_sram_like to bridge
+    // data
     wire        cache_data_req     ;
     wire        cache_data_wr      ;
     wire [1 :0] cache_data_size    ;
     wire [31:0] cache_data_addr    ;
     wire [31:0] cache_data_wdata   ;
-    // bridge to data_sram_like
+
     wire [31:0] cache_data_rdata   ;
     wire        cache_data_addr_ok ;
     wire        cache_data_data_ok ;
 
     cache cache(
-        .clk(~aclk), // FIXME
+        .clk(aclk), // FIXME
         .rst(~aresetn),
         // inst sram
         // input from cpu
@@ -149,6 +149,7 @@ module mycpu_top(
         .cpu_data_wdata(cpu_data_wdata), //in
         .cpu_data_rdata(cpu_data_rdata), //out
         .cpu_data_stall(cpu_data_stall), //out
+        .no_dcache     (no_dcache     ),
         // .cpu_longest_stall(cpu_longest_stall),//in
 
         // inst sram-like
@@ -174,79 +175,79 @@ module mycpu_top(
         // input from axi bridge
         .cache_data_rdata  (cache_data_rdata  ), //in
         .cache_data_addr_ok(cache_data_addr_ok), //in
-        .cache_data_data_ok(cache_data_data_ok) //in
+        .cache_data_data_ok(cache_data_data_ok)  //in
     );
 
     ///////////////////////////////////////////////////////////////
     cpu_axi_interface cpu_axi_interface(
-    .clk(aclk),
-    .resetn(aresetn), 
-    // inst sram-like
-    // input from cache
-    .inst_req    (cache_inst_req    ), // in
-    .inst_wr     (cache_inst_wr     ), // in
-    .inst_size   (cache_inst_size   ), // in
-    .inst_addr   (cache_inst_addr   ), // in
-    .inst_wdata  (cache_inst_wdata  ), // in
-    // output to cache
-    .inst_rdata  (cache_inst_rdata  ), // out
-    .inst_addr_ok(cache_inst_addr_ok), // out
-    .inst_data_ok(cache_inst_data_ok), // out
-        
-    // data sram-like 
-    // input from cache
-    .data_req    (cache_data_req    ), // in
-    .data_wr     (cache_data_wr     ), // in
-    .data_size   (cache_data_size   ), // in
-    .data_addr   (cache_data_addr   ), // in
-    .data_wdata  (cache_data_wdata  ), // in
-    // output to cache
-    .data_rdata  (cache_data_rdata  ), // out
-    .data_addr_ok(cache_data_addr_ok), // out
-    .data_data_ok(cache_data_data_ok), // out
+        .clk(aclk),
+        .resetn(aresetn), 
+        // inst sram-like
+        // input from cache
+        .inst_req    (cache_inst_req    ), // in
+        .inst_wr     (cache_inst_wr     ), // in
+        .inst_size   (cache_inst_size   ), // in
+        .inst_addr   (cache_inst_addr   ), // in
+        .inst_wdata  (cache_inst_wdata  ), // in
+        // output to cache
+        .inst_rdata  (cache_inst_rdata  ), // out
+        .inst_addr_ok(cache_inst_addr_ok), // out
+        .inst_data_ok(cache_inst_data_ok), // out
+            
+        // data sram-like 
+        // input from cache
+        .data_req    (cache_data_req    ), // in
+        .data_wr     (cache_data_wr     ), // in
+        .data_size   (cache_data_size   ), // in
+        .data_addr   (cache_data_addr   ), // in
+        .data_wdata  (cache_data_wdata  ), // in
+        // output to cache
+        .data_rdata  (cache_data_rdata  ), // out
+        .data_addr_ok(cache_data_addr_ok), // out
+        .data_data_ok(cache_data_data_ok), // out
 
-    // axi
-    // ar
-    .arid   (arid   ),
-    .araddr (araddr ),
-    .arlen  (arlen  ),
-    .arsize (arsize ),
-    .arburst(arburst),
-    .arlock (arlock ),
-    .arcache(arcache),
-    .arprot (arprot ),
-    .arvalid(arvalid),
-    .arready(arready),
-    // r           
-    .rid   (rid   ),
-    .rdata (rdata ),
-    .rresp (rresp ),
-    .rlast (rlast ),
-    .rvalid(rvalid),
-    .rready(rready),
-    // aw          
-    .awid   (awid   ),
-    .awaddr (awaddr ),
-    .awlen  (awlen  ),
-    .awsize (awsize ),
-    .awburst(awburst),
-    .awlock (awlock ),
-    .awcache(awcache),
-    .awprot (awprot ),
-    .awvalid(awvalid),
-    .awready(awready),
-    // w          
-    .wid   (wid   ),
-    .wdata (wdata ),
-    .wstrb (wstrb ),
-    .wlast (wlast ),
-    .wvalid(wvalid),
-    .wready(wready),
-    // b           
-    .bid   (bid   ),
-    .bresp (bresp ),
-    .bvalid(bvalid),
-    .bready(bready)
-);
+        // axi
+        // ar
+        .arid   (arid   ),
+        .araddr (araddr ),
+        .arlen  (arlen  ),
+        .arsize (arsize ),
+        .arburst(arburst),
+        .arlock (arlock ),
+        .arcache(arcache),
+        .arprot (arprot ),
+        .arvalid(arvalid),
+        .arready(arready),
+        // r           
+        .rid   (rid   ),
+        .rdata (rdata ),
+        .rresp (rresp ),
+        .rlast (rlast ),
+        .rvalid(rvalid),
+        .rready(rready),
+        // aw          
+        .awid   (awid   ),
+        .awaddr (awaddr ),
+        .awlen  (awlen  ),
+        .awsize (awsize ),
+        .awburst(awburst),
+        .awlock (awlock ),
+        .awcache(awcache),
+        .awprot (awprot ),
+        .awvalid(awvalid),
+        .awready(awready),
+        // w          
+        .wid   (wid   ),
+        .wdata (wdata ),
+        .wstrb (wstrb ),
+        .wlast (wlast ),
+        .wvalid(wvalid),
+        .wready(wready),
+        // b           
+        .bid   (bid   ),
+        .bresp (bresp ),
+        .bvalid(bvalid),
+        .bready(bready)
+    );
 
 endmodule
