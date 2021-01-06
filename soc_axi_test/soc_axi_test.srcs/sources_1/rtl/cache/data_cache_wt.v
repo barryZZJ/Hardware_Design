@@ -132,8 +132,9 @@ module data_cache (
     //* addr_ok 没用上
     // assign cpu_data_addr_ok = read & cpu_data_req & hit | cache_data_req & cache_data_addr_ok;
     // assign cpu_data_addr_ok = read & cpu_data_req & hit | cache_data_req & cache_data_addr_ok;
-    wire cpu_data_data_ok;
-    assign cpu_data_data_ok = cpu_data_en & hit | cache_data_data_ok;
+    //* data_ok 没用上
+    // wire cpu_data_data_ok;
+    // assign cpu_data_data_ok = cpu_data_en & hit | cache_data_data_ok;
     // assign cpu_data_data_ok = read & cpu_data_req & hit | cache_data_data_ok;
     // TODO 可能有bug。检查一下命中时会不会有延迟，造成周期浪费
     // * stall
@@ -145,7 +146,7 @@ module data_cache (
         // CPU有空之后(~longest_stall)，就会读，这时把do_finish归零，准备下一次访存。
         // 如果数据还没准备好，但是CPU已经有空了(~longest_stall)，就让CPU接着等(cpu_data_stall)。
         do_finish <= rst                ? 1'b0 :
-                     cpu_data_data_ok   ? 1'b1 :
+                     cache_data_data_ok ? 1'b1 :
         // cpu 仍在暂停，保证一次流水线暂停只取一次指令，只进行一次内存访问
                      ~cpu_longest_stall ? 1'b0 : do_finish;
     end
