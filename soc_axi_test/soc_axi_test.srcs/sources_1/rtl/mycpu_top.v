@@ -131,7 +131,7 @@ module mycpu_top(
     wire        cache_data_data_ok ;
 
     cache cache(
-        .clk(aclk),
+        .clk(~aclk), // FIXME
         .rst(~aresetn),
         // inst sram
         // input from cpu
