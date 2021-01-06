@@ -1,0 +1,56 @@
+Test begin!
+coremark test begin.
+
+arg : 0, 0, 102, 1, 7, 1, 2000 
+
+test start
+
+computation done 
+
+2K performance run parameters for coremark.
+
+CoreMark Size    : 666
+
+Total ns : 116798930
+
+Iterations/Sec : 8
+
+COREMARK/MHZ = (1000000.0/CPU_COUNT_PER_US)*NSEC_PER_USEC*results[0].iterations/total_ns
+
+It equals to 1000*1000*iteration/total_ns
+
+In this run, iterate=1, total_ns=116798930
+
+
+
+Total ticks      : 0
+
+Total time (secs): 0
+
+Iterations       : 1
+
+Compiler version : GCC4.3.0
+
+Compiler flags   : 
+
+Memory location  : Please put data memory location here
+
+			(e.g. code in flash, data on heap etc)
+
+seedcrc          : 0xe9f5
+
+[0]crclist       : 0xe714
+
+[0]crcmatrix     : 0x1fd7
+
+[0]crcstate      : 0x8e3a
+
+[0]crcfinal      : 0xe714
+
+Correct operation validated. See readme.txt for run and reporting rules.
+
+coremark PASS!
+
+coremark: Total Count(SoC count) = 0xc305d0
+
+coremark: Total Count(CPU count) = 0xb149f9

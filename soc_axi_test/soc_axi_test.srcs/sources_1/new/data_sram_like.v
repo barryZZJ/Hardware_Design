@@ -35,6 +35,10 @@ module data_sram_like(
     end
 
     always @(posedge clk) begin
+        // 本次读mem事务是否完成。用来告诉CPU数据准备好了。
+        // 如果数据准备好了(data_ok)，就告诉CPU数据准备好了(finish=1)，数据存到save里，等待CPU读。如果CPU忙，mem这边就要一直保持do_finish(为1)，等CPU有空之后来读。
+        // CPU有空之后(~longest_stall)，就会读，这时把do_finish归零，准备下一次访存。
+        // 如果数据还没准备好，但是CPU已经有空了(~longest_stall)，就让CPU接着等(cpu_data_stall)。
         do_finish <= rst          ? 1'b0 :
         // 只判断data_ok
                      data_data_ok ? 1'b1 :
@@ -51,7 +55,7 @@ module data_sram_like(
     end
 
     // sram like
-    assign data_req = cpu_data_en & ~addr_rcv & ~do_finish;
+    assign data_req = cpu_data_en & ~addr_rcv & ~do_finish; // 给桥
     assign data_wr = cpu_data_en & |cpu_data_wen;
     assign data_size = (cpu_data_wen==4'b0001 || cpu_data_wen==4'b0010 || cpu_data_wen==4'b0100 || cpu_data_wen==4'b1000) ? 2'b00:
                        (cpu_data_wen==4'b0011 || cpu_data_wen==4'b1100 ) ? 2'b01 : 2'b10;
@@ -60,6 +64,6 @@ module data_sram_like(
 
     // sram
     assign cpu_data_rdata = data_rdata_save;
-    assign cpu_data_stall = cpu_data_en & ~do_finish;
+    assign cpu_data_stall = cpu_data_en & ~do_finish; // 让CPU等
     
 endmodule
