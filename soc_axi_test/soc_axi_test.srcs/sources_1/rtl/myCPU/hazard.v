@@ -91,8 +91,8 @@ assign branchstall = branchD && regwriteE &&
 //（except上升沿更新时flushExcept与stall同时更新，条件用不上，下降沿更新时flushEXcept早到，&&~flushExcept可以防止stall置1）。
 ///////////
 wire jrstall;
-assign jrstall =  ((jrD && regwriteE)  && (writeregE == rsD))
-                || ((jrD && memtoregM) && (writeregM == rsD));
+assign jrstall =  (jrD && regwriteE)  && (writeregE == rsD) 
+                || (jrD && memtoregM) && (writeregM == rsD);
 
 // 取指和访存都暂停所有阶段
 // TODO 可能有雷
@@ -105,7 +105,7 @@ assign stallW = (inst_stall || data_stall) && ~flushExcept;
 
 // 只要有一个在stall，CPU就处于stall状态
 //TODO 可能还要改
-assign longest_stall = (inst_stall || data_stall || divstallE || lwstall || jrstall || branchstall) && ~flushExcept;
+assign longest_stall = (inst_stall || data_stall || divstallE) && ~flushExcept;
 
 // 除法要么stallM，要么flushM，如果是stall的话，就是前一条指令在M一直写memory，如果是flush就正常清空了
 // TODO 要不要把每个flush信号都带上~inst_stall

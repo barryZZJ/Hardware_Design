@@ -1,30 +1,10 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2021/01/03 14:21:08
-// Design Name: 
-// Module Name: sram_like_top
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
+module mycpu_top(
+    input wire [5:0] int,
 
-module sram_like_top(
-    input wire [5:0] ext_int    ,
-
-    input wire aclk             ,
-    input wire aresetn          ,
+    input wire aclk     ,
+    input wire aresetn  ,
 
     output wire [3 :0] arid     ,
     output wire [31:0] araddr   ,
@@ -99,9 +79,9 @@ module sram_like_top(
     wire [31:0] debug_wb_rf_wdata;*/
     //cpu
     mips_top cpu(
-        .clk              (aclk          ),     // (in, 1) 娉ㄦ剰鏃堕挓鍙嶈浆
+        .clk              (aclk         ),      // (in, 1) 注意时钟反转
         .resetn           (~aresetn      ),     // (in, 1) low active
-        .int              (ext_int       ),     // (in, 6) interrupt,high active
+        .int              (int           ),     // (in, 6) interrupt,high active
 
         .longest_stall    (cpu_longest_stall),  // (out, 1)
 
@@ -116,6 +96,7 @@ module sram_like_top(
         .data_sram_wen    (cpu_data_wen  ),     // (out, 4)
         .data_sram_addr   (cpu_data_addr ),     // (out,32)
         .data_sram_wdata  (cpu_data_wdata),     // (out,32)
+        .no_dcache        (no_dcache     ),
         .data_sram_rdata  (cpu_data_rdata),     // (in, 32)
         .data_stall       (cpu_data_stall),     // (in, 1)
         //debug
@@ -124,99 +105,106 @@ module sram_like_top(
         .debug_wb_rf_wnum (debug_wb_rf_wnum ),  // (out, 5)
         .debug_wb_rf_wdata(debug_wb_rf_wdata)   // (out,32)
     );
-    ///////////////////////////////////////////////////////////////
+
+    // cache
     // inst sram-like 
     // inst_sram_like to bridge
-    wire        inst_req     ;
-    wire        inst_wr      ;
-    wire [1 :0] inst_size    ;
-    wire [31:0] inst_addr    ;
-    wire [31:0] inst_wdata   ;
+    wire        cache_inst_req     ;
+    wire        cache_inst_wr      ;
+    wire [1 :0] cache_inst_size    ;
+    wire [31:0] cache_inst_addr    ;
+    wire [31:0] cache_inst_wdata   ;
 
     // bridge to inst_sram_like
-    wire [31:0] inst_rdata   ;
-    wire        inst_addr_ok ;
-    wire        inst_data_ok ;
-
-    inst_sram_like inst_sram_like(
-        .clk(aclk),
-        .rst(~aresetn),
-        // cpu
-        .cpu_inst_en   (cpu_inst_en   ),
-        .cpu_inst_wen  (cpu_inst_wen  ),
-        .cpu_inst_addr (cpu_inst_addr ),
-        .cpu_inst_wdata(cpu_inst_wdata),
-        .cpu_inst_rdata(cpu_inst_rdata),
-        .cpu_inst_stall(cpu_inst_stall),
-        .cpu_longest_stall(cpu_longest_stall),
-        // bridge
-        .inst_req    (inst_req    ),
-        .inst_wr     (inst_wr     ),
-        .inst_size   (inst_size   ),
-        .inst_addr   (inst_addr   ),
-        .inst_wdata  (inst_wdata  ),
-        .inst_rdata  (inst_rdata  ),
-        .inst_addr_ok(inst_addr_ok),
-        .inst_data_ok(inst_data_ok)
-    );
-    ///////////////////////////////////////////////////////////////
+    wire [31:0] cache_inst_rdata   ;
+    wire        cache_inst_addr_ok ;
+    wire        cache_inst_data_ok ;
     // data sram-like 
     // data_sram_like to bridge
-    wire        data_req     ;
-    wire        data_wr      ;
-    wire [1 :0] data_size    ;
-    wire [31:0] data_addr    ;
-    wire [31:0] data_wdata   ;
+    wire        cache_data_req     ;
+    wire        cache_data_wr      ;
+    wire [1 :0] cache_data_size    ;
+    wire [31:0] cache_data_addr    ;
+    wire [31:0] cache_data_wdata   ;
     // bridge to data_sram_like
-    wire [31:0] data_rdata   ;
-    wire        data_addr_ok ;
-    wire        data_data_ok ;
+    wire [31:0] cache_data_rdata   ;
+    wire        cache_data_addr_ok ;
+    wire        cache_data_data_ok ;
 
-    data_sram_like data_sram_like(
-        .clk(aclk),
+    cache cache(
+        .clk(aclk), // FIXME
         .rst(~aresetn),
-        // cpu
-        .cpu_data_en   (cpu_data_en   ),
-        .cpu_data_wen  (cpu_data_wen  ),
-        .cpu_data_addr (cpu_data_addr ),
-        .cpu_data_wdata(cpu_data_wdata),
-        .cpu_data_rdata(cpu_data_rdata),
-        .cpu_data_stall(cpu_data_stall),
-        .cpu_longest_stall(cpu_longest_stall),
+        // inst sram
+        // input from cpu
+        .cpu_inst_en   (cpu_inst_en   ), //in
+        .cpu_inst_wen  (cpu_inst_wen  ), //in
+        .cpu_inst_addr (cpu_inst_addr ), //in
+        .cpu_inst_wdata(cpu_inst_wdata), //in
+        .cpu_inst_rdata(cpu_inst_rdata), //out
+        .cpu_inst_stall(cpu_inst_stall), //out
+        .cpu_longest_stall(cpu_longest_stall), //in
+        // data sram
+        .cpu_data_en   (cpu_data_en   ), //in
+        .cpu_data_wen  (cpu_data_wen  ), //in
+        .cpu_data_addr (cpu_data_addr ), //in
+        .cpu_data_wdata(cpu_data_wdata), //in
+        .cpu_data_rdata(cpu_data_rdata), //out
+        .cpu_data_stall(cpu_data_stall), //out
+        // .cpu_longest_stall(cpu_longest_stall),//in
+
+        // inst sram-like
+        // output to axi bridge
+        .cache_inst_req    (cache_inst_req    ), //out
+        .cache_inst_wr     (cache_inst_wr     ), //out
+        .cache_inst_size   (cache_inst_size   ), //out
+        .cache_inst_addr   (cache_inst_addr   ), //out
+        .cache_inst_wdata  (cache_inst_wdata  ), //out
+        // input from axi bridge
+        .cache_inst_rdata  (cache_inst_rdata  ), //in
+        .cache_inst_addr_ok(cache_inst_addr_ok), //in
+        .cache_inst_data_ok(cache_inst_data_ok), //in
+
+        // data sram-like
+        // output to axi bridge
         // bridge ports
-        .data_req    (data_req    ),
-        .data_wr     (data_wr     ),
-        .data_size   (data_size   ),
-        .data_addr   (data_addr   ),
-        .data_wdata  (data_wdata  ),
-        .data_rdata  (data_rdata  ),
-        .data_addr_ok(data_addr_ok),
-        .data_data_ok(data_data_ok)
+        .cache_data_req    (cache_data_req    ), //out
+        .cache_data_wr     (cache_data_wr     ), //out
+        .cache_data_size   (cache_data_size   ), //out
+        .cache_data_addr   (cache_data_addr   ), //out
+        .cache_data_wdata  (cache_data_wdata  ), //out
+        // input from axi bridge
+        .cache_data_rdata  (cache_data_rdata  ), //in
+        .cache_data_addr_ok(cache_data_addr_ok), //in
+        .cache_data_data_ok(cache_data_data_ok) //in
     );
 
     ///////////////////////////////////////////////////////////////
     cpu_axi_interface cpu_axi_interface(
     .clk(aclk),
     .resetn(aresetn), 
-    // inst sram-like 
-    .inst_req    (inst_req    ),
-    .inst_wr     (inst_wr     ),
-    .inst_size   (inst_size   ),
-    .inst_addr   (inst_addr   ),
-    .inst_wdata  (inst_wdata  ),
-    .inst_rdata  (inst_rdata  ),
-    .inst_addr_ok(inst_addr_ok),
-    .inst_data_ok(inst_data_ok),
+    // inst sram-like
+    // input from cache
+    .inst_req    (cache_inst_req    ), // in
+    .inst_wr     (cache_inst_wr     ), // in
+    .inst_size   (cache_inst_size   ), // in
+    .inst_addr   (cache_inst_addr   ), // in
+    .inst_wdata  (cache_inst_wdata  ), // in
+    // output to cache
+    .inst_rdata  (cache_inst_rdata  ), // out
+    .inst_addr_ok(cache_inst_addr_ok), // out
+    .inst_data_ok(cache_inst_data_ok), // out
         
     // data sram-like 
-    .data_req    (data_req    ),
-    .data_wr     (data_wr     ),
-    .data_size   (data_size   ),
-    .data_addr   (data_addr   ),
-    .data_wdata  (data_wdata  ),
-    .data_rdata  (data_rdata  ),
-    .data_addr_ok(data_addr_ok),
-    .data_data_ok(data_data_ok),
+    // input from cache
+    .data_req    (cache_data_req    ), // in
+    .data_wr     (cache_data_wr     ), // in
+    .data_size   (cache_data_size   ), // in
+    .data_addr   (cache_data_addr   ), // in
+    .data_wdata  (cache_data_wdata  ), // in
+    // output to cache
+    .data_rdata  (cache_data_rdata  ), // out
+    .data_addr_ok(cache_data_addr_ok), // out
+    .data_data_ok(cache_data_data_ok), // out
 
     // axi
     // ar

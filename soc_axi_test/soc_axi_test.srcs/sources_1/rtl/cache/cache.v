@@ -23,7 +23,7 @@ module cache (
     output wire [31:0] cpu_data_rdata,
     output wire        cpu_data_stall,
 
-    input wire         no_dcache,
+
     // inst sram-like
     // output to axi bridge
     output wire        cache_inst_req    ,
@@ -85,7 +85,7 @@ module cache (
         .cpu_data_stall      (cpu_data_stall   ),
         // .cpu_data_addr_ok (cpu_data_addr_ok ),
         // .cpu_data_data_ok (cpu_data_data_ok ),
-        .no_dcache          (no_dcache          ),
+    
         .cache_data_req     (cache_data_req     ),
         .cache_data_wr      (cache_data_wr      ),
         .cache_data_size    (cache_data_size    ),

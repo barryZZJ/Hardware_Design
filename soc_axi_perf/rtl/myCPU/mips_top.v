@@ -19,6 +19,7 @@ module mips_top(
 	output wire [ 3:0] data_sram_wen  ,
 	output wire [31:0] data_sram_addr ,
 	output wire [31:0] data_sram_wdata,
+	output wire        no_dcache,
 	input  wire [31:0] data_sram_rdata,
     input data_stall, // 等待数据存储器准备好
 	//////////////////////////////////////////
@@ -40,7 +41,8 @@ addrtrans address_transfer(
 	.inst_vaddr(inst_addr),
 	.inst_paddr(inst_sram_addr),
 	.data_vaddr(data_addr),
-	.data_paddr(data_sram_addr)
+	.data_paddr(data_sram_addr),
+	.no_dcache (no_dcache)
 );
 
 mips mips(

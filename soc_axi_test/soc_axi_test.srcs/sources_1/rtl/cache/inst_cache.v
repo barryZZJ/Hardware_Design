@@ -83,7 +83,8 @@ module inst_cache (
     always @(posedge clk) begin
         addr_rcv <= rst ? 1'b0 :
         // 保证先inst_req再addr_rcv；如果addr_ok同时data_ok，则优先data_ok
-                    cache_inst_req & cache_inst_addr_ok ? 1'b1 :
+        // *
+                    cache_inst_req & cache_inst_addr_ok & ~cache_inst_data_ok ? 1'b1 :
                     read_finish ? 1'b0 : addr_rcv;
     end
     assign read_req = state==RM;
@@ -105,6 +106,7 @@ module inst_cache (
     //* addr_ok 没用上
     // assign cpu_inst_addr_ok = cpu_inst_en & hit | cache_inst_req & cache_inst_addr_ok;
     // assign cpu_inst_addr_ok = cpu_inst_req & hit | cache_inst_req & cache_inst_addr_ok;
+    //* data_ok 没用上
     // wire cpu_inst_data_ok;
     // assign cpu_inst_data_ok = cpu_inst_en & hit | cache_inst_data_ok;
     // assign cpu_inst_data_ok = cpu_inst_req & hit | cache_inst_data_ok;
@@ -117,14 +119,15 @@ module inst_cache (
         // CPU有空之后(~longest_stall)，就会读，这时把do_finish归零，准备下一次访存。
         // 如果数据还没准备好，但是CPU已经有空了(~longest_stall)，就让CPU接着等(cpu_data_stall)。
         do_finish <= rst                ? 1'b0 :
-                     cache_inst_data_ok   ? 1'b1 : 
+                     cache_inst_data_ok ? 1'b1 :
         // cpu 仍在暂停，保证一次流水线暂停只取一次指令，只进行一次内存访问
                      ~cpu_longest_stall ? 1'b0 : do_finish;
     end
     assign cpu_inst_stall = cpu_inst_en & ~do_finish; // 让CPU等
 
     //output to axi interface
-    assign cache_inst_req   = read_req & ~addr_rcv & ~do_finish;
+    // *
+    assign cache_inst_req   = (read_req & ~addr_rcv) & ~do_finish;
     assign cache_inst_wr    = 1'b0;
     assign cache_inst_size  = 2'b10;
     assign cache_inst_addr  = cpu_inst_addr;
