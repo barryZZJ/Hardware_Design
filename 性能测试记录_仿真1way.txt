@@ -1,0 +1,14 @@
+
+====== NO DELAY ======
+
+string search: Total Count(SoC count) = 0x67cd2
+string search: Total Count(CPU count) = 0x5e501
+
+stream copy: Total Count(SoC count) = 0x2243c7
+stream copy: Total Count(CPU count) = 0x200e522
+
+crc32: Total Count(SoC count) = 0xabb2edd
+crc32: Total Count(CPU count) = 0x9b91a
+
+bubble sort: Total Count(SoC count) = 0x66c067
+bubble sort: Total Count(CPU count) = 0x6222877

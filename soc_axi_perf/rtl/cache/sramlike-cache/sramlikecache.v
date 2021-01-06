@@ -64,7 +64,7 @@ module sramlikecache (
     
 
     // data_sramlikecache data_sramlikecache(
-    data_sramlikecache_wb_4way_fLRU data_sramlikecache(
+    data_sramlikecache_wb_1way data_sramlikecache(
         .clk(clk), .rst(rst),
         .cpu_data_req     (data_req     ),
         .cpu_data_wr      (data_wr      ),

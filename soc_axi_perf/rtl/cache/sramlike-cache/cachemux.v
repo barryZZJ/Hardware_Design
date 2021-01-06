@@ -50,6 +50,12 @@ module cachemux (
     wire [31:0] tocache_data_addr  = no_dcache ? 32'b0 : data_addr;
     wire [31:0] tocache_data_wdata = no_dcache ? 32'b0 : data_wdata;
 
+    wire        cachetobridge_data_req  ;
+    wire        cachetobridge_data_wr   ;
+    wire [ 1:0] cachetobridge_data_size ;
+    wire [31:0] cachetobridge_data_addr ;
+    wire [31:0] cachetobridge_data_wdata;
+
     // 去桥
     assign tobridge_data_req = no_dcache ? data_req : cachetobridge_data_req;
     assign tobridge_data_wr = no_dcache ? data_wr : cachetobridge_data_wr;
