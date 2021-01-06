@@ -53,7 +53,7 @@ module inst_cache (
     assign c_block = cache_block[index];
 
     //判断是否命中
-    // TODO hit 能否保持高电平?
+    //* hit和miss互反，合起来总保持高电平
     wire hit, miss;
     assign hit = c_valid & (c_tag == tag);  //cache line的valid位为1，且tag与地址中tag相等
     assign miss = ~hit;
@@ -90,7 +90,18 @@ module inst_cache (
     assign read_finish = cache_inst_data_ok;
 
     //output to mips core
-    assign cpu_inst_rdata   = hit ? c_block : cache_inst_rdata;
+    //* 如果数据准备好了(hit or cache_data_ok)，就告诉CPU数据准备好了(finish=1)，数据存到save里，等待CPU读
+    // save rdata，防止丢失
+    reg [31:0] cpu_inst_rdata_save;
+    always @(posedge clk) begin
+        cpu_inst_rdata_save <= rst ? 32'b0:
+        // hit(一定算ok) 或 data_ok 则更新暂存值
+                               hit ? c_block : cache_inst_data_ok ? cache_inst_rdata : 
+                               cpu_inst_rdata_save;
+    end
+    // *
+    assign cpu_inst_rdata   = cpu_inst_rdata_save;
+    // assign cpu_inst_rdata   = hit ? c_block : cache_inst_rdata;
     //* addr_ok 没用上
     // assign cpu_inst_addr_ok = cpu_inst_en & hit | cache_inst_req & cache_inst_addr_ok;
     // assign cpu_inst_addr_ok = cpu_inst_req & hit | cache_inst_req & cache_inst_addr_ok;
@@ -125,10 +136,12 @@ module inst_cache (
     reg [INDEX_WIDTH-1:0] index_save;
     always @(posedge clk) begin
         tag_save   <= rst ? 0 :
-                      cpu_inst_en ? tag : tag_save; //*
+        //*
+                      cpu_inst_en ? tag : tag_save;
                     //   cpu_inst_req ? tag : tag_save;
         index_save <= rst ? 0 :
-                      cpu_inst_en ? index : index_save; //*
+        //*
+                      cpu_inst_en ? index : index_save;
                     //   cpu_inst_req ? index : index_save;
     end
 

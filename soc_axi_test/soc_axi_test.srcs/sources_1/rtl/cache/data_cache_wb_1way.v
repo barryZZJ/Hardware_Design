@@ -1,4 +1,5 @@
-module data_cache (
+// module data_cache (
+module data_cache_wb_1way (
     input wire clk, rst,
     //mips core
     input wire        cpu_data_en    , //* 读或写 new，一直高电平。
@@ -51,21 +52,22 @@ module data_cache (
     wire c_dirty; // 是否修改过
     wire [TAG_WIDTH-1:0] c_tag;
     wire [31:0] c_block;
-
+    // TODO 问题：dirty位置错了，给成下一个地址了
     assign c_valid = cache_valid[index];
     assign c_dirty = cache_dirty[index]; // 是否修改过
     assign c_tag   = cache_tag  [index];
     assign c_block = cache_block[index];
 
     //判断是否命中
-    // TODO hit 能否保持高电平?
+    //* hit和miss互反，合起来总保持高电平
     wire hit, miss;
     assign hit = c_valid & (c_tag == tag);  //cache line的valid位为1，且tag与地址中tag相等
     assign miss = ~hit;
 
     // cpu请求是不是读或写请求(是不是load或store指令)
     wire load, store;
-    assign store = cpu_data_en & (cpu_data_wen != 4'b0); // *
+    // *
+    assign store = cpu_data_en & (cpu_data_wen != 4'b0); 
     // assign store = cpu_data_wr;
     assign load = cpu_data_en & (cpu_data_wen == 4'b0); // 是数据请求，且不是store，那么就是load。暂时没用上
     // assign load = cpu_data_req & ~store; // 是数据请求，且不是store，那么就是load
@@ -156,7 +158,7 @@ module data_cache (
                                hit ? c_block : cache_data_data_ok ? cache_data_rdata : 
                                cpu_data_rdata_save;
     end
-
+    // *
     assign cpu_data_rdata   = cpu_data_rdata_save;
     // assign cpu_data_rdata   = hit ? c_block : cache_data_rdata;
 
@@ -256,10 +258,12 @@ module data_cache (
     reg [INDEX_WIDTH-1:0] index_save;
     always @(posedge clk) begin
         tag_save   <= rst ? 0 :
-                      cpu_data_en ? tag : tag_save; //*
+        //*
+                      cpu_data_en ? tag : tag_save;
                     //   cpu_data_req ? tag : tag_save;
         index_save <= rst ? 0 :
-                      cpu_data_en ? index : index_save; //*
+        //*
+                      cpu_data_en ? index : index_save;
                     //   cpu_data_req ? index : index_save;
     end
 
@@ -267,9 +271,8 @@ module data_cache (
     wire [3:0] write_mask;
 
     //根据地址低两位和size，生成写掩码（针对sb，sh等不是写完整一个字的指令），4位对应1个字（4字节）中每个字的写使能
-    // wire [1:0] cpu_data_size;
-    
-    assign write_mask = cpu_data_wen; // *
+    // *
+    assign write_mask = cpu_data_wen;
     // assign write_mask = cpu_data_size==2'b00 ?
     //                     (cpu_data_addr[1] ? (cpu_data_addr[0] ? 4'b1000 : 4'b0100):
     //                                         (cpu_data_addr[0] ? 4'b0010 : 4'b0001)) :
